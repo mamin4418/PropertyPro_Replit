@@ -18,8 +18,9 @@ import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 
 function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  // For mobile, sidebar is initially closed; for desktop, it's always open
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
   
   useEffect(() => {
     const handleResize = () => {
@@ -32,7 +33,7 @@ function App() {
       }
     };
     
-    // Set initial states
+    // Set initial states on mount and when the window resizes
     handleResize();
     
     window.addEventListener('resize', handleResize);

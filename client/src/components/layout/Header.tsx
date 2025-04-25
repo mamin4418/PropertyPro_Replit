@@ -24,15 +24,13 @@ const Header = ({ toggleSidebar, isMobile = false }: HeaderProps) => {
       {/* Mobile Header */}
       <header className="lg:hidden bg-card shadow-sm flex items-center justify-between p-4 sticky top-0 z-30">
         <div className="flex items-center">
-          {isMobile && (
-            <button
-              onClick={toggleSidebar}
-              className="p-2 rounded-md text-muted-foreground hover:bg-secondary"
-            >
-              <Menu size={20} />
-            </button>
-          )}
-          <div className={`font-semibold text-xl ${isMobile ? "ml-3" : ""}`}>PMS</div>
+          <button
+            onClick={toggleSidebar}
+            className="p-2 rounded-md text-muted-foreground hover:bg-secondary"
+          >
+            <Menu size={20} />
+          </button>
+          <div className="ml-3 font-semibold text-xl">PMS</div>
         </div>
         <div className="flex items-center space-x-4">
           <button className="p-2 rounded-md text-muted-foreground hover:bg-secondary">

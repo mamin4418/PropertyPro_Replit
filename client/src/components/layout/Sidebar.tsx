@@ -10,7 +10,9 @@ import {
   BarChart,
   Settings,
   ChevronRight,
-  ChevronDown
+  ChevronDown,
+  Hammer,
+  Store
 } from "lucide-react";
 import ThemeSwitch from "./ThemeSwitch";
 
@@ -66,6 +68,10 @@ const Sidebar = () => {
   );
   const [tenantsOpen, setTenantsOpen] = useState(
     ["tenants", "add-tenant"].includes(currentPage)
+  );
+  
+  const [vendorsOpen, setVendorsOpen] = useState(
+    ["vendors", "add-vendor"].includes(currentPage)
   );
 
   return (
@@ -169,6 +175,39 @@ const Sidebar = () => {
           <Drill className="w-5 h-5" />
           <span className="ml-3">Maintenance</span>
         </NavLink>
+        
+        {/* Vendors */}
+        <div className="space-y-1">
+          <button
+            onClick={() => setVendorsOpen(!vendorsOpen)}
+            className={`w-full flex items-center justify-between p-3 rounded-md transition-colors ${
+              ["vendors", "add-vendor"].includes(currentPage) 
+                ? "bg-primary/10 text-primary" 
+                : "hover:bg-secondary"
+            }`}
+          >
+            <div className="flex items-center">
+              <Store className="w-5 h-5" />
+              <span className="ml-3">Vendors</span>
+            </div>
+            {vendorsOpen ? (
+              <ChevronDown className="w-4 h-4" />
+            ) : (
+              <ChevronRight className="w-4 h-4" />
+            )}
+          </button>
+          
+          {vendorsOpen && (
+            <div className="pl-10 space-y-1">
+              <SubNavLink href="/vendors" isActive={currentPage === "vendors"}>
+                All Vendors
+              </SubNavLink>
+              <SubNavLink href="/add-vendor" isActive={currentPage === "add-vendor"}>
+                Add Vendor
+              </SubNavLink>
+            </div>
+          )}
+        </div>
         
         {/* Reports */}
         <NavLink href="/reports" isActive={currentPage === "reports"}>

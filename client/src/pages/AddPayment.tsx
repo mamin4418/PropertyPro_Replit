@@ -7,7 +7,8 @@ import {
   CreditCard,
   Receipt,
   ArrowUpRight,
-  ArrowDownLeft
+  ArrowDownLeft,
+  Upload
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -277,6 +278,30 @@ const AddPayment = () => {
                   value={formData.notes}
                   onChange={handleChange}
                 />
+              </div>
+
+              <div className="md:col-span-2">
+                <Label htmlFor="receipt">Receipt or Invoice</Label>
+                <div className="mt-1">
+                  <div className="flex items-center justify-center w-full">
+                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-secondary/50 hover:bg-secondary">
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
+                        <p className="mb-2 text-sm text-muted-foreground">
+                          <span className="font-semibold">Click to upload</span> or drag and drop
+                        </p>
+                        <p className="text-xs text-muted-foreground">PDF, PNG, JPG (MAX. 10MB)</p>
+                      </div>
+                      <input 
+                        id="receipt" 
+                        name="receipt" 
+                        type="file" 
+                        className="hidden" 
+                        accept=".pdf,.png,.jpg,.jpeg"
+                      />
+                    </label>
+                  </div>
+                </div>
               </div>
             </div>
 

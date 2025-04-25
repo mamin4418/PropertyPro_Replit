@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import Properties from "./pages/Properties";
 import AddProperty from "./pages/AddProperty";
 import Tenants from "./pages/Tenants";
+import AddTenant from "./pages/AddTenant";
 import Leases from "./pages/Leases";
 import AddLease from "./pages/AddLease";
 import Payments from "./pages/Payments";
@@ -103,7 +104,7 @@ function App() {
                   <Route path="/properties" component={Properties} />
                   <Route path="/add-property" component={AddProperty} />
                   <Route path="/tenants" component={Tenants} />
-                  <Route path="/add-tenant" component={NotFound} />
+                  <Route path="/add-tenant" component={AddTenant} />
                   <Route path="/leases" component={Leases} />
                   <Route path="/add-lease" component={AddLease} />
                   <Route path="/leases/:id" component={NotFound} />

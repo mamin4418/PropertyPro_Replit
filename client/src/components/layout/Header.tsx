@@ -14,7 +14,7 @@ const Header = () => {
     : location.split("/")[1].charAt(0).toUpperCase() + location.split("/")[1].slice(1).replace(/-/g, ' ');
   
   return (
-    <header className="bg-card shadow-sm flex items-center justify-between p-4 sticky top-0 z-20">
+    <header className="bg-card shadow-sm flex items-center justify-between p-4 z-20 border-b border-border">
       <div className="flex items-center">
         <h1 className="text-xl font-semibold">{pageName}</h1>
       </div>
@@ -23,8 +23,8 @@ const Header = () => {
           <Bell size={20} />
         </button>
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center space-x-2 focus:outline-none">
-            <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
+          <DropdownMenuTrigger className="flex items-center gap-2 focus:outline-none">
+            <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center">
               <User className="w-5 h-5 text-muted-foreground" />
             </div>
             <span className="hidden md:inline">Admin User</span>

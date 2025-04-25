@@ -3,18 +3,27 @@
 @tailwind utilities;
 
 @layer components {
-  .app-layout {
-    display: grid;
-    grid-template-columns: 16rem 1fr;
+  /* Base layout */
+  .app-container {
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
   }
   
+  /* Desktop layout - sidebar + content */
+  .app-layout {
+    flex: 1;
+    display: flex;
+    position: relative;
+  }
+  
+  /* Sidebar component */
   .app-sidebar {
     position: fixed;
     top: 0;
     left: 0;
     width: 16rem;
-    height: 100vh;
+    height: 100vh; 
     overflow-y: auto;
     z-index: 50;
     border-right-width: 1px;
@@ -22,18 +31,24 @@
     background-color: hsl(var(--background));
   }
   
+  /* Main content area */
   .app-main {
     margin-left: 16rem;
-    min-height: 100vh;
+    flex: 1; 
     width: calc(100% - 16rem);
+    min-height: 100vh;
+  }
+  
+  /* Content holder */
+  .content-container {
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
   }
   
   /* For mobile screens */
   @media (max-width: 1023px) {
-    .app-layout {
-      grid-template-columns: 1fr;
-    }
-    
     .app-sidebar {
       transform: translateX(-100%);
       transition: transform 0.2s ease-in-out;
@@ -46,6 +61,17 @@
     .app-main {
       margin-left: 0;
       width: 100%;
+      padding-top: 60px; /* For mobile header */
+    }
+    
+    .mobile-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 40;
+      background-color: hsl(var(--card));
+      border-bottom: 1px solid hsl(var(--border));
     }
   }
 }

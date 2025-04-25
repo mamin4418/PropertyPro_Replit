@@ -14,6 +14,36 @@ import {
 } from "lucide-react";
 import ThemeSwitcher from "./ThemeSwitcher";
 
+// Custom navigation link that doesn't use nested <a> tags
+const NavLink = ({ href, isActive, children, className = "" }) => {
+  return (
+    <Link href={href}>
+      <div 
+        className={`w-full cursor-pointer flex items-center p-3 rounded-md transition-colors ${
+          isActive ? "bg-primary/10 text-primary" : "hover:bg-secondary"
+        } ${className}`}
+      >
+        {children}
+      </div>
+    </Link>
+  );
+};
+
+// Sub-navigation link for dropdowns
+const SubNavLink = ({ href, isActive, children }) => {
+  return (
+    <Link href={href}>
+      <div 
+        className={`w-full cursor-pointer text-left p-2 rounded-md transition-colors ${
+          isActive ? "bg-primary/5 text-primary" : "hover:bg-secondary"
+        }`}
+      >
+        {children}
+      </div>
+    </Link>
+  );
+};
+
 const Sidebar = () => {
   const [location] = useLocation();
   const currentPage = location.split("/")[1] || "dashboard";
@@ -38,16 +68,10 @@ const Sidebar = () => {
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-1">
         {/* Dashboard */}
-        <Link href="/dashboard">
-          <a
-            className={`w-full flex items-center p-3 rounded-md transition-colors ${
-              currentPage === "dashboard" ? "bg-primary/10 text-primary" : "hover:bg-secondary"
-            }`}
-          >
-            <Home className="w-5 h-5" />
-            <span className="ml-3">Dashboard</span>
-          </a>
-        </Link>
+        <NavLink href="/dashboard" isActive={currentPage === "dashboard"}>
+          <Home className="w-5 h-5" />
+          <span className="ml-3">Dashboard</span>
+        </NavLink>
         
         {/* Properties */}
         <div className="space-y-1">
@@ -72,28 +96,12 @@ const Sidebar = () => {
           
           {propertiesOpen && (
             <div className="pl-10 space-y-1">
-              <Link href="/properties">
-                <a
-                  className={`w-full text-left p-2 rounded-md transition-colors ${
-                    currentPage === "properties" 
-                      ? "bg-primary/5 text-primary" 
-                      : "hover:bg-secondary"
-                  }`}
-                >
-                  All Properties
-                </a>
-              </Link>
-              <Link href="/add-property">
-                <a
-                  className={`w-full text-left p-2 rounded-md transition-colors ${
-                    currentPage === "add-property" 
-                      ? "bg-primary/5 text-primary" 
-                      : "hover:bg-secondary"
-                  }`}
-                >
-                  Add Property
-                </a>
-              </Link>
+              <SubNavLink href="/properties" isActive={currentPage === "properties"}>
+                All Properties
+              </SubNavLink>
+              <SubNavLink href="/add-property" isActive={currentPage === "add-property"}>
+                Add Property
+              </SubNavLink>
             </div>
           )}
         </div>
@@ -121,91 +129,45 @@ const Sidebar = () => {
           
           {tenantsOpen && (
             <div className="pl-10 space-y-1">
-              <Link href="/tenants">
-                <a
-                  className={`w-full text-left p-2 rounded-md transition-colors ${
-                    currentPage === "tenants" 
-                      ? "bg-primary/5 text-primary" 
-                      : "hover:bg-secondary"
-                  }`}
-                >
-                  All Tenants
-                </a>
-              </Link>
-              <Link href="/add-tenant">
-                <a
-                  className={`w-full text-left p-2 rounded-md transition-colors ${
-                    currentPage === "add-tenant" 
-                      ? "bg-primary/5 text-primary" 
-                      : "hover:bg-secondary"
-                  }`}
-                >
-                  Add Tenant
-                </a>
-              </Link>
+              <SubNavLink href="/tenants" isActive={currentPage === "tenants"}>
+                All Tenants
+              </SubNavLink>
+              <SubNavLink href="/add-tenant" isActive={currentPage === "add-tenant"}>
+                Add Tenant
+              </SubNavLink>
             </div>
           )}
         </div>
         
         {/* Leases */}
-        <Link href="/leases">
-          <a
-            className={`w-full flex items-center p-3 rounded-md transition-colors ${
-              currentPage === "leases" ? "bg-primary/10 text-primary" : "hover:bg-secondary"
-            }`}
-          >
-            <FileText className="w-5 h-5" />
-            <span className="ml-3">Leases</span>
-          </a>
-        </Link>
+        <NavLink href="/leases" isActive={currentPage === "leases"}>
+          <FileText className="w-5 h-5" />
+          <span className="ml-3">Leases</span>
+        </NavLink>
         
         {/* Payments */}
-        <Link href="/payments">
-          <a
-            className={`w-full flex items-center p-3 rounded-md transition-colors ${
-              currentPage === "payments" ? "bg-primary/10 text-primary" : "hover:bg-secondary"
-            }`}
-          >
-            <DollarSign className="w-5 h-5" />
-            <span className="ml-3">Payments</span>
-          </a>
-        </Link>
+        <NavLink href="/payments" isActive={currentPage === "payments"}>
+          <DollarSign className="w-5 h-5" />
+          <span className="ml-3">Payments</span>
+        </NavLink>
         
         {/* Maintenance */}
-        <Link href="/maintenance">
-          <a
-            className={`w-full flex items-center p-3 rounded-md transition-colors ${
-              currentPage === "maintenance" ? "bg-primary/10 text-primary" : "hover:bg-secondary"
-            }`}
-          >
-            <Drill className="w-5 h-5" />
-            <span className="ml-3">Maintenance</span>
-          </a>
-        </Link>
+        <NavLink href="/maintenance" isActive={currentPage === "maintenance"}>
+          <Drill className="w-5 h-5" />
+          <span className="ml-3">Maintenance</span>
+        </NavLink>
         
         {/* Reports */}
-        <Link href="/reports">
-          <a
-            className={`w-full flex items-center p-3 rounded-md transition-colors ${
-              currentPage === "reports" ? "bg-primary/10 text-primary" : "hover:bg-secondary"
-            }`}
-          >
-            <BarChart className="w-5 h-5" />
-            <span className="ml-3">Reports</span>
-          </a>
-        </Link>
+        <NavLink href="/reports" isActive={currentPage === "reports"}>
+          <BarChart className="w-5 h-5" />
+          <span className="ml-3">Reports</span>
+        </NavLink>
         
         {/* Settings */}
-        <Link href="/settings">
-          <a
-            className={`w-full flex items-center p-3 rounded-md transition-colors ${
-              currentPage === "settings" ? "bg-primary/10 text-primary" : "hover:bg-secondary"
-            }`}
-          >
-            <Settings className="w-5 h-5" />
-            <span className="ml-3">Settings</span>
-          </a>
-        </Link>
+        <NavLink href="/settings" isActive={currentPage === "settings"}>
+          <Settings className="w-5 h-5" />
+          <span className="ml-3">Settings</span>
+        </NavLink>
       </nav>
       
       {/* Theme Switcher */}

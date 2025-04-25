@@ -49,51 +49,51 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        {/* Mobile Header - Only visible on mobile */}
-        <header className="fixed top-0 left-0 right-0 z-50 lg:hidden bg-card shadow-sm flex items-center justify-between p-4">
-          <div className="flex items-center">
-            <button
-              onClick={toggleMobileMenu}
-              className="p-2 rounded-md text-muted-foreground hover:bg-secondary"
-            >
-              <Menu size={20} />
-            </button>
-            <div className="ml-3 font-semibold text-xl">PropManager</div>
-          </div>
-        </header>
-
-        {/* Main Layout */}
-        <div className="app-layout">
-          {/* Sidebar - Fixed on desktop, toggleable on mobile */}
-          <aside className={`app-sidebar ${mobileMenuOpen ? 'open' : ''}`}>
-            {/* Mobile Close Button */}
-            {isMobile && mobileMenuOpen && (
-              <button 
-                onClick={toggleMobileMenu} 
-                className="absolute top-4 right-4 p-2 rounded-md text-muted-foreground hover:bg-secondary lg:hidden"
+        <div className="app-container">
+          {/* Mobile Header - Only visible on mobile */}
+          <header className="mobile-header lg:hidden flex items-center justify-between p-4 shadow-sm">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={toggleMobileMenu}
+                className="p-2 rounded-md text-muted-foreground hover:bg-secondary"
               >
-                <X size={18} />
+                <Menu size={20} />
               </button>
+              <div className="font-semibold text-xl">PropManager</div>
+            </div>
+          </header>
+
+          {/* Main Layout Container */}
+          <div className="app-layout">
+            {/* Sidebar - Fixed on desktop, toggleable on mobile */}
+            <aside className={`app-sidebar ${mobileMenuOpen ? 'open' : ''}`}>
+              {/* Mobile Close Button */}
+              {isMobile && mobileMenuOpen && (
+                <button 
+                  onClick={toggleMobileMenu} 
+                  className="absolute top-4 right-4 p-2 rounded-md text-muted-foreground hover:bg-secondary lg:hidden"
+                >
+                  <X size={18} />
+                </button>
+              )}
+              <Sidebar />
+            </aside>
+            
+            {/* Mobile Backdrop */}
+            {mobileMenuOpen && isMobile && (
+              <div 
+                className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+                onClick={() => setMobileMenuOpen(false)}
+              />
             )}
-            <Sidebar />
-          </aside>
-          
-          {/* Mobile Backdrop */}
-          {mobileMenuOpen && isMobile && (
-            <div 
-              className="fixed inset-0 z-40 bg-black/50 lg:hidden"
-              onClick={() => setMobileMenuOpen(false)}
-            />
-          )}
-          
-          {/* Main Content Area */}
-          <main className="app-main">
-            <div className={`${isMobile ? 'pt-16' : 'pt-0'}`}>
+            
+            {/* Main Content Area */}
+            <main className="app-main">
               {/* Desktop Header */}
               <Header />
               
               {/* Page Content */}
-              <div className="p-4 lg:p-6">
+              <div className="content-container">
                 <Switch>
                   <Route path="/" component={Dashboard} />
                   <Route path="/dashboard" component={Dashboard} />
@@ -108,8 +108,8 @@ function App() {
                   <Route component={NotFound} />
                 </Switch>
               </div>
-            </div>
-          </main>
+            </main>
+          </div>
         </div>
         
         <Toaster />

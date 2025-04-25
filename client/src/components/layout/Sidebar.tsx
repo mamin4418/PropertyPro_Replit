@@ -12,7 +12,7 @@ import {
   ChevronRight,
   ChevronDown
 } from "lucide-react";
-import ThemeSwitcher from "./ThemeSwitcher";
+import ThemeSwitch from "./ThemeSwitch";
 
 interface NavLinkProps {
   href: string;
@@ -185,7 +185,7 @@ const Sidebar = () => {
       
       {/* Theme Switcher */}
       <div className="p-4 border-t border-custom mt-auto">
-        <ThemeSwitcher />
+        <ThemeSwitch />
       </div>
     </div>
   );

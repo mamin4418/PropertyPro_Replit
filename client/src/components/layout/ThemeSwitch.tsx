@@ -30,18 +30,49 @@ const ThemeSwitch = () => {
 
   // Apply theme when it changes
   useEffect(() => {
-    // Remove all theme classes first
-    document.documentElement.classList.remove(...themeOptions.map(t => t.id).filter(id => id !== 'default'));
+    // Function to apply theme to all relevant elements
+    const applyThemeToElements = () => {
+      // List of elements to apply theme to
+      const elements = [
+        document.documentElement, 
+        document.body,
+        document.querySelector('.app-container'),
+        document.querySelector('.app-layout'),
+        document.querySelector('.app-sidebar'),
+        document.querySelector('.app-main')
+      ].filter(Boolean);
+      
+      // All theme classes
+      const allThemeClasses = themeOptions.map(t => t.id).filter(id => id !== 'default');
+      
+      // Remove all theme classes from each element
+      elements.forEach(el => {
+        if (el) {
+          el.classList.remove(...allThemeClasses);
+          
+          // Add new theme class if not default
+          if (theme !== 'default') {
+            el.classList.add(theme);
+          }
+        }
+      });
+      
+      console.log('Theme applied:', theme);
+      console.log('Applied to elements:', elements.length);
+    };
     
-    // Apply new theme class (if not default)
-    if (theme !== 'default') {
-      document.documentElement.classList.add(theme);
-    }
+    // Apply the theme
+    applyThemeToElements();
     
     // Store preference
     localStorage.setItem('pms-theme', theme);
     
-    console.log('Theme applied:', theme);
+    // Force reflow to ensure theme is applied
+    const timer = setTimeout(() => {
+      applyThemeToElements();
+    }, 50);
+    
+    return () => clearTimeout(timer);
   }, [theme]);
 
   // Handle theme change

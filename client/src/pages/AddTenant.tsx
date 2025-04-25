@@ -389,116 +389,48 @@ const AddTenant = () => {
               {/* Documents & Attachments */}
               <div>
                 <h3 className="text-lg font-medium mb-4">Documents & Attachments</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <Label htmlFor="tenantPhoto">Tenant Photo</Label>
-                    <div className="mt-1">
-                      <div className="flex items-center justify-center w-full">
-                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-secondary/50 hover:bg-secondary">
-                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
-                            <p className="mb-2 text-sm text-muted-foreground">
-                              <span className="font-semibold">Click to upload</span> or drag and drop
-                            </p>
-                            <p className="text-xs text-muted-foreground">PNG, JPG or JPEG (MAX. 2MB)</p>
-                            {files.photo && (
-                              <p className="mt-2 text-xs text-primary">File: {files.photo.name}</p>
-                            )}
-                          </div>
-                          <input 
-                            id="tenantPhoto" 
-                            name="tenantPhoto" 
-                            type="file" 
-                            className="hidden" 
-                            accept="image/png, image/jpeg, image/jpg"
-                            onChange={(e) => handleFileChange(e, 'photo')}
-                          />
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="idDocument">ID Document</Label>
-                    <div className="mt-1">
-                      <div className="flex items-center justify-center w-full">
-                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-secondary/50 hover:bg-secondary">
-                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
-                            <p className="mb-2 text-sm text-muted-foreground">
-                              <span className="font-semibold">Click to upload</span> or drag and drop
-                            </p>
-                            <p className="text-xs text-muted-foreground">PDF, PNG, JPG (MAX. 5MB)</p>
-                            {files.idDocument && (
-                              <p className="mt-2 text-xs text-primary">File: {files.idDocument.name}</p>
-                            )}
-                          </div>
-                          <input 
-                            id="idDocument" 
-                            name="idDocument" 
-                            type="file" 
-                            className="hidden" 
-                            accept="image/png, image/jpeg, image/jpg, application/pdf"
-                            onChange={(e) => handleFileChange(e, 'idDocument')}
-                          />
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="proofOfIncome">Proof of Income</Label>
-                    <div className="mt-1">
-                      <div className="flex items-center justify-center w-full">
-                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-secondary/50 hover:bg-secondary">
-                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
-                            <p className="mb-2 text-sm text-muted-foreground">
-                              <span className="font-semibold">Click to upload</span> or drag and drop
-                            </p>
-                            <p className="text-xs text-muted-foreground">PDF, PNG, JPG (MAX. 5MB)</p>
-                            {files.proofOfIncome && (
-                              <p className="mt-2 text-xs text-primary">File: {files.proofOfIncome.name}</p>
-                            )}
-                          </div>
-                          <input 
-                            id="proofOfIncome" 
-                            name="proofOfIncome" 
-                            type="file" 
-                            className="hidden" 
-                            accept="image/png, image/jpeg, image/jpg, application/pdf"
-                            onChange={(e) => handleFileChange(e, 'proofOfIncome')}
-                          />
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="backgroundCheck">Background Check</Label>
-                    <div className="mt-1">
-                      <div className="flex items-center justify-center w-full">
-                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-secondary/50 hover:bg-secondary">
-                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
-                            <p className="mb-2 text-sm text-muted-foreground">
-                              <span className="font-semibold">Click to upload</span> or drag and drop
-                            </p>
-                            <p className="text-xs text-muted-foreground">PDF, PNG, JPG (MAX. 5MB)</p>
-                            {files.backgroundCheck && (
-                              <p className="mt-2 text-xs text-primary">File: {files.backgroundCheck.name}</p>
-                            )}
-                          </div>
-                          <input 
-                            id="backgroundCheck" 
-                            name="backgroundCheck" 
-                            type="file" 
-                            className="hidden" 
-                            accept="image/png, image/jpeg, image/jpg, application/pdf"
-                            onChange={(e) => handleFileChange(e, 'backgroundCheck')}
-                          />
-                        </label>
-                      </div>
+                <div className="w-full">
+                  <div className="mt-1">
+                    <div className="flex items-center justify-center w-full">
+                      <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-lg cursor-pointer bg-secondary/50 hover:bg-secondary">
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                          <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
+                          <p className="mb-2 text-sm text-muted-foreground">
+                            <span className="font-semibold">Click to upload</span> or drag and drop
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Upload ID documents, tenant photos, proof of income and background checks
+                          </p>
+                          <p className="text-xs text-muted-foreground">PDF, PNG, JPG (MAX. 10MB per file)</p>
+                          <p className="text-xs font-medium text-primary-foreground mt-1">Multiple files allowed</p>
+                          {Object.values(files).some(file => file !== null) && (
+                            <div className="mt-2 text-xs text-primary">
+                              {Object.entries(files).map(([key, file]) => (
+                                file && <p key={key}>File: {file.name}</p>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        <input 
+                          id="documents" 
+                          name="documents" 
+                          type="file" 
+                          className="hidden" 
+                          accept="image/png, image/jpeg, image/jpg, application/pdf"
+                          multiple
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files.length > 0) {
+                              // In a real application, we would handle multiple files 
+                              // Here we're just showing the first file for demonstration
+                              const file = e.target.files[0];
+                              setFiles(prev => ({
+                                ...prev,
+                                photo: file
+                              }));
+                            }
+                          }}
+                        />
+                      </label>
                     </div>
                   </div>
                 </div>

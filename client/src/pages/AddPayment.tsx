@@ -281,23 +281,28 @@ const AddPayment = () => {
               </div>
 
               <div className="md:col-span-2">
-                <Label htmlFor="receipt">Receipt or Invoice</Label>
+                <Label htmlFor="documents">Documents & Receipts</Label>
                 <div className="mt-1">
                   <div className="flex items-center justify-center w-full">
-                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-secondary/50 hover:bg-secondary">
+                    <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-lg cursor-pointer bg-secondary/50 hover:bg-secondary">
                       <div className="flex flex-col items-center justify-center pt-5 pb-6">
                         <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
                         <p className="mb-2 text-sm text-muted-foreground">
                           <span className="font-semibold">Click to upload</span> or drag and drop
                         </p>
-                        <p className="text-xs text-muted-foreground">PDF, PNG, JPG (MAX. 10MB)</p>
+                        <p className="text-sm text-muted-foreground">
+                          Upload receipts, invoices, and payment confirmations
+                        </p>
+                        <p className="text-xs text-muted-foreground">PDF, PNG, JPG (MAX. 10MB per file)</p>
+                        <p className="text-xs font-medium text-primary-foreground mt-1">Multiple files allowed</p>
                       </div>
                       <input 
-                        id="receipt" 
-                        name="receipt" 
+                        id="documents" 
+                        name="documents" 
                         type="file" 
                         className="hidden" 
                         accept=".pdf,.png,.jpg,.jpeg"
+                        multiple
                       />
                     </label>
                   </div>

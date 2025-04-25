@@ -445,53 +445,30 @@ const AddLease = () => {
             {/* Document Upload */}
             <div>
               <h3 className="text-lg font-medium mb-4">Lease Documents</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <Label htmlFor="leaseDocument">Lease Agreement</Label>
-                  <div className="mt-1">
-                    <div className="flex items-center justify-center w-full">
-                      <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-secondary/50 hover:bg-secondary">
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                          <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
-                          <p className="mb-2 text-sm text-muted-foreground">
-                            <span className="font-semibold">Click to upload</span> or drag and drop
-                          </p>
-                          <p className="text-xs text-muted-foreground">PDF, DOCX (MAX. 10MB)</p>
-                        </div>
-                        <input 
-                          id="leaseDocument" 
-                          name="leaseDocument" 
-                          type="file" 
-                          className="hidden" 
-                          accept=".pdf,.doc,.docx"
-                        />
-                      </label>
-                    </div>
-                  </div>
-                </div>
-                
-                <div>
-                  <Label htmlFor="additionalDocument">Additional Documents</Label>
-                  <div className="mt-1">
-                    <div className="flex items-center justify-center w-full">
-                      <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-secondary/50 hover:bg-secondary">
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                          <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
-                          <p className="mb-2 text-sm text-muted-foreground">
-                            <span className="font-semibold">Click to upload</span> or drag and drop
-                          </p>
-                          <p className="text-xs text-muted-foreground">PDF, DOCX, JPG (MAX. 10MB)</p>
-                        </div>
-                        <input 
-                          id="additionalDocument" 
-                          name="additionalDocument" 
-                          type="file" 
-                          className="hidden" 
-                          accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                          multiple
-                        />
-                      </label>
-                    </div>
+              <div className="w-full">
+                <div className="mt-1">
+                  <div className="flex items-center justify-center w-full">
+                    <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-lg cursor-pointer bg-secondary/50 hover:bg-secondary">
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
+                        <p className="mb-2 text-sm text-muted-foreground">
+                          <span className="font-semibold">Click to upload</span> or drag and drop
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Upload lease agreements and supporting documents
+                        </p>
+                        <p className="text-xs text-muted-foreground">PDF, DOCX, JPG (MAX. 10MB per file)</p>
+                        <p className="text-xs font-medium text-primary-foreground mt-1">Multiple files allowed</p>
+                      </div>
+                      <input 
+                        id="leaseDocuments" 
+                        name="leaseDocuments" 
+                        type="file" 
+                        className="hidden" 
+                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                        multiple
+                      />
+                    </label>
                   </div>
                 </div>
               </div>

@@ -34,7 +34,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <div className="min-h-screen">
+        <div className="flex min-h-screen">
           {/* Sidebar */}
           <Sidebar open={sidebarOpen} toggleSidebar={toggleSidebar} />
           
@@ -47,7 +47,7 @@ function App() {
           )}
           
           {/* Main Content */}
-          <main className="lg:pl-64 pt-0 lg:pt-0 transition-all duration-300">
+          <main className="flex-1 lg:ml-64 transition-all duration-300">
             <Header toggleSidebar={toggleSidebar} />
             
             <div className="p-4 lg:p-6">

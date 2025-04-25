@@ -34,7 +34,7 @@ const Sidebar = ({ open, toggleSidebar }: SidebarProps) => {
 
   return (
     <aside 
-      className={`sidebar fixed inset-y-0 left-0 z-40 w-64 transition-transform duration-300 lg:translate-x-0 border-r border-custom ${
+      className={`sidebar fixed top-0 bottom-0 left-0 z-40 w-64 transition-transform duration-300 lg:translate-x-0 border-r border-custom ${
         open ? "translate-x-0" : "-translate-x-full"
       }`}
     >

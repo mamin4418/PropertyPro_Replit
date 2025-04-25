@@ -3,7 +3,11 @@ import App from "./App";
 import "./index.css";
 import { ThemeProvider } from "./context/ThemeProvider";
 
-createRoot(document.getElementById("root")!).render(
+// Create a custom element 
+const rootElement = document.getElementById("root")!;
+rootElement.className = "app-root";
+
+createRoot(rootElement).render(
   <ThemeProvider>
     <App />
   </ThemeProvider>

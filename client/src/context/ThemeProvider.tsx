@@ -13,17 +13,33 @@ export const ThemeContext = createContext<ThemeContextType>({
 });
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentTheme, setCurrentTheme] = useState<Theme>(() => {
-    // Get theme from localStorage if available
-    const savedTheme = localStorage.getItem("pms-theme") as Theme | null;
-    return savedTheme || "default";
-  });
+  // Initialize theme from localStorage
+  const getInitialTheme = (): Theme => {
+    // Check for localStorage support
+    if (typeof window !== "undefined") {
+      const savedTheme = localStorage.getItem("pms-theme") as Theme | null;
+      if (savedTheme && ["default", "dark-theme", "forest-theme", "ocean-theme", "sunset-theme"].includes(savedTheme)) {
+        return savedTheme;
+      }
+    }
+    return "default";
+  };
+  
+  const [currentTheme, setCurrentTheme] = useState<Theme>(getInitialTheme);
 
   useEffect(() => {
-    // Apply theme to body element
+    // Apply theme to the app root element
     const applyTheme = (theme: Theme) => {
+      // Get the root element
+      const rootElement = document.querySelector('.app-root');
+      
+      if (!rootElement) {
+        console.error("Root element not found for theme application");
+        return;
+      }
+      
       // First remove all theme classes
-      document.body.classList.remove(
+      rootElement.classList.remove(
         "dark-theme", 
         "forest-theme", 
         "ocean-theme", 
@@ -32,11 +48,23 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       
       // Then add the current theme if it's not default
       if (theme !== "default") {
+        rootElement.classList.add(theme);
+      }
+      
+      // For backwards compatibility, also apply to body
+      document.body.classList.remove(
+        "dark-theme", 
+        "forest-theme", 
+        "ocean-theme", 
+        "sunset-theme"
+      );
+      
+      if (theme !== "default") {
         document.body.classList.add(theme);
       }
       
       console.log("Applied theme:", theme);
-      console.log("Body classes:", document.body.className);
+      console.log("Root element classes:", rootElement.className);
     };
     
     // Apply theme immediately

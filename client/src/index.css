@@ -253,8 +253,20 @@
     @apply border-border;
   }
 
-  body {
+  body, .app-root {
     @apply font-sans antialiased bg-background text-foreground;
+  }
+  
+  .app-layout {
+    @apply bg-background text-foreground;
+  }
+  
+  .app-sidebar {
+    @apply bg-background border-border;
+  }
+  
+  .app-main {
+    @apply bg-background text-foreground;
   }
 }
 

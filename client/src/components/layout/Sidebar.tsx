@@ -14,8 +14,15 @@ import {
 } from "lucide-react";
 import ThemeSwitcher from "./ThemeSwitcher";
 
+interface NavLinkProps {
+  href: string;
+  isActive: boolean;
+  children: React.ReactNode;
+  className?: string;
+}
+
 // Custom navigation link that doesn't use nested <a> tags
-const NavLink = ({ href, isActive, children, className = "" }) => {
+const NavLink = ({ href, isActive, children, className = "" }: NavLinkProps) => {
   return (
     <Link href={href}>
       <div 
@@ -29,8 +36,14 @@ const NavLink = ({ href, isActive, children, className = "" }) => {
   );
 };
 
+interface SubNavLinkProps {
+  href: string;
+  isActive: boolean;
+  children: React.ReactNode;
+}
+
 // Sub-navigation link for dropdowns
-const SubNavLink = ({ href, isActive, children }) => {
+const SubNavLink = ({ href, isActive, children }: SubNavLinkProps) => {
   return (
     <Link href={href}>
       <div 

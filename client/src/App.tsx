@@ -12,8 +12,11 @@ import Properties from "./pages/Properties";
 import AddProperty from "./pages/AddProperty";
 import Tenants from "./pages/Tenants";
 import Leases from "./pages/Leases";
+import AddLease from "./pages/AddLease";
 import Payments from "./pages/Payments";
+import AddPayment from "./pages/AddPayment";
 import Maintenance from "./pages/Maintenance";
+import AddMaintenance from "./pages/AddMaintenance";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import { Menu, X } from "lucide-react";
@@ -100,9 +103,19 @@ function App() {
                   <Route path="/properties" component={Properties} />
                   <Route path="/add-property" component={AddProperty} />
                   <Route path="/tenants" component={Tenants} />
+                  <Route path="/add-tenant" component={NotFound} />
                   <Route path="/leases" component={Leases} />
+                  <Route path="/add-lease" component={AddLease} />
+                  <Route path="/leases/:id" component={NotFound} />
+                  <Route path="/leases/:id/edit" component={NotFound} />
                   <Route path="/payments" component={Payments} />
+                  <Route path="/add-payment" component={AddPayment} />
+                  <Route path="/payments/:id" component={NotFound} />
+                  <Route path="/payments/:id/edit" component={NotFound} />
                   <Route path="/maintenance" component={Maintenance} />
+                  <Route path="/add-maintenance" component={AddMaintenance} />
+                  <Route path="/maintenance/:id" component={NotFound} />
+                  <Route path="/maintenance/:id/edit" component={NotFound} />
                   <Route path="/reports" component={Reports} />
                   <Route path="/settings" component={Settings} />
                   <Route component={NotFound} />

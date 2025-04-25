@@ -18,12 +18,22 @@ import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 
 function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 1024);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   
   useEffect(() => {
     const handleResize = () => {
-      setSidebarOpen(window.innerWidth >= 1024);
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      
+      // On desktop, sidebar should always be open
+      if (!mobile) {
+        setSidebarOpen(true);
+      }
     };
+    
+    // Set initial states
+    handleResize();
     
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -36,10 +46,10 @@ function App() {
       <TooltipProvider>
         <div className="flex min-h-screen">
           {/* Sidebar */}
-          <Sidebar open={sidebarOpen} toggleSidebar={toggleSidebar} />
+          <Sidebar open={sidebarOpen} toggleSidebar={toggleSidebar} isMobile={isMobile} />
           
           {/* Backdrop - mobile only */}
-          {sidebarOpen && window.innerWidth < 1024 && (
+          {sidebarOpen && isMobile && (
             <div 
               className="fixed inset-0 z-30 bg-black bg-opacity-50 lg:hidden"
               onClick={toggleSidebar}
@@ -48,7 +58,7 @@ function App() {
           
           {/* Main Content */}
           <main className="flex-1 lg:ml-64 transition-all duration-300">
-            <Header toggleSidebar={toggleSidebar} />
+            <Header toggleSidebar={toggleSidebar} isMobile={isMobile} />
             
             <div className="p-4 lg:p-6">
               <Switch>

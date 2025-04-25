@@ -19,9 +19,10 @@ import ThemeSwitcher from "./ThemeSwitcher";
 interface SidebarProps {
   open: boolean;
   toggleSidebar: () => void;
+  isMobile?: boolean;
 }
 
-const Sidebar = ({ open, toggleSidebar }: SidebarProps) => {
+const Sidebar = ({ open, toggleSidebar, isMobile = false }: SidebarProps) => {
   const [location] = useLocation();
   const currentPage = location.split("/")[1] || "dashboard";
   
@@ -47,12 +48,14 @@ const Sidebar = ({ open, toggleSidebar }: SidebarProps) => {
             </div>
             <div className="ml-3 font-semibold text-xl">PropManager</div>
           </div>
-          <button 
-            onClick={toggleSidebar} 
-            className="lg:hidden p-2 rounded-md text-muted-foreground hover:bg-secondary"
-          >
-            <X size={18} />
-          </button>
+          {isMobile && (
+            <button 
+              onClick={toggleSidebar} 
+              className="p-2 rounded-md text-muted-foreground hover:bg-secondary"
+            >
+              <X size={18} />
+            </button>
+          )}
         </div>
         
         {/* Navigation */}

@@ -17,7 +17,7 @@ const PropertyFilters = ({ onReset }: PropertyFiltersProps) => {
               <SelectValue placeholder="All Types" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Types</SelectItem>
+              <SelectItem value="all-types">All Types</SelectItem>
               <SelectItem value="apartment">Apartment</SelectItem>
               <SelectItem value="house">House</SelectItem>
               <SelectItem value="condo">Condo</SelectItem>
@@ -33,7 +33,7 @@ const PropertyFilters = ({ onReset }: PropertyFiltersProps) => {
               <SelectValue placeholder="All Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Status</SelectItem>
+              <SelectItem value="all-status">All Status</SelectItem>
               <SelectItem value="active">Active</SelectItem>
               <SelectItem value="maintenance">Maintenance</SelectItem>
               <SelectItem value="vacant">Vacant</SelectItem>
@@ -48,7 +48,7 @@ const PropertyFilters = ({ onReset }: PropertyFiltersProps) => {
               <SelectValue placeholder="Any Occupancy" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Any Occupancy</SelectItem>
+              <SelectItem value="any-occupancy">Any Occupancy</SelectItem>
               <SelectItem value="full">Fully Occupied</SelectItem>
               <SelectItem value="partial">Partially Occupied</SelectItem>
               <SelectItem value="vacant">Vacant</SelectItem>

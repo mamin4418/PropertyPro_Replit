@@ -6,7 +6,8 @@ import {
   Calendar,
   Building,
   Home,
-  User
+  User,
+  Upload
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -192,6 +193,31 @@ const AddMaintenance = () => {
                   value={formData.contactInfo}
                   onChange={handleChange}
                 />
+              </div>
+
+              <div className="md:col-span-2">
+                <Label htmlFor="images">Photos of Issue</Label>
+                <div className="mt-1">
+                  <div className="flex items-center justify-center w-full">
+                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-secondary/50 hover:bg-secondary">
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
+                        <p className="mb-2 text-sm text-muted-foreground">
+                          <span className="font-semibold">Click to upload</span> or drag and drop
+                        </p>
+                        <p className="text-xs text-muted-foreground">PNG, JPG, JPEG (MAX. 10MB)</p>
+                      </div>
+                      <input 
+                        id="images" 
+                        name="images" 
+                        type="file" 
+                        className="hidden" 
+                        accept="image/png,image/jpeg,image/jpg"
+                        multiple
+                      />
+                    </label>
+                  </div>
+                </div>
               </div>
             </div>
 

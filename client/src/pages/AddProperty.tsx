@@ -63,21 +63,34 @@ const AddProperty = () => {
               </div>
               <div className="md:col-span-2">
                 <div className="mb-1 flex justify-between">
-                  <Label>Property Images</Label>
-                  <span className="text-xs text-muted-foreground">You can upload up to 10 images</span>
+                  <Label htmlFor="documents">Property Images & Documents</Label>
+                  <span className="text-xs text-muted-foreground">Multiple files allowed</span>
                 </div>
-                <div className="border-2 border-dashed border-border rounded-md p-6 flex flex-col items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-4xl text-muted-foreground mb-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                      </svg>
+                <div className="border-2 border-dashed border-border rounded-md p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-secondary/50">
+                  <label htmlFor="documents" className="w-full h-full cursor-pointer">
+                    <div className="text-center">
+                      <div className="text-4xl text-muted-foreground mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Drag and drop your files here, or <span className="text-primary">browse</span>
+                      </p>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        Upload property photos, floor plans, legal documents, and certificates
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">Supported formats: JPEG, PNG, PDF, DOC (MAX. 10MB per file)</p>
                     </div>
-                    <p className="text-sm text-muted-foreground">
-                      Drag and drop your images here, or <span className="text-primary cursor-pointer">browse</span>
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">Supported formats: JPEG, PNG, GIF</p>
-                  </div>
+                    <input 
+                      id="documents" 
+                      name="documents" 
+                      type="file" 
+                      className="hidden" 
+                      accept="image/jpeg,image/png,image/gif,application/pdf,.doc,.docx"
+                      multiple
+                    />
+                  </label>
                 </div>
               </div>
             </div>

@@ -156,7 +156,7 @@ const Tenants = () => {
                 <SelectValue placeholder="All Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Status</SelectItem>
+                <SelectItem value="all-status">All Status</SelectItem>
                 <SelectItem value="active">Active</SelectItem>
                 <SelectItem value="past">Past</SelectItem>
                 <SelectItem value="pending">Pending</SelectItem>
@@ -171,7 +171,7 @@ const Tenants = () => {
                 <SelectValue placeholder="All Properties" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Properties</SelectItem>
+                <SelectItem value="all-properties">All Properties</SelectItem>
                 <SelectItem value="sunset">Sunset Heights</SelectItem>
                 <SelectItem value="maple">Maple Gardens</SelectItem>
                 <SelectItem value="urban">Urban Lofts</SelectItem>
@@ -186,7 +186,7 @@ const Tenants = () => {
                 <SelectValue placeholder="Any Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Any Status</SelectItem>
+                <SelectItem value="any-status">Any Status</SelectItem>
                 <SelectItem value="current">Current</SelectItem>
                 <SelectItem value="expiring">Expiring Soon</SelectItem>
                 <SelectItem value="expired">Expired</SelectItem>
@@ -257,8 +257,12 @@ const Tenants = () => {
                   </TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
-                      <Button variant="link" className="h-auto p-0 text-primary">View</Button>
-                      <Button variant="link" className="h-auto p-0">Edit</Button>
+                      <Link href={`/tenants/${tenant.id}`}>
+                        <Button variant="link" className="h-auto p-0 text-primary">View</Button>
+                      </Link>
+                      <Link href={`/tenants/${tenant.id}/edit`}>
+                        <Button variant="link" className="h-auto p-0">Edit</Button>
+                      </Link>
                     </div>
                   </TableCell>
                 </TableRow>

@@ -18,6 +18,8 @@ import Payments from "./pages/Payments";
 import AddPayment from "./pages/AddPayment";
 import Maintenance from "./pages/Maintenance";
 import AddMaintenance from "./pages/AddMaintenance";
+import Vendors from "./pages/Vendors";
+import AddVendor from "./pages/AddVendor";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import { Menu, X } from "lucide-react";
@@ -117,6 +119,10 @@ function App() {
                   <Route path="/add-maintenance" component={AddMaintenance} />
                   <Route path="/maintenance/:id" component={NotFound} />
                   <Route path="/maintenance/:id/edit" component={NotFound} />
+                  <Route path="/vendors" component={Vendors} />
+                  <Route path="/add-vendor" component={AddVendor} />
+                  <Route path="/vendors/:id" component={NotFound} />
+                  <Route path="/vendors/:id/edit" component={NotFound} />
                   <Route path="/reports" component={Reports} />
                   <Route path="/settings" component={Settings} />
                   <Route component={NotFound} />

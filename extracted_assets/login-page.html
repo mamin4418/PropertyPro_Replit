@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Management System - Login Page Mockup</title>
+    <style>
+        :root {
+            --primary-color: #2563EB;
+            --primary-light: #93C5FD;
+            --success-color: #10B981;
+            --warning-color: #F59E0B;
+            --danger-color: #EF4444;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--gray-100);
+            color: var(--gray-800);
+            line-height: 1.5;
+        }
+
+        .mockup-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .mockup-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .mockup-description {
+            padding: 20px;
+            background-color: var(--gray-200);
+            border-bottom: 1px solid var(--gray-300);
+        }
+
+        .mockup-content {
+            padding: 20px;
+        }
+
+        .login-page {
+            display: flex;
+            min-height: 600px;
+        }
+
+        .login-form-container {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-hero-container {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary-color), #1e3a8a);
+            color: white;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .form-checkbox {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .form-checkbox input {
+            margin-right: 8px;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .forgot-password {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 500;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .register-link {
+            margin-top: 20px;
+            text-align: center;
+            color: var(--gray-600);
+        }
+
+        .register-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .hero-content {
+            max-width: 400px;
+        }
+
+        .hero-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .hero-description {
+            margin-bottom: 30px;
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .feature-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+
+        .mockup-notes {
+            padding: 20px;
+            background-color: var(--gray-200);
+            border-top: 1px solid var(--gray-300);
+        }
+    </style>
+</head>
+<body>
+    <div class="mockup-container">
+        <div class="mockup-header">
+            <h1>Login Page - UI Mockup</h1>
+        </div>
+        <div class="mockup-description">
+            <p>This mockup shows the login page for the Property Management System. It features a two-column layout with the login form on the left and a hero section on the right.</p>
+        </div>
+        <div class="mockup-content">
+            <div class="login-page">
+                <div class="login-form-container">
+                    <div class="logo-container">
+                        <div class="logo">PMS</div>
+                        <h2 style="margin-top: 15px; color: var(--gray-800);">PropManager</h2>
+                        <p style="color: var(--gray-500); margin-top: 5px;">Property Management System</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="username">Username</label>
+                        <input type="text" id="username" class="form-input" placeholder="Enter your username">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="password">Password</label>
+                        <input type="password" id="password" class="form-input" placeholder="Enter your password">
+                    </div>
+
+                    <div class="form-checkbox">
+                        <input type="checkbox" id="remember">
+                        <label for="remember">Remember me</label>
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="#" class="forgot-password">Forgot password?</a>
+                    </div>
+
+                    <button class="btn btn-primary btn-full" style="margin-top: 10px;">Login</button>
+
+                    <div class="register-link">
+                        Don't have an account? <a href="#">Register</a>
+                    </div>
+                </div>
+
+                <div class="login-hero-container">
+                    <div class="hero-content">
+                        <h2 class="hero-title">Manage Your Properties With Ease</h2>
+                        <p class="hero-description">PropManager helps property owners and managers streamline operations, track maintenance, manage tenants, and increase overall efficiency.</p>
+
+                        <ul class="feature-list">
+                            <li class="feature-item">
+                                <div class="feature-icon">✓</div>
+                                <span>Track properties, units, and occupancy</span>
+                            </li>
+                            <li class="feature-item">
+                                <div class="feature-icon">✓</div>
+                                <span>Manage tenant relationships and leases</span>
+                            </li>
+                            <li class="feature-item">
+                                <div class="feature-icon">✓</div>
+                                <span>Handle maintenance requests efficiently</span>
+                            </li>
+                            <li class="feature-item">
+                                <div class="feature-icon">✓</div>
+                                <span>Process payments and track finances</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mockup-notes">
+            <h3>Implementation Notes:</h3>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>The login form should validate input before submission.</li>
+                <li>Failed login attempts should show appropriate error messages.</li>
+                <li>"Forgot password" link should lead to a password recovery page.</li>
+                <li>"Register" link should navigate to the registration page.</li>
+                <li>Successful login redirects to the dashboard.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

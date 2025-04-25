@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Management System - Dashboard</title>
+    <link rel="stylesheet" href="theme.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+</head>
+<body>
+<div class="header border-bottom bg-white px-4 py-3 d-flex justify-content-between align-items-center">
+    <div class="fw-bold fs-4">🏠 PropManager</div>
+    <div class="d-flex align-items-center">
+        <div class="me-3">
+            <label for="themeSelect" class="form-label mb-0 me-2">Theme:</label>
+            <select id="themeSelect" class="form-select d-inline-block w-auto">
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+                <option value="green">Green</option>
+            </select>
+        </div>
+        <a href="settings.html" class="btn btn-outline-secondary">Settings</a>
+    </div>
+</div>
+<div class="d-flex">
+    <div class="sidebar" style="width:250px; background-color:var(--gray-800); color:white; padding:20px 0;">
+    <div class="sidebar-header" style="padding:0 20px 20px; border-bottom:1px solid var(--gray-700); margin-bottom:20px; display:flex; align-items:center;">
+        <div class="sidebar-logo" style="width:40px; height:40px; background-color:var(--primary-color); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; margin-right:10px;">PM</div>
+        <div class="sidebar-brand" style="font-size:18px; font-weight:bold;">PropManager</div>
+    </div>
+    <div class="nav-section" style="margin-bottom:15px;">
+        <div class="nav-section-title" style="font-size:12px; text-transform:uppercase; color:var(--gray-400); padding:0 20px; margin-bottom:8px;">Main</div>
+        <ul class="nav-items" style="list-style:none;">
+            <li class="nav-item active" style="padding:10px 20px; display:flex; align-items:center; cursor:pointer; background-color:var(--primary-dark); border-left:4px solid var(--primary-light);">
+                <div class="nav-icon" style="width:20px; height:20px; margin-right:10px; opacity:0.7; text-align:center;">📊</div>
+                <a href="dashboard-page.html" style="color:white; text-decoration:none; flex:1;">Dashboard</a>
+            </li>
+            <li class="nav-item" style="padding:10px 20px; display:flex; align-items:center; cursor:pointer;">
+                <div class="nav-icon" style="width:20px; height:20px; margin-right:10px; opacity:0.7; text-align:center;">🏢</div>
+                <a href="companies-list-page.html" style="color:white; text-decoration:none; flex:1;">Companies</a>
+            </li>
+            <li class="nav-item" style="padding:10px 20px; display:flex; align-items:center; cursor:pointer;">
+                <div class="nav-icon" style="width:20px; height:20px; margin-right:10px; opacity:0.7; text-align:center;">🏘️</div>
+                <a href="properties-list-page.html" style="color:white; text-decoration:none; flex:1;">Properties</a>
+            </li>
+            <li class="nav-item" style="padding:10px 20px; display:flex; align-items:center; cursor:pointer;">
+                <div class="nav-icon" style="width:20px; height:20px; margin-right:10px; opacity:0.7; text-align:center;">🚪</div>
+                <a href="units-list-page.html" style="color:white; text-decoration:none; flex:1;">Units</a>
+            </li>
+        </ul>
+    </div>
+    <div class="nav-section" style="margin-bottom:15px;">
+        <div class="nav-section-title" style="font-size:12px; text-transform:uppercase; color:var(--gray-400); padding:0 20px; margin-bottom:8px;">Management</div>
+        <ul class="nav-items" style="list-style:none;">
+            <li class="nav-item" style="padding:10px 20px; display:flex; align-items:center; cursor:pointer;">
+                <div class="nav-icon" style="width:20px; height:20px; margin-right:10px; opacity:0.7; text-align:center;">👥</div>
+                <a href="tenants-list-page.html" style="color:white; text-decoration:none; flex:1;">Tenants</a>
+            </li>
+            <li class="nav-item" style="padding:10px 20px; display:flex; align-items:center; cursor:pointer;">
+                <div class="nav-icon" style="width:20px; height:20px; margin-right:10px; opacity:0.7; text-align:center;">📝</div>
+                <a href="leases-list-page.html" style="color:white; text-decoration:none; flex:1;">Leases</a>
+            </li>
+            <li class="nav-item" style="padding:10px 20px; display:flex; align-items:center; cursor:pointer;">
+                <div class="nav-icon" style="width:20px; height:20px; margin-right:10px; opacity:0.7; text-align:center;">💰</div>
+                <a href="payments-list-page.html" style="color:white; text-decoration:none; flex:1;">Payments</a>
+            </li>
+            <li class="nav-item" style="padding:10px 20px; display:flex; align-items:center; cursor:pointer;">
+                <div class="nav-icon" style="width:20px; height:20px; margin-right:10px; opacity:0.7; text-align:center;">🔧</div>
+                <a href="maintenance-requests-list-page.html" style="color:white; text-decoration:none; flex:1;">Maintenance</a>
+            </li>
+            <li class="nav-item" style="padding:10px 20px; display:flex; align-items:center; cursor:pointer;">
+                <div class="nav-icon" style="width:20px; height:20px; margin-right:10px; opacity:0.7; text-align:center;">🛠️</div>
+                <a href="vendors-list-page.html" style="color:white; text-decoration:none; flex:1;">Vendors</a>
+            </li>
+        </ul>
+    </div>
+    <div class="nav-section">
+        <div class="nav-section-title" style="font-size:12px; text-transform:uppercase; color:var(--gray-400); padding:0 20px; margin-bottom:8px;">Other</div>
+        <ul class="nav-items" style="list-style:none;">
+            <li class="nav-item" style="padding:10px 20px; display:flex; align-items:center; cursor:pointer;">
+                <div class="nav-icon" style="width:20px; height:20px; margin-right:10px; opacity:0.7; text-align:center;">📁</div>
+                <a href="#" style="color:white; text-decoration:none; flex:1;">Documents</a>
+            </li>
+            <li class="nav-item" style="padding:10px 20px; display:flex; align-items:center; cursor:pointer;">
+                <div class="nav-icon" style="width:20px; height:20px; margin-right:10px; opacity:0.7; text-align:center;">📊</div>
+                <a href="#" style="color:white; text-decoration:none; flex:1;">Reports</a>
+            </li>
+            <li class="nav-item" style="padding:10px 20px; display:flex; align-items:center; cursor:pointer;">
+                <div class="nav-icon" style="width:20px; height:20px; margin-right:10px; opacity:0.7; text-align:center;">⚙️</div>
+                <a href="settings.html" style="color:white; text-decoration:none; flex:1;">Settings</a>
+            </li>
+        </ul>
+    </div>
+</div>
+    <main class="flex-fill p-4 bg-light" style="min-height:100vh;">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold mb-0">Dashboard</h2>
+                    <div class="text-muted">Welcome back, <span class="fw-semibold">John</span></div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="user-avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width:40px; height:40px; font-weight:bold;">JD</div>
+                                        <div class="upcoming-desc">HVAC inspection at Oakwood Apartments</div>
+                                    </li>
+                                    <li class="upcoming-item">
+                                        <div class="upcoming-title">Monthly report due</div>
+                                        <div class="upcoming-date">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M8 2V5M16 2V5M3.5 9.09H20.5M21 8.5V17C21 20 19.5 22 16 22H8C4.5 22 3 20 3 17V8.5C3 5.5 4.5 3.5 8 3.5H16C19.5 3.5 21 5.5 21 8.5Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                            <span>In 3 days</span>
+                                        </div>
+                                        <div class="upcoming-desc">April financial summary</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mockup-notes">
+            <h3>Implementation Notes:</h3>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>The dashboard should be customizable based on user roles and preferences.</li>
+                <li>Charts should be interactive with tooltips and drill-down capabilities.</li>
+                <li>Recent activities should update in real-time or with periodic refresh.</li>
+                <li>Statistics should be calculated based on current data with proper time filtering.</li>
+                <li>All cards should have clickable areas that lead to relevant detailed views.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

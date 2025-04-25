@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Unit</title>
+</head>
+<body style="font-family: Arial, sans-serif; margin: 20px;">
+<div>
+    <h2 style="color: #333;">Add Unit</h2>
+    <form>
+        <!-- Basic Unit Info -->
+        <label>Unit Name/Number</label><br>
+        <input type="text" required style="width: 200px; padding: 8px; margin-bottom: 10px;"><br>
+
+        <label>Property</label><br>
+        <select required style="width: 300px; padding: 8px; margin-bottom: 10px;">
+            <option selected disabled>Choose Property...</option>
+        </select><br>
+
+        <label>Floor Number</label><br>
+        <input type="number" style="width: 100px; padding: 8px; margin-bottom: 10px;"><br>
+
+        <label>Unit Type</label><br>
+        <select required style="width: 200px; padding: 8px; margin-bottom: 10px;">
+            <option selected disabled>Choose...</option>
+            <option>Studio</option>
+            <option>1-Bedroom</option>
+            <option>2-Bedroom</option>
+            <option>Commercial</option>
+        </select><br>
+
+        <label>Square Footage</label><br>
+        <input type="number" style="width: 150px; padding: 8px; margin-bottom: 10px;"><br>
+
+        <!-- Facilities & Compliance -->
+        <label>Heat Type</label><br>
+        <select style="width: 200px; padding: 8px; margin-bottom: 10px;">
+            <option selected disabled>Choose...</option>
+            <option>Baseboard</option>
+            <option>Forced Air</option>
+            <option>Steam</option>
+        </select><br>
+
+        <label>Heat Source</label><br>
+        <select style="width: 200px; padding: 8px; margin-bottom: 10px;">
+            <option selected disabled>Choose...</option>
+            <option>Oil</option>
+            <option>Electric</option>
+            <option>Gas</option>
+            <option>Solar</option>
+            <option>Geo-Thermal</option>
+        </select><br>
+
+        <label>Smoke/CO Detectors Last Replacement Date</label><br>
+        <input type="date" style="width: 200px; padding: 8px; margin-bottom: 10px;"><br>
+
+        <!-- Financial Information -->
+        <label>Monthly Rent</label><br>
+        <input type="number" required style="width: 150px; padding: 8px; margin-bottom: 10px;"><br>
+
+        <label>Security Deposit</label><br>
+        <input type="number" style="width: 150px; padding: 8px; margin-bottom: 10px;"><br>
+
+        <label>Utility Included</label><br>
+        <select style="width: 100px; padding: 8px; margin-bottom: 10px;">
+            <option selected disabled>Choose...</option>
+            <option>Yes</option>
+            <option>No</option>
+        </select><br>
+
+        <!-- Vacancy & Application -->
+        <label>Availability Status</label><br>
+        <select required style="width: 200px; padding: 8px; margin-bottom: 10px;">
+            <option selected disabled>Choose...</option>
+            <option>Occupied</option>
+            <option>Vacant</option>
+            <option>Maintenance</option>
+        </select><br>
+
+        <label>Lease Applications Received (Upload)</label><br>
+        <input type="file" multiple style="margin-bottom: 10px;"><br>
+
+        <label>Open House Dates</label><br>
+        <input type="date" style="width: 200px; padding: 8px; margin-bottom: 10px;"><br>
+
+        <label>Scheduled Showings</label><br>
+        <input type="date" style="width: 200px; padding: 8px; margin-bottom: 10px;"><br><br>
+
+        <!-- Actions -->
+        <button type="submit" style="padding: 8px 16px;">Save Unit</button>
+        <button type="reset" style="padding: 8px 16px; margin-left: 10px;">Cancel</button>
+    </form>
+</div>
+</body>
+</html>

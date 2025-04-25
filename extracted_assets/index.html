@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Management System - UI Mockups</title>
+    <style>
+        :root {
+            --primary-color: #2563EB;
+            --primary-light: #93C5FD;
+            --primary-dark: #1E40AF;
+            --success-color: #10B981;
+            --warning-color: #F59E0B;
+            --danger-color: #EF4444;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--gray-100);
+            color: var(--gray-800);
+            line-height: 1.5;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: var(--gray-600);
+        }
+
+        .mockups-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .mockup-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .mockup-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .mockup-image {
+            height: 160px;
+            background-color: var(--primary-light);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-dark);
+            font-size: 40px;
+            font-weight: bold;
+        }
+
+        .mockup-auth .mockup-image {
+            background-color: #EBF5FF;
+            color: #2563EB;
+        }
+
+        .mockup-dashboard .mockup-image {
+            background-color: #F0FDF4;
+            color: #10B981;
+        }
+
+        .mockup-company .mockup-image {
+            background-color: #FEF3C7;
+            color: #D97706;
+        }
+
+        .mockup-property .mockup-image {
+            background-color: #FEE2E2;
+            color: #DC2626;
+        }
+
+        .mockup-unit .mockup-image {
+            background-color: #DBEAFE;
+            color: #3B82F6;
+        }
+
+        .mockup-tenant .mockup-image {
+            background-color: #F3E8FF;
+            color: #8B5CF6;
+        }
+
+        .mockup-content {
+            padding: 15px;
+        }
+
+        .mockup-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .mockup-description {
+            font-size: 14px;
+            color: var(--gray-600);
+            margin-bottom: 15px;
+        }
+
+        .mockup-link {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .mockup-link:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 40px 0 20px;
+            color: var(--gray-900);
+            border-bottom: 1px solid var(--gray-300);
+            padding-bottom: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            color: var(--gray-500);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Property Management System UI Mockups</h1>
+            <p class="subtitle">Interactive HTML mockups for the Property Management System</p>
+        </div>
+
+        <h2 class="section-title">Authentication</h2>
+        <div class="mockups-list">
+            <div class="mockup-card mockup-auth">
+                <div class="mockup-image">🔐</div>
+                <div class="mockup-content">
+                    <h3 class="mockup-title">Login Page</h3>
+                    <p class="mockup-description">User login interface with two-column layout and hero section.</p>
+                    <a href="login-page.html" class="mockup-link">View Mockup</a>
+                </div>
+            </div>
+
+            <div class="mockup-card mockup-auth">
+                <div class="mockup-image">👤</div>
+                <div class="mockup-content">
+                    <h3 class="mockup-title">Registration Page</h3>
+                    <p class="mockup-description">New user registration form with account creation fields.</p>
+                    <a href="register-page.html" class="mockup-link">View Mockup</a>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title">Core Navigation</h2>
+        <div class="mockups-list">
+            <div class="mockup-card mockup-dashboard">
+                <div class="mockup-image">📊</div>
+                <div class="mockup-content">
+                    <h3 class="mockup-title">Dashboard</h3>
+                    <p class="mockup-description">Main dashboard with key metrics, charts, and recent activities.</p>
+                    <a href="dashboard-page.html" class="mockup-link">View Mockup</a>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title">Companies</h2>
+        <div class="mockups-list">
+            <div class="mockup-card mockup-company">
+                <div class="mockup-image">🏢</div>
+                <div class="mockup-content">
+                    <h3 class="mockup-title">Companies List</h3>
+                    <p class="mockup-description">Grid view of all property management companies with filtering options.</p>
+                    <a href="companies-list-page.html" class="mockup-link">View Mockup</a>
+                </div>
+            </div>
+
+            <div class="mockup-card mockup-company">
+                <div class="mockup-image">📋</div>
+                <div class="mockup-content">
+                    <h3 class="mockup-title">Company Detail</h3>
+                    <p class="mockup-description">Detailed view of a company with properties, contacts, and documents.</p>
+                    <a href="company-detail-page.html" class="mockup-link">View Mockup</a>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title">Properties</h2>
+        <div class="mockups-list">
+            <div class="mockup-card mockup-property">
+                <div class="mockup-image">🏘️</div>
+                <div class="mockup-content">
+                    <h3 class="mockup-title">Properties List</h3>
+                    <p class="mockup-description">Grid view of all properties with filtering and search capabilities.</p>
+                    <a href="properties-list-page.html" class="mockup-link">View Mockup</a>
+                </div>
+            </div>
+
+            <div class="mockup-card mockup-property">
+                <div class="mockup-image">🏠</div>
+                <div class="mockup-content">
+                    <h3 class="mockup-title">Property Detail</h3>
+                    <p class="mockup-description">Detailed view of a property with units, tenants, and maintenance.</p>
+                    <a href="property-detail-page.html" class="mockup-link">View Mockup</a>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title">Units</h2>
+        <div class="mockups-list">
+            <div class="mockup-card mockup-unit">
+                <div class="mockup-image">🚪</div>
+                <div class="mockup-content">
+                    <h3 class="mockup-title">Units List</h3>
+                    <p class="mockup-description">Table view of all units across properties with filtering options.</p>
+                    <a href="units-list-page.html" class="mockup-link">View Mockup</a>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title">Tenants</h2>
+        <div class="mockups-list">
+            <div class="mockup-card mockup-tenant">
+                <div class="mockup-image">👥</div>
+                <div class="mockup-content">
+                    <h3 class="mockup-title">Tenants List</h3>
+                    <p class="mockup-description">Grid view of all tenants with their contact information and lease details.</p>
+                    <a href="tenants-list-page.html" class="mockup-link">View Mockup</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Property Management System UI Mockups - Created April 2023</p>
+        </div>
+    </div>
+</body>
+</html>

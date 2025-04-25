@@ -1,0 +1,362 @@
+Table Account {
+  id int [pk]
+  role_id int
+  email varchar
+  password_hash varchar
+  first_name varchar
+  last_name varchar
+  phone_number varchar
+  created_at timestamp
+  updated_at timestamp
+  created_by int
+  updated_by int
+  is_deleted boolean [default: false]
+  deleted_at timestamp
+  note: "Stores user accounts with RBAC roles"
+}
+
+Table Company {
+  id int [pk]
+  account_id int
+  legal_name varchar
+  name varchar
+  company_type_id int
+  ein varchar
+  business_license varchar
+  incorporation_date date
+  tax_classification_id int
+  email varchar
+  phone_primary varchar
+  phone_secondary varchar
+  fax_number varchar
+  website varchar
+  street_address varchar
+  city varchar
+  state_id int
+  zip_code varchar
+  country_id int
+  description text
+  is_description_private boolean
+  status_id int
+  owner_name varchar
+  partner_names text
+  partner_emails text
+  percentage_partnerships text
+  created_at timestamp
+  updated_at timestamp
+  created_by int
+  updated_by int
+  is_deleted boolean [default: false]
+  deleted_at timestamp
+  index: account_id
+  note: "Enhanced company entity with compliance, legal, audit, soft-delete, and ownership fields"
+}
+
+Table Vendor {
+  id int [pk]
+  company_id int
+  name varchar
+  vendor_type_id int
+  contact_name varchar
+  email varchar
+  phone_number varchar
+  street_address varchar
+  city varchar
+  state_id int
+  zip_code varchar
+  country_id int
+  created_at timestamp
+  updated_at timestamp
+  created_by int
+  updated_by int
+  is_deleted boolean [default: false]
+  deleted_at timestamp
+  index: company_id
+  note: "Stores vendor information for maintenance"
+}
+
+Table Property {
+  id int [pk]
+  company_id int
+  name varchar
+  property_type_id int
+  street_address varchar
+  city varchar
+  state_id int
+  zip_code varchar
+  country_id int
+  year_built int
+  square_feet int
+  bedrooms int
+  bathrooms DECIMAL(3,1)
+  parcel_number varchar
+  zoning_type varchar
+  latitude DECIMAL(9,6)
+  longitude DECIMAL(9,6)
+  parking_type varchar
+  number_of_parking_spaces int
+  lead_compliance boolean
+  hoa_fees decimal
+  tax_assessed_value decimal
+  description text
+  status_id int
+  created_at timestamp
+  updated_at timestamp
+  created_by int
+  updated_by int
+  is_deleted boolean [default: false]
+  deleted_at timestamp
+  index: company_id
+  note: "Enhanced property entity with compliance and real estate-specific fields"
+}
+
+Table Unit {
+  id int [pk]
+  property_id int
+  name varchar
+  unit_type_id int
+  floor int
+  square_feet int
+  bedrooms int
+  bathrooms DECIMAL(3,1)
+  rent_amount decimal
+  occupancy_status_id int
+  utilities_included boolean
+  availability_date date
+  smoke_co_detector_last_replaced date
+  heat_type varchar
+  heat_source varchar
+  created_at timestamp
+  updated_at timestamp
+  created_by int
+  updated_by int
+  is_deleted boolean [default: false]
+  deleted_at timestamp
+  index: property_id
+  note: "Enhanced unit entity for compliance and utility management"
+}
+
+Table Appliance {
+  id int [pk]
+  unit_id int
+  property_id int
+  name varchar
+  appliance_type_id int
+  brand varchar
+  model varchar
+  serial_number varchar
+  purchase_date date
+  warranty_expiry_date date
+  created_at timestamp
+  updated_at timestamp
+  created_by int
+  updated_by int
+  is_deleted boolean [default: false]
+  deleted_at timestamp
+  index: unit_id
+  index: property_id
+  note: "Tracks appliances for units/properties"
+}
+
+Table Tenant {
+  id int [pk]
+  first_name varchar
+  last_name varchar
+  email varchar
+  phone_number varchar
+  alternate_phone varchar
+  emergency_contact_name varchar
+  emergency_contact_phone varchar
+  employment_status varchar
+  annual_income decimal
+  credit_score int // Add constraint in SQL: CHECK (credit_score BETWEEN 300 AND 850)
+  background_check_status varchar
+  gender_id int
+  date_of_birth date
+  ssn varchar
+  preferred_contact_method varchar
+  created_at timestamp
+  updated_at timestamp
+  created_by int
+  updated_by int
+  is_deleted boolean [default: false]
+  deleted_at timestamp
+  note: "Extended tenant information for robust management"
+}
+
+Table TenantUnit {
+  id int [pk]
+  tenant_id int
+  unit_id int
+  start_date date
+  end_date date
+  created_at timestamp
+  updated_at timestamp
+  created_by int
+  updated_by int
+  is_deleted boolean [default: false]
+  deleted_at timestamp
+  index: tenant_id
+  index: unit_id
+  note: "Tracks multiple tenants in a unit over time"
+}
+
+Table Lease {
+  id int [pk]
+  tenant_id int
+  unit_id int
+  lease_period_id int
+  start_date date
+  end_date date
+  rent_amount decimal
+  security_deposit decimal
+  lease_signed_date timestamp
+  lease_status_id int
+  created_at timestamp
+  updated_at timestamp
+  created_by int
+  updated_by int
+  is_deleted boolean [default: false]
+  deleted_at timestamp
+  index: tenant_id
+  index: unit_id
+  note: "Lease agreements without media paths (using Media entity)"
+}
+
+Table Payment {
+  id int [pk]
+  tenant_id int
+  vendor_id int
+  amount decimal
+  payment_date date
+  payment_method_id int
+  payment_type_id int
+  late_fee decimal
+  payment_notes varchar
+  status_id int
+  created_at timestamp
+  updated_at timestamp
+  created_by int
+  updated_by int
+  is_deleted boolean [default: false]
+  deleted_at timestamp
+  index: tenant_id
+  index: vendor_id
+  note: "Payment tracking without media paths (using Media entity)"
+}
+
+Table Media {
+  id int [pk]
+  context_type varchar
+  context_id int
+  file_type varchar
+  file_path varchar
+  media_name varchar
+  media_notes varchar
+  is_public boolean
+  created_at timestamp
+  updated_at timestamp
+  created_by int
+  updated_by int
+  note: "Stores named media/documents linked generically to Account, Company, Vendor, Property, Unit, Appliance, Tenant, Payment, Lease (polymorphic via context_type, context_id)"
+}
+
+Table Employee {
+  id int [pk]
+  account_id int
+  role varchar
+  status varchar
+  created_at timestamp
+  updated_at timestamp
+  created_by int
+  updated_by int
+  is_deleted boolean [default: false]
+  deleted_at timestamp
+  index: account_id
+  note: "Stores employee information, linked to user accounts"
+}
+
+Table DropdownType {
+  id int [pk]
+  name varchar
+  created_at timestamp
+  updated_at timestamp
+  created_by int
+  updated_by int
+  is_deleted boolean [default: false]
+  deleted_at timestamp
+  note: "Defines dropdown categories (e.g., Company Type)"
+}
+
+Table DropdownValue {
+  id int [pk]
+  dropdown_type_id int
+  value varchar
+  created_at timestamp
+  updated_at timestamp
+  created_by int
+  updated_by int
+  is_deleted boolean [default: false]
+  deleted_at timestamp
+  index: dropdown_type_id
+  note: "Stores values for each dropdown (e.g., LLC, S-Corp)"
+}
+
+Table Maintenance {
+  id int [pk]
+  property_id int
+  unit_id int
+  description varchar
+  maintenance_type_id int
+  status_id int
+  reported_date date
+  completed_date date
+  cost decimal
+  created_at timestamp
+  updated_at timestamp
+  created_by int
+  updated_by int
+  is_deleted boolean [default: false]
+  deleted_at timestamp
+  index: property_id
+  index: unit_id
+  note: "Tracks maintenance and inspections"
+}
+
+Table Listing {
+  id int [pk]
+  unit_id int
+  listing_type_id int
+  title varchar
+  description text
+  rent_amount decimal
+  available_date date
+  status_id int
+  created_at timestamp
+  updated_at timestamp
+  created_by int
+  updated_by int
+  is_deleted boolean [default: false]
+  deleted_at timestamp
+  index: unit_id
+  note: "Manages vacancy listings and showings"
+}
+
+// Relationships
+Ref: Company.account_id > Account.id
+Ref: Vendor.company_id > Company.id
+Ref: Property.company_id > Company.id
+Ref: Unit.property_id > Property.id
+Ref: Appliance.unit_id > Unit.id
+Ref: Appliance.property_id > Property.id
+Ref: TenantUnit.tenant_id > Tenant.id
+Ref: TenantUnit.unit_id > Unit.id
+Ref: Lease.tenant_id > Tenant.id
+Ref: Lease.unit_id > Unit.id
+Ref: Payment.tenant_id > Tenant.id
+Ref: Payment.vendor_id > Vendor.id
+Ref: Employee.account_id > Account.id
+Ref: DropdownValue.dropdown_type_id > DropdownType.id
+Ref: Maintenance.property_id > Property.id
+Ref: Maintenance.unit_id > Unit.id
+Ref: Listing.unit_id > Unit.id

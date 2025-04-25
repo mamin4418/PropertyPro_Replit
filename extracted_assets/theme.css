@@ -1,0 +1,96 @@
+/* Theme Variables */
+:root {
+    --primary: #2563eb;
+    --primary-light: #60a5fa;
+    --primary-dark: #1e40af;
+    --background: #f8fafc;
+    --surface: #ffffff;
+    --text: #1f2937;
+    --text-light: #6b7280;
+    --accent: #10b981;
+    --danger: #ef4444;
+    --border: #e5e7eb;
+}
+
+[data-theme="dark"] {
+    --primary: #1e40af;
+    --primary-light: #60a5fa;
+    --primary-dark: #2563eb;
+    --background: #18181b;
+    --surface: #23232b;
+    --text: #f3f4f6;
+    --text-light: #9ca3af;
+    --accent: #22d3ee;
+    --danger: #f87171;
+    --border: #374151;
+}
+
+[data-theme="green"] {
+    --primary: #10b981;
+    --primary-light: #6ee7b7;
+    --primary-dark: #047857;
+    --background: #f0fdf4;
+    --surface: #ffffff;
+    --text: #064e3b;
+    --text-light: #6ee7b7;
+    --accent: #2563eb;
+    --danger: #b91c1c;
+    --border: #bbf7d0;
+}
+
+body {
+    background: var(--background);
+    color: var(--text);
+}
+
+.card, .table, .form-control, .btn {
+    border-radius: 8px;
+    border-color: var(--border) !important;
+}
+
+.btn-primary {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+.btn-primary:hover {
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+.btn-success {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+.btn-success:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.header, .sidebar {
+    background: var(--surface);
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+}
+
+.sidebar {
+    min-width: 220px;
+    border-right: 1px solid var(--border);
+}
+
+.nav-link.active, .sidebar .active {
+    background: var(--primary-light);
+    color: var(--primary-dark) !important;
+}
+
+.theme-switcher {
+    margin-left: auto;
+}
+
+.footer {
+    color: var(--text-light);
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 1rem 0;
+    text-align: center;
+    margin-top: 2rem;
+}

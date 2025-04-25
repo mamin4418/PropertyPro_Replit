@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Company</title>
+</head>
+<body style="font-family: Arial, sans-serif; margin: 20px;">
+<div>
+    <h2 style="color: #333;">Add Company</h2>
+    <form>
+        <!-- Basic Info -->
+        <label>Legal Name</label><br>
+        <input type="text" required style="width: 400px; padding: 8px; margin-bottom: 10px;"><br>
+
+        <label>Company Name</label><br>
+        <input type="text" required style="width: 400px; padding: 8px; margin-bottom: 10px;"><br>
+
+        <!-- Additional Info -->
+        <label>Company Type</label><br>
+        <select required style="width: 200px; padding: 8px; margin-bottom: 10px;">
+            <option selected disabled>Choose...</option>
+            <option>LLC</option>
+            <option>S-Corp</option>
+            <option>C-Corp</option>
+        </select><br>
+
+        <label>EIN</label><br>
+        <input type="text" required style="width: 200px; padding: 8px; margin-bottom: 10px;"><br>
+
+        <label>Business License</label><br>
+        <input type="text" style="width: 200px; padding: 8px; margin-bottom: 10px;"><br>
+
+        <!-- Contact Info -->
+        <label>Email</label><br>
+        <input type="email" required style="width: 400px; padding: 8px; margin-bottom: 10px;"><br>
+
+        <label>Phone (Primary)</label><br>
+        <input type="tel" style="width: 250px; padding: 8px; margin-bottom: 10px;"><br>
+
+        <label>Company Logo</label><br>
+        <input type="file" accept="image/*" style="margin-bottom: 10px;"><br>
+
+        <!-- Address Info -->
+        <label>Address Line 1</label><br>
+        <input type="text" required style="width: 400px; padding: 8px; margin-bottom: 10px;"><br>
+
+        <label>Address Line 2</label><br>
+        <input type="text" style="width: 400px; padding: 8px; margin-bottom: 10px;"><br>
+
+        <label>City</label><br>
+        <input type="text" required style="width: 250px; padding: 8px; margin-bottom: 10px;"><br>
+
+        <label>State</label><br>
+        <select required style="width: 200px; padding: 8px; margin-bottom: 10px;">
+            <option selected disabled>Choose...</option>
+            <optgroup label="United States">
+                <option>AL</option><option>AK</option><option>AZ</option><option>AR</option><option>CA</option>
+                <option>CO</option><option>CT</option><option>DE</option><option>FL</option><option>GA</option>
+                <option>HI</option><option>ID</option><option>IL</option><option>IN</option><option>IA</option>
+                <option>KS</option><option>KY</option><option>LA</option><option>ME</option><option>MD</option>
+                <option>MA</option><option>MI</option><option>MN</option><option>MS</option><option>MO</option>
+                <option>MT</option><option>NE</option><option>NV</option><option>NH</option><option>NJ</option>
+                <option>NM</option><option>NY</option><option>NC</option><option>ND</option><option>OH</option>
+                <option>OK</option><option>OR</option><option>PA</option><option>RI</option><option>SC</option>
+                <option>SD</option><option>TN</option><option>TX</option><option>UT</option><option>VT</option>
+                <option>VA</option><option>WA</option><option>WV</option><option>WI</option><option>WY</option>
+            </optgroup>
+            <optgroup label="Canada">
+                <option>AB</option><option>BC</option><option>MB</option><option>NB</option><option>NL</option>
+                <option>NS</option><option>NT</option><option>NU</option><option>ON</option><option>PE</option>
+                <option>QC</option><option>SK</option><option>YT</option>
+            </optgroup>
+            <optgroup label="India">
+                <option>Delhi</option><option>Maharashtra</option><option>Tamil Nadu</option><option>Uttar Pradesh</option>
+                <option>Karnataka</option><option>Gujarat</option><option>West Bengal</option>
+            </optgroup>
+        </select><br>
+
+        <label>Zip Code</label><br>
+        <input type="text" required style="width: 150px; padding: 8px; margin-bottom: 10px;"><br>
+
+        <label>Country</label><br>
+        <select required style="width: 250px; padding: 8px; margin-bottom: 10px;">
+            <option selected disabled>Choose...</option>
+            <option>United States</option>
+            <option>Canada</option>
+            <option>United Kingdom</option>
+            <option>Australia</option>
+            <option>India</option>
+            <option>Germany</option>
+            <option>France</option>
+            <option>Other</option>
+        </select><br>
+
+        <!-- Owner Info -->
+        <label>Owner Name</label><br>
+        <select style="width: 300px;">
+            <option>Contact A</option>
+            <option>Contact B</option>
+            <option>Contact C</option>
+        </select>
+        <a href="contacts.html" target="_blank" style="margin-left: 10px;">+ Add New Owner</a><br><br>
+
+        <!-- Partners -->
+        <label>Partner Name</label><br>
+        <select style="width: 300px;">
+            <option>Contact A</option>
+            <option>Contact B</option>
+            <option>Contact C</option>
+        </select>
+        <a href="contacts.html" target="_blank" style="margin-left: 10px;">+ Add New Partner</a><br><br>
+
+        <!-- Actions -->
+        <button type="submit" style="padding: 8px 16px;">Save Company</button>
+        <button type="reset" style="padding: 8px 16px; margin-left: 10px;">Cancel</button>
+    </form>
+</div>
+</body>
+</html>

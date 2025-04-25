@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add New Lease</title>
+</head>
+<body style="font-family: Arial, sans-serif; margin: 20px;">
+<div>
+    <h2 style="color: #333;">Add New Lease</h2>
+    <form>
+        <!-- Lease Information -->
+        <label>Property</label><br>
+        <select required style="width: 300px; padding: 8px; margin-bottom: 10px;">
+            <option selected disabled>Choose Property...</option>
+            <option>Property A</option>
+            <option>Property B</option>
+            <option>Property C</option>
+        </select><br>
+
+        <label>Lease Nickname</label><br>
+        <input type="text" required style="width: 300px; padding: 8px; margin-bottom: 10px;" placeholder="Enter lease nickname"><br>
+
+        <label>Lease Term</label><br>
+        <select required style="width: 200px; padding: 8px; margin-bottom: 10px;">
+            <option selected disabled>Choose lease term...</option>
+            <option>Month to Month</option>
+            <option>Six Month</option>
+            <option>Yearly</option>
+        </select><br>
+
+        <label>Lease Start Date</label><br>
+        <input type="date" required style="width: 200px; padding: 8px; margin-bottom: 10px;"><br>
+
+        <label>Lease End Date</label><br>
+        <input type="date" required style="width: 200px; padding: 8px; margin-bottom: 10px;"><br>
+
+        <label>Monthly Rent</label><br>
+        <input type="number" step="0.01" required style="width: 200px; padding: 8px; margin-bottom: 10px;" placeholder="Enter amount"><br>
+
+        <label>Security Deposit</label><br>
+        <input type="number" step="0.01" required style="width: 200px; padding: 8px; margin-bottom: 10px;" placeholder="Enter amount"><br>
+
+        <!-- Additional Lease Terms -->
+        <label>Rent Due Day</label><br>
+        <select required style="width: 200px; padding: 8px; margin-bottom: 10px;">
+            <option selected disabled>Choose day...</option>
+            <option>1st of month</option>
+            <option>15th of month</option>
+            <option>Last day of month</option>
+        </select><br>
+
+        <label>Late Fee Amount</label><br>
+        <input type="number" step="0.01" style="width: 200px; padding: 8px; margin-bottom: 10px;" placeholder="Enter late fee amount"><br>
+
+        <label>Grace Period (Days)</label><br>
+        <input type="number" style="width: 100px; padding: 8px; margin-bottom: 10px;" placeholder="Days"><br>
+
+        <label>Utilities Included</label><br>
+        <div style="margin-bottom: 10px;">
+            <input type="checkbox" id="water"> <label for="water">Water</label><br>
+            <input type="checkbox" id="electricity"> <label for="electricity">Electricity</label><br>
+            <input type="checkbox" id="gas"> <label for="gas">Gas</label><br>
+            <input type="checkbox" id="internet"> <label for="internet">Internet</label><br>
+            <input type="checkbox" id="trash"> <label for="trash">Trash</label>
+        </div>
+
+        <label>Pet Deposit</label><br>
+        <input type="number" step="0.01" style="width: 200px; padding: 8px; margin-bottom: 10px;" placeholder="Enter pet deposit"><br>
+
+        <label>Pet Rent (Monthly)</label><br>
+        <input type="number" step="0.01" style="width: 200px; padding: 8px; margin-bottom: 10px;" placeholder="Enter pet rent"><br>
+
+        <label>Parking Fee (Monthly)</label><br>
+        <input type="number" step="0.01" style="width: 200px; padding: 8px; margin-bottom: 10px;" placeholder="Enter parking fee"><br>
+
+        <label>Lease Documents</label><br>
+        <input type="file" multiple style="margin-bottom: 10px;" accept=".pdf,.doc,.docx"><br>
+
+        <label>Notes</label><br>
+        <textarea style="width: 400px; height: 100px; padding: 8px; margin-bottom: 10px;" placeholder="Enter any additional notes or special conditions"></textarea><br><br>
+
+        <!-- Actions -->
+        <button type="submit" style="padding: 8px 16px;">Save Lease</button>
+        <button type="reset" style="padding: 8px 16px; margin-left: 10px;">Cancel</button>
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Management System - Units List Mockup</title>
+    <style>
+        :root {
+            --primary-color: #2563EB;
+            --primary-light: #93C5FD;
+            --primary-dark: #1E40AF;
+            --success-color: #10B981;
+            --warning-color: #F59E0B;
+            --danger-color: #EF4444;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--gray-100);
+            color: var(--gray-800);
+            line-height: 1.5;
+        }
+
+        .mockup-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .mockup-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .mockup-description {
+            padding: 20px;
+            background-color: var(--gray-200);
+            border-bottom: 1px solid var(--gray-300);
+        }
+
+        .mockup-content {
+            padding: 0;
+        }
+
+        .dashboard-layout {
+            display: flex;
+            min-height: 800px;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: var(--gray-800);
+            color: white;
+            padding: 20px 0;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--gray-700);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-logo {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .sidebar-brand {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .nav-section {
+            margin-bottom: 15px;
+        }
+
+        .nav-section-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--gray-400);
+            padding: 0 20px;
+            margin-bottom: 8px;
+        }
+
+        .nav-items {
+            list-style: none;
+        }
+
+        .nav-item {
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .nav-item:hover {
+            background-color: var(--gray-700);
+        }
+
+        .nav-item.active {
+            background-color: var(--primary-dark);
+            border-left: 4px solid var(--primary-light);
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            opacity: 0.7;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background-color: var(--gray-100);
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--gray-900);
+        }
+
+        .page-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-icon {
+            margin-right: 8px;
+        }
+
+        .filter-bar {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-container {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 8px 8px 8px 35px;
+            border: 1px solid var(--gray-300);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .filter-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .filter-dropdown {
+            padding: 8px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: 4px;
+            background-color: white;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .filter-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 10px;
+            margin-right: 8px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .filter-badge.blue {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .filter-badge-clear {
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        .view-toggle {
+            display: flex;
+            border: 1px solid var(--gray-300);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .view-toggle-btn {
+            padding: 8px 12px;
+            background-color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .view-toggle-btn.active {
+            background-color: var(--gray-200);
+        }
+
+        .units-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .units-table th {
+            background-color: var(--gray-100);
+            color: var(--gray-700);
+            font-weight: 600;
+            text-align: left;
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--gray-300);
+        }
+
+        .units-table tr:hover {
+            background-color: var(--gray-50);
+        }
+
+        .units-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .units-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .unit-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .unit-status.occupied {
+            background-color: #D1FAE5;
+            color: var(--success-color);
+        }
+
+        .unit-status.vacant {
+            background-color: #FEE2E2;
+            color: var(--danger-color);
+        }
+
+        .unit-status.maintenance {
+            background-color: #FEF3C7;
+            color: var(--warning-color);
+        }
+
+        .unit-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .unit-status-dot.occupied {
+            background-color: var(--success-color);
+        }
+
+        .unit-status-dot.vacant {
+            background-color: var(--danger-color);
+        }
+
+        .unit-status-dot.maintenance {
+            background-color: var(--warning-color);
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .table-action {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            background-color: var(--gray-100);
+            color: var(--gray-600);
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .table-action:hover {
+            background-color: var(--gray-200);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        .pagination-button {
+            padding: 8px 12px;
+            border: 1px solid var(--gray-300);
+            background-color: white;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+
+        .pagination-button.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .pagination-ellipsis {
+            margin: 0 5px;
+            color: var(--gray-500);
+        }
+
+        .property-name {
+            color: var(--primary-color);
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .tenant-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .tenant-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            color: var(--gray-700);
+            font-weight: 500;
+            font-size: 10px;
+        }
+
+        .tenant-name {
+            font-weight: 500;
+        }
+
+        .no-tenant {
+            color: var(--gray-500);
+            font-style: italic;
+        }
+
+        .mockup-notes {
+            padding: 20px;
+            background-color: var(--gray-200);
+            border-top: 1px solid var(--gray-300);
+        }
+    </style>
+</head>
+<body>
+    <div class="mockup-container">
+        <div class="mockup-header">
+            <h1>Units List - UI Mockup</h1>
+        </div>
+        <div class="mockup-description">
+            <p>This mockup shows the Units List page of the Property Management System. It displays all units across properties, with filtering and sorting options.</p>
+        </div>
+        <div class="mockup-content">
+            <div class="dashboard-layout">
+                <!-- Sidebar Navigation -->
+                <div class="sidebar">
+                    <div class="sidebar-header">
+                        <div class="sidebar-logo">PM</div>
+                        <div class="sidebar-brand">PropManager</div>
+                    </div>
+
+                    <div class="nav-section">
+                        <div class="nav-section-title">Main</div>
+                        <ul class="nav-items">
+                            <li class="nav-item">
+                                <div class="nav-icon">📊</div>
+                                <span>Dashboard</span>
+                            </li>
+                            <li class="nav-item">
+                                <div class="nav-icon">🏢</div>
+                                <span>Companies</span>
+                            </li>
+                            <li class="nav-item">
+                                <div class="nav-icon">🏘️</div>
+                                <span>Properties</span>
+                            </li>
+                            <li class="nav-item active">
+                                <div class="nav-icon">🚪</div>
+                                <span>Units</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="nav-section">
+                        <div class="nav-section-title">Management</div>
+                        <ul class="nav-items">
+                            <li class="nav-item">
+                                <div class="nav-icon">👥</div>
+                                <span>Tenants</span>
+                            </li>
+                            <li class="nav-item">
+                                <div class="nav-icon">📝</div>
+                                <span>Leases</span>
+                            </li>
+                            <li class="nav-item">
+                                <div class="nav-icon">💰</div>
+                                <span>Payments</span>
+                            </li>
+                            <li class="nav-item">
+                                <div class="nav-icon">🔧</div>
+                                <span>Maintenance</span>
+                            </li>
+                            <li class="nav-item">
+                                <div class="nav-icon">🛠️</div>
+                                <span>Vendors</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="nav-section">
+                        <div class="nav-section-title">Other</div>
+                        <ul class="nav-items">
+                            <li class="nav-item">
+                                <div class="nav-icon">📁</div>
+                                <span>Documents</span>
+                            </li>
+                            <li class="nav-item">
+                                <div class="nav-icon">📊</div>
+                                <span>Reports</span>
+                            </li>
+                            <li class="nav-item">
+                                <div class="nav-icon">⚙️</div>
+                                <span>Settings</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="main-content">
+                    <!-- Page Header -->
+                    <div class="page-header">
+                        <h1 class="page-title">Units</h1>
+                        <div class="page-actions">
+                            <button class="btn btn-primary">
+                                <span class="btn-icon">+</span>
+                                Add Unit
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filter Bar -->
+                    <div class="filter-bar">
+                        <div style="flex: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
+                            <div class="search-container">
+                                <div class="search-icon">🔍</div>
+                                <input type="text" class="search-input" placeholder="Search units...">
+                            </div>
+                            <div>
+                                <span class="filter-badge blue">
+                                    Oakwood Heights
+                                    <span class="filter-badge-clear">✕</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="filter-actions">
+                            <select class="filter-dropdown">
+                                <option>All Properties</option>
+                                <option selected>Oakwood Heights</option>
+                                <option>Oakwood Gardens</option>
+                                <option>Sunset Towers</option>
+                                <option>Green Meadows</option>
+                                <option>Cedar Cottage</option>
+                                <option>Metro Office Center</option>
+                            </select>
+                            <select class="filter-dropdown">
+                                <option>All Types</option>
+                                <option>Studio</option>
+                                <option>1 Bedroom</option>
+                                <option>2 Bedroom</option>
+                                <option>3+ Bedroom</option>
+                                <option>Commercial</option>
+                            </select>
+                            <select class="filter-dropdown">
+                                <option>All Statuses</option>
+                                <option>Occupied</option>
+                                <option>Vacant</option>
+                                <option>Under Maintenance</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Units Table -->
+                    <table class="units-table">
+                        <thead>
+                            <tr>
+                                <th>Unit</th>
+                                <th>Property</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Rent</th>
+                                <th>Size</th>
+                                <th>Tenant</th>
+                                <th>Lease End</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Unit 1 -->
+                            <tr>
+                                <td>Unit 101</td>
+                                <td class="property-name">Oakwood Heights</td>
+                                <td>1 Bed, 1 Bath</td>
+                                <td>
+                                    <div class="unit-status occupied">
+                                        <div class="unit-status-dot occupied"></div>
+                                        Occupied
+                                    </div>
+                                </td>
+                                <td>$1,200</td>
+                                <td>750 sq ft</td>
+                                <td>
+                                    <div class="tenant-info">
+                                        <div class="tenant-avatar">JS</div>
+                                        <div class="tenant-name">Jane Smith</div>
+                                    </div>
+                                </td>
+                                <td>June 30, 2023</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <div class="table-action">👁️</div>
+                                        <div class="table-action">✏️</div>
+                                        <div class="table-action">🗑️</div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Unit 2 -->
+                            <tr>
+                                <td>Unit 102</td>
+                                <td class="property-name">Oakwood Heights</td>
+                                <td>1 Bed, 1 Bath</td>
+                                <td>
+                                    <div class="unit-status occupied">
+                                        <div class="unit-status-dot occupied"></div>
+                                        Occupied
+                                    </div>
+                                </td>
+                                <td>$1,200</td>
+                                <td>750 sq ft</td>
+                                <td>
+                                    <div class="tenant-info">
+                                        <div class="tenant-avatar">RJ</div>
+                                        <div class="tenant-name">Robert Johnson</div>
+                                    </div>
+                                </td>
+                                <td>Dec 31, 2023</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <div class="table-action">👁️</div>
+                                        <div class="table-action">✏️</div>
+                                        <div class="table-action">🗑️</div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Unit 3 -->
+                            <tr>
+                                <td>Unit 201</td>
+                                <td class="property-name">Oakwood Heights</td>
+                                <td>2 Bed, 1 Bath</td>
+                                <td>
+                                    <div class="unit-status occupied">
+                                        <div class="unit-status-dot occupied"></div>
+                                        Occupied
+                                    </div>
+                                </td>
+                                <td>$1,500</td>
+                                <td>950 sq ft</td>
+                                <td>
+                                    <div class="tenant-info">
+                                        <div class="tenant-avatar">ML</div>
+                                        <div class="tenant-name">Maria Lopez</div>
+                                    </div>
+                                </td>
+                                <td>May 15, 2024</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <div class="table-action">👁️</div>
+                                        <div class="table-action">✏️</div>
+                                        <div class="table-action">🗑️</div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Unit 4 -->
+                            <tr>
+                                <td>Unit 202</td>
+                                <td class="property-name">Oakwood Heights</td>
+                                <td>2 Bed, 1 Bath</td>
+                                <td>
+                                    <div class="unit-status maintenance">
+                                        <div class="unit-status-dot maintenance"></div>
+                                        Maintenance
+                                    </div>
+                                </td>
+                                <td>$1,500</td>
+                                <td>950 sq ft</td>
+                                <td>
+                                    <div class="no-tenant">Not Available</div>
+                                </td>
+                                <td>-</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <div class="table-action">👁️</div>
+                                        <div class="table-action">✏️</div>
+                                        <div class="table-action">🗑️</div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Unit 5 -->
+                            <tr>
+                                <td>Unit 301</td>
+                                <td class="property-name">Oakwood Heights</td>
+                                <td>2 Bed, 1 Bath</td>
+                                <td>
+                                    <div class="unit-status occupied">
+                                        <div class="unit-status-dot occupied"></div>
+                                        Occupied
+                                    </div>
+                                </td>
+                                <td>$1,500</td>
+                                <td>950 sq ft</td>
+                                <td>
+                                    <div class="tenant-info">
+                                        <div class="tenant-avatar">DK</div>
+                                        <div class="tenant-name">David Kim</div>
+                                    </div>
+                                </td>
+                                <td>Aug 15, 2023</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <div class="table-action">👁️</div>
+                                        <div class="table-action">✏️</div>
+                                        <div class="table-action">🗑️</div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Unit 6 -->
+                            <tr>
+                                <td>Unit 302</td>
+                                <td class="property-name">Oakwood Heights</td>
+                                <td>2 Bed, 1 Bath</td>
+                                <td>
+                                    <div class="unit-status occupied">
+                                        <div class="unit-status-dot occupied"></div>
+                                        Occupied
+                                    </div>
+                                </td>
+                                <td>$1,500</td>
+                                <td>950 sq ft</td>
+                                <td>
+                                    <div class="tenant-info">
+                                        <div class="tenant-avatar">SL</div>
+                                        <div class="tenant-name">Sarah Lee</div>
+                                    </div>
+                                </td>
+                                <td>April 30, 2023</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <div class="table-action">👁️</div>
+                                        <div class="table-action">✏️</div>
+                                        <div class="table-action">🗑️</div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Unit 7 -->
+                            <tr>
+                                <td>Unit 401</td>
+                                <td class="property-name">Oakwood Heights</td>
+                                <td>1 Bed, 1 Bath</td>
+                                <td>
+                                    <div class="unit-status vacant">
+                                        <div class="unit-status-dot vacant"></div>
+                                        Vacant
+                                    </div>
+                                </td>
+                                <td>$1,200</td>
+                                <td>750 sq ft</td>
+                                <td>
+                                    <div class="no-tenant">Vacant</div>
+                                </td>
+                                <td>-</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <div class="table-action">👁️</div>
+                                        <div class="table-action">✏️</div>
+                                        <div class="table-action">🗑️</div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Unit 8 -->
+                            <tr>
+                                <td>Unit 402</td>
+                                <td class="property-name">Oakwood Heights</td>
+                                <td>1 Bed, 1 Bath</td>
+                                <td>
+                                    <div class="unit-status occupied">
+                                        <div class="unit-status-dot occupied"></div>
+                                        Occupied
+                                    </div>
+                                </td>
+                                <td>$1,200</td>
+                                <td>750 sq ft</td>
+                                <td>
+                                    <div class="tenant-info">
+                                        <div class="tenant-avatar">TP</div>
+                                        <div class="tenant-name">Tom Patel</div>
+                                    </div>
+                                </td>
+                                <td>Oct 31, 2023</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <div class="table-action">👁️</div>
+                                        <div class="table-action">✏️</div>
+                                        <div class="table-action">🗑️</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Pagination -->
+                    <div class="pagination">
+                        <button class="pagination-button">Previous</button>
+                        <button class="pagination-button active">1</button>
+                        <button class="pagination-button">2</button>
+                        <button class="pagination-button">3</button>
+                        <div class="pagination-ellipsis">...</div>
+                        <button class="pagination-button">12</button>
+                        <button class="pagination-button">Next</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mockup-notes">
+            <h3>Implementation Notes:</h3>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>The units list should display all units across properties, with filtering options.</li>
+                <li>The property filter should allow users to view units from a specific property.</li>
+                <li>The type filter should allow filtering by unit type (studio, 1 bedroom, etc.).</li>
+                <li>The status filter should allow filtering by occupancy status (occupied, vacant, maintenance).</li>
+                <li>The search field should allow searching by unit number, tenant name, etc.</li>
+                <li>Each unit row should display key information: unit number, property, type, status, rent, size, tenant, and lease end date.</li>
+                <li>Status should be color-coded for easy identification.</li>
+                <li>Clicking on a property name should navigate to the property detail page.</li>
+                <li>Clicking on a tenant name should navigate to the tenant detail page.</li>
+                <li>The actions column should provide quick access to view, edit, and delete operations.</li>
+                <li>The "Add Unit" button should open a form to create a new unit.</li>
+                <li>The table should be sortable by clicking on column headers.</li>
+                <li>Pagination should be implemented for large lists of units.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

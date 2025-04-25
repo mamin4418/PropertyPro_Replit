@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add New Contact</title>
+</head>
+<body style="font-family: Arial, sans-serif; margin: 20px;">
+    <h2 style="color: #333;">Add New Contact</h2>
+    <form>
+        <label>First Name</label><br>
+        <input type="text" required><br><br>
+
+        <label>Last Name</label><br>
+        <input type="text" required><br><br>
+
+        <label>Phone Number</label><br>
+        <input type="tel"><br><br>
+
+        <label>Mobile Number</label><br>
+        <input type="tel"><br><br>
+
+        <label>Email</label><br>
+        <input type="email"><br><br>
+
+        <label>Has WhatsApp?</label><br>
+        <select>
+            <option>Yes</option>
+            <option>No</option>
+        </select><br><br>
+
+        <label>Address Line 1</label><br>
+        <input type="text" required><br><br>
+
+        <label>Address Line 2</label><br>
+        <input type="text"><br><br>
+
+        <label>City</label><br>
+        <input type="text" required><br><br>
+
+        <label>State</label><br>
+        <select required style="width: 200px; padding: 8px; margin-bottom: 10px;">
+            <option selected disabled>Choose...</option>
+            <optgroup label="United States">
+                <option>AL</option><option>AK</option><option>AZ</option><option>AR</option><option>CA</option>
+                <option>CO</option><option>CT</option><option>DE</option><option>FL</option><option>GA</option>
+                <option>HI</option><option>ID</option><option>IL</option><option>IN</option><option>IA</option>
+                <option>KS</option><option>KY</option><option>LA</option><option>ME</option><option>MD</option>
+                <option>MA</option><option>MI</option><option>MN</option><option>MS</option><option>MO</option>
+                <option>MT</option><option>NE</option><option>NV</option><option>NH</option><option>NJ</option>
+                <option>NM</option><option>NY</option><option>NC</option><option>ND</option><option>OH</option>
+                <option>OK</option><option>OR</option><option>PA</option><option>RI</option><option>SC</option>
+                <option>SD</option><option>TN</option><option>TX</option><option>UT</option><option>VT</option>
+                <option>VA</option><option>WA</option><option>WV</option><option>WI</option><option>WY</option>
+            </optgroup>
+            <optgroup label="Canada">
+                <option>AB</option><option>BC</option><option>MB</option><option>NB</option><option>NL</option>
+                <option>NS</option><option>NT</option><option>NU</option><option>ON</option><option>PE</option>
+                <option>QC</option><option>SK</option><option>YT</option>
+            </optgroup>
+            <optgroup label="India">
+                <option>Delhi</option><option>Maharashtra</option><option>Tamil Nadu</option><option>Uttar Pradesh</option>
+                <option>Karnataka</option><option>Gujarat</option><option>West Bengal</option>
+            </optgroup>
+        </select><br>
+
+        <label>Zipcode</label><br>
+        <input type="text" required><br><br>
+
+        <label>Country</label><br>
+        <select required style="width: 250px; padding: 8px; margin-bottom: 10px;">
+            <option selected disabled>Choose...</option>
+            <option>United States</option>
+            <option>Canada</option>
+            <option>United Kingdom</option>
+            <option>Australia</option>
+            <option>India</option>
+            <option>Germany</option>
+            <option>France</option>
+            <option>Other</option>
+        </select><br><br>
+
+        <label>Note</label><br>
+        <textarea rows="2" cols="40"></textarea><br><br>
+
+        <label>Upload Picture</label><br>
+        <input type="file" accept="image/*"><br><br>
+
+        <label>Contact Type</label><br>
+        <select>
+            <option>Tenant</option>
+            <option>Supplier</option>
+            <option>Owner</option>
+        </select><br><br>
+
+        <label>Profession</label><br>
+        <select>
+            <option>metalworker</option>
+            <option>bricklayer</option>
+            <option>builder</option>
+            <option>carpenter</option>
+            <option>network</option>
+            <option>cleaner</option>
+            <option>drainage</option>
+            <option>driveway</option>
+            <option>electrician</option>
+            <option>flooring</option>
+            <option>gardener</option>
+            <option>heating</option>
+            <option>handyman</option>
+            <option>hvac</option>
+            <option>kitchen</option>
+            <option>lawyer</option>
+            <option>locksmiths</option>
+            <option>loft</option>
+            <option>other</option>
+            <option>decorator</option>
+            <option>pest</option>
+            <option>plasterer</option>
+            <option>plumber</option>
+            <option>Property Manager</option>
+            <option>removal</option>
+            <option>roofer</option>
+            <option>security</option>
+            <option>specialist</option>
+            <option>stoneworker</option>
+            <option>pool</option>
+            <option>tiler</option>
+            <option>craftsman</option>
+            <option>tree</option>
+            <option>windows</option>
+        </select><br><br>
+
+        <button type="submit">Save Contact</button>
+    </form>
+</body>
+</html>

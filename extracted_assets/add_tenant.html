@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Tenant</title>
+</head>
+<body style="font-family: Arial, sans-serif; margin: 20px;">
+<div>
+    <h2 style="color: #333;">Add Tenant</h2>
+    <form>
+        <!-- Personal Info -->
+        <label>First Name</label><br>
+        <input type="text" required style="width: 250px; padding: 8px; margin-bottom: 10px;"><br>
+
+        <label>Last Name</label><br>
+        <input type="text" required style="width: 250px; padding: 8px; margin-bottom: 10px;"><br>
+
+        <label>Email</label><br>
+        <input type="email" required style="width: 300px; padding: 8px; margin-bottom: 10px;"><br>
+
+        <label>Phone</label><br>
+        <input type="tel" required style="width: 200px; padding: 8px; margin-bottom: 10px;"><br>
+
+        <label>Alternate Contact</label><br>
+        <input type="tel" style="width: 200px; padding: 8px; margin-bottom: 10px;"><br>
+
+        <!-- Lease Information -->
+        <label>Property/Unit</label><br>
+        <select required style="width: 300px; padding: 8px; margin-bottom: 10px;">
+            <option selected disabled>Choose Property/Unit...</option>
+        </select><br>
+
+        <label>Payment Method</label><br>
+        <select required style="width: 200px; padding: 8px; margin-bottom: 10px;">
+            <option selected disabled>Choose...</option>
+            <option>Check</option>
+            <option>Bank Transfer</option>
+            <option>Credit Card</option>
+        </select><br>
+
+        <!-- Background Checks & Documentation -->
+        <label>Credit Check Status</label><br>
+        <select style="width: 200px; padding: 8px; margin-bottom: 10px;">
+            <option selected disabled>Choose...</option>
+            <option>Passed</option>
+            <option>Failed</option>
+            <option>Pending</option>
+        </select><br>
+
+        <label>Background Check Status</label><br>
+        <select style="width: 200px; padding: 8px; margin-bottom: 10px;">
+            <option selected disabled>Choose...</option>
+            <option>Passed</option>
+            <option>Failed</option>
+            <option>Pending</option>
+        </select><br>
+
+        <label>Documents Upload (ID, Proof of Income, etc.)</label><br>
+        <input type="file" multiple style="margin-bottom: 10px;"><br><br>
+
+        <!-- Actions -->
+        <button type="submit" style="padding: 8px 16px;">Save Tenant</button>
+        <button type="reset" style="padding: 8px 16px; margin-left: 10px;">Cancel</button>
+    </form>
+</div>
+</body>
+</html>

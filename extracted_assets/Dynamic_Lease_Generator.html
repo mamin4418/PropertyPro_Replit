@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Lease Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body { background: #f8f9fa; }
+        .section-card { margin-bottom: 1rem; }
+        .lease-preview { background: #fff; border: 1px solid #dee2e6; padding: 1rem; border-radius: 8px; min-height: 200px; }
+        .variable-btn { font-size: 0.85em; margin-right: 0.5em; }
+    </style>
+</head>
+<body>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Dynamic Tenant Lease Generator</h2>
+        <div>
+            <input type="text" id="templateName" class="form-control d-inline-block" style="width: 200px;" placeholder="Template Name">
+            <button class="btn btn-info" onclick="saveTemplate()">Save Template</button>
+            <button class="btn btn-secondary" onclick="loadTemplateModal()">Load Template</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <form id="leaseForm">
+                <div id="sections"></div>
+                <button type="button" class="btn btn-primary mt-3" onclick="addSection()">+ Add Section</button>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <h5>Lease Preview</h5>
+            <div class="lease-preview" id="leasePreview"></div>
+        </div>
+    </div>
+    <div class="mt-4">
+        <button class="btn btn-success me-2" onclick="exportLease()">Export Lease (Copy to Clipboard)</button>
+        <button class="btn btn-primary" onclick="exportPDF()">Export as PDF</button>
+    </div>
+
+    <!-- Template Modal -->
+    <div class="modal fade" id="templateModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Load Template</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="templateList" class="list-group"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const variables = {
+    'Tenant Name': '{{TENANT_NAME}}',
+    'Landlord Name': '{{LANDLORD_NAME}}',
+    'Unit Address': '{{UNIT_ADDRESS}}',
+    'Lease Start Date': '{{LEASE_START}}',
+    'Lease End Date': '{{LEASE_END}}',
+    'Monthly Rent': '{{RENT}}',
+    'Security Deposit': '{{DEPOSIT}}',
+    'Custom Variable': '{{CUSTOM}}'
+};
+
+let sectionCount = 0;
+
+function addSection(title = '', content = '') {
+    sectionCount++;
+    const id = `section${sectionCount}`;
+    const sectionDiv = document.createElement('div');
+    sectionDiv.className = 'card section-card';
+    sectionDiv.innerHTML = `
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <input type="text" class="form-control me-2" placeholder="Section Title (e.g. Rent, Utilities)" value="${title}" onchange="updatePreview()" oninput="updatePreview()">
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeSection(this)">Remove</button>
+            </div>
+            <div class="mb-2">
+                <div class="mb-1">Insert Variable:
+                    ${Object.entries(variables).map(([name, val]) => `<button type='button' class='btn btn-outline-secondary btn-sm variable-btn' onclick='insertVariable(this, "${val}")'>${name}</button>`).join('')}
+                </div>
+                <textarea class="form-control section-content" rows="4" placeholder="Section Content..." onchange="updatePreview()" oninput="updatePreview()">${content}</textarea>
+            </div>
+        </div>
+    `;
+    document.getElementById('sections').appendChild(sectionDiv);
+    updatePreview();
+}
+
+function removeSection(btn) {
+    btn.closest('.section-card').remove();
+    updatePreview();
+}
+
+function insertVariable(btn, variable) {
+    const textarea = btn.closest('.card-body').querySelector('textarea');
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    textarea.value = text.slice(0, start) + variable + text.slice(end);
+    textarea.focus();
+    textarea.selectionEnd = start + variable.length;
+    updatePreview();
+}
+
+function updatePreview() {
+    const sections = document.querySelectorAll('#sections .section-card');
+    let lease = '';
+    sections.forEach(section => {
+        const title = section.querySelector('input').value.trim();
+        const content = section.querySelector('textarea').value.trim();
+        if (title || content) {
+            lease += `<h6>${title}</h6><p>${content.replace(/\n/g, '<br>')}</p>`;
+        }
+    });
+    document.getElementById('leasePreview').innerHTML = lease || '<em>No sections added yet.</em>';
+}
+
+function exportLease() {
+    const preview = document.getElementById('leasePreview');
+    const temp = document.createElement('textarea');
+    temp.value = preview.innerHTML.replace(/<br>/g, '\n').replace(/<[^>]+>/g, '');
+    document.body.appendChild(temp);
+    temp.select();
+    document.execCommand('copy');
+    document.body.removeChild(temp);
+    alert('Lease copied to clipboard!');
+}
+
+async function exportPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const preview = document.getElementById('leasePreview');
+    
+    const tempDiv = preview.cloneNode(true);
+    tempDiv.style.width = '700px';
+    tempDiv.style.padding = '20px';
+    document.body.appendChild(tempDiv);
+    
+    try {
+        const canvas = await html2canvas(tempDiv, {
+            scale: 1,
+            logging: false,
+            useCORS: true
+        });
+        
+        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const imgWidth = pageWidth - 20;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        
+        let heightLeft = imgHeight;
+        let position = 10;
+        
+        doc.addImage(imgData, 'JPEG', 10, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+        
+        while (heightLeft >= 0) {
+            doc.addPage();
+            position = heightLeft - imgHeight;
+            doc.addImage(imgData, 'JPEG', 10, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+        }
+        
+        doc.save('lease-agreement.pdf');
+    } catch (error) {
+        console.error('PDF generation failed:', error);
+        alert('Failed to generate PDF. Please try again.');
+    } finally {
+        document.body.removeChild(tempDiv);
+    }
+}
+
+function saveTemplate() {
+    const templateName = document.getElementById('templateName').value.trim();
+    if (!templateName) {
+        alert('Please enter a template name');
+        return;
+    }
+    
+    const sections = document.querySelectorAll('#sections .section-card');
+    const template = [];
+    
+    sections.forEach(section => {
+        template.push({
+            title: section.querySelector('input').value.trim(),
+            content: section.querySelector('textarea').value.trim()
+        });
+    });
+    
+    let templates = JSON.parse(localStorage.getItem('leaseTemplates') || '{}');
+    templates[templateName] = template;
+    localStorage.setItem('leaseTemplates', JSON.stringify(templates));
+    
+    alert('Template saved successfully!');
+}
+
+function loadTemplateModal() {
+    const templates = JSON.parse(localStorage.getItem('leaseTemplates') || '{}');
+    const templateList = document.getElementById('templateList');
+    templateList.innerHTML = '';
+    
+    Object.keys(templates).forEach(name => {
+        const item = document.createElement('button');
+        item.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
+        item.innerHTML = `
+            ${name}
+            <button class="btn btn-sm btn-danger" onclick="deleteTemplate('${name}'); event.stopPropagation();">Delete</button>
+        `;
+        item.onclick = () => loadTemplate(name);
+        templateList.appendChild(item);
+    });
+    
+    const modal = new bootstrap.Modal(document.getElementById('templateModal'));
+    modal.show();
+}
+
+function loadTemplate(name) {
+    const templates = JSON.parse(localStorage.getItem('leaseTemplates') || '{}');
+    const template = templates[name];
+    
+    if (!template) return;
+    
+    document.getElementById('sections').innerHTML = '';
+    sectionCount = 0;
+    
+    template.forEach(section => {
+        addSection(section.title, section.content);
+    });
+    
+    document.getElementById('templateName').value = name;
+    bootstrap.Modal.getInstance(document.getElementById('templateModal')).hide();
+}
+
+function deleteTemplate(name) {
+    if (!confirm(`Are you sure you want to delete the template "${name}"?`)) return;
+    
+    let templates = JSON.parse(localStorage.getItem('leaseTemplates') || '{}');
+    delete templates[name];
+    localStorage.setItem('leaseTemplates', JSON.stringify(templates));
+    
+    loadTemplateModal();
+}
+
+// Add a default section on load
+window.onload = () => {
+    addSection('Rent', 'The monthly rent is {{RENT}} payable by the 1st of each month.');
+};
+</script>
+</body>
+</html>

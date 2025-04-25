@@ -16,7 +16,7 @@ import Payments from "./pages/Payments";
 import Maintenance from "./pages/Maintenance";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
-import { Menu } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -49,49 +49,51 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <div className="flex flex-col min-h-screen">
-          {/* Mobile Header */}
-          <div className="lg:hidden bg-card shadow-sm flex items-center justify-between p-4 z-20">
-            <div className="flex items-center">
-              <button
-                onClick={toggleMobileMenu}
-                className="p-2 rounded-md text-muted-foreground hover:bg-secondary"
-              >
-                <Menu size={20} />
-              </button>
-              <div className="ml-3 font-semibold text-xl">PropManager</div>
-            </div>
-          </div>
-          
-          <div className="flex flex-1 relative">
-            {/* Sidebar - Always visible on desktop, conditional on mobile */}
-            <aside 
-              className={`
-                fixed top-0 bottom-0 left-0 w-64 z-40 
-                bg-background border-r border-custom overflow-y-auto
-                transition-transform duration-200
-                lg:relative lg:transform-none lg:translate-x-0
-                ${isMobile ? (mobileMenuOpen ? 'translate-x-0' : '-translate-x-full') : ''}
-              `}
+        {/* Mobile Header - Only visible on mobile */}
+        <header className="fixed top-0 left-0 right-0 z-50 lg:hidden bg-card shadow-sm flex items-center justify-between p-4">
+          <div className="flex items-center">
+            <button
+              onClick={toggleMobileMenu}
+              className="p-2 rounded-md text-muted-foreground hover:bg-secondary"
             >
-              <Sidebar />
-            </aside>
-            
-            {/* Backdrop for mobile */}
-            {mobileMenuOpen && isMobile && (
-              <div 
-                className="fixed inset-0 z-30 bg-black/50 lg:hidden"
-                onClick={() => setMobileMenuOpen(false)}
-              />
+              <Menu size={20} />
+            </button>
+            <div className="ml-3 font-semibold text-xl">PropManager</div>
+          </div>
+        </header>
+
+        {/* Main Layout */}
+        <div className="app-layout">
+          {/* Sidebar - Fixed on desktop, toggleable on mobile */}
+          <aside className={`app-sidebar ${mobileMenuOpen ? 'open' : ''}`}>
+            {/* Mobile Close Button */}
+            {isMobile && mobileMenuOpen && (
+              <button 
+                onClick={toggleMobileMenu} 
+                className="absolute top-4 right-4 p-2 rounded-md text-muted-foreground hover:bg-secondary lg:hidden"
+              >
+                <X size={18} />
+              </button>
             )}
-            
-            {/* Main Content */}
-            <main className="flex-1 flex flex-col min-w-0">
+            <Sidebar />
+          </aside>
+          
+          {/* Mobile Backdrop */}
+          {mobileMenuOpen && isMobile && (
+            <div 
+              className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+              onClick={() => setMobileMenuOpen(false)}
+            />
+          )}
+          
+          {/* Main Content Area */}
+          <main className="app-main">
+            <div className={`${isMobile ? 'pt-16' : 'pt-0'}`}>
               {/* Desktop Header */}
               <Header />
               
-              {/* Content */}
-              <div className="flex-1 p-4 lg:p-6">
+              {/* Page Content */}
+              <div className="p-4 lg:p-6">
                 <Switch>
                   <Route path="/" component={Dashboard} />
                   <Route path="/dashboard" component={Dashboard} />
@@ -106,8 +108,8 @@ function App() {
                   <Route component={NotFound} />
                 </Switch>
               </div>
-            </main>
-          </div>
+            </div>
+          </main>
         </div>
         
         <Toaster />

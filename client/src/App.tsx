@@ -48,6 +48,10 @@ import CreateVacancy from "./pages/CreateVacancy";
 import ViewVacancy from "./pages/ViewVacancy";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
+import Appliances from "./pages/Appliances";
+import AddAppliance from "./pages/AddAppliance";
+import ViewAppliance from "./pages/ViewAppliance";
+import EditAppliance from "./pages/EditAppliance";
 import { Menu, X } from "lucide-react";
 
 function App() {
@@ -160,6 +164,12 @@ function App() {
                   <Route path="/add-maintenance" component={AddMaintenance} />
                   <Route path="/view-maintenance/:id" component={ViewMaintenance} />
                   <Route path="/edit-maintenance/:id" component={EditMaintenance} />
+                  
+                  {/* Appliances Routes */}
+                  <Route path="/appliances" component={Appliances} />
+                  <Route path="/add-appliance" component={AddAppliance} />
+                  <Route path="/view-appliance/:id" component={ViewAppliance} />
+                  <Route path="/edit-appliance/:id" component={EditAppliance} />
                   
                   {/* Vendors Routes */}
                   <Route path="/vendors" component={Vendors} />

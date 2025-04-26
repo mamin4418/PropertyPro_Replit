@@ -33,7 +33,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2 } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
 
 import { insertContactSchema } from "@shared/schema";
 
@@ -78,21 +78,27 @@ const AddContact = () => {
   // Create contact mutation
   const { mutate, isPending } = useMutation({
     mutationFn: async (data: ContactFormValues) => {
-      return apiRequest('/api/contacts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
+      return apiRequest('POST', '/api/contacts', data);
     },
-    onSuccess: () => {
+    onSuccess: async (response) => {
       toast({
         title: "Contact created",
         description: "The contact has been created successfully",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/contacts'] });
-      navigate("/contacts");
+      
+      // Navigate to the created contact's view page
+      try {
+        const data = await response.json();
+        if (data && data.id) {
+          navigate(`/view-contact/${data.id}`);
+        } else {
+          navigate("/contacts");
+        }
+      } catch (error) {
+        // If we can't parse the response, just go back to contacts
+        navigate("/contacts");
+      }
     },
     onError: (error) => {
       toast({
@@ -112,6 +118,14 @@ const AddContact = () => {
   return (
     <div className="p-6">
       <div className="mb-6">
+        <Button 
+          variant="outline" 
+          onClick={() => navigate("/contacts")}
+          className="mb-4"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Contacts
+        </Button>
         <h1 className="text-2xl font-bold">Add New Contact</h1>
       </div>
 
@@ -119,7 +133,7 @@ const AddContact = () => {
         <CardHeader>
           <CardTitle>Contact Information</CardTitle>
           <CardDescription>
-            Enter the details of the new contact
+            Enter the details for this new contact
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -165,7 +179,7 @@ const AddContact = () => {
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input placeholder="john.doe@example.com" {...field} />
+                          <Input placeholder="john.doe@example.com" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -179,7 +193,7 @@ const AddContact = () => {
                       <FormItem>
                         <FormLabel>Phone Number</FormLabel>
                         <FormControl>
-                          <Input placeholder="(555) 123-4567" {...field} />
+                          <Input placeholder="(555) 123-4567" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -193,7 +207,7 @@ const AddContact = () => {
                       <FormItem>
                         <FormLabel>Alternate Phone</FormLabel>
                         <FormControl>
-                          <Input placeholder="(555) 765-4321" {...field} />
+                          <Input placeholder="(555) 765-4321" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -266,7 +280,7 @@ const AddContact = () => {
                       <FormItem>
                         <FormLabel>Company Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Acme Inc." {...field} />
+                          <Input placeholder="Acme Inc." {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -280,7 +294,7 @@ const AddContact = () => {
                       <FormItem>
                         <FormLabel>Job Title</FormLabel>
                         <FormControl>
-                          <Input placeholder="Manager" {...field} />
+                          <Input placeholder="Manager" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -294,7 +308,7 @@ const AddContact = () => {
                       <FormItem>
                         <FormLabel>Website</FormLabel>
                         <FormControl>
-                          <Input placeholder="https://example.com" {...field} />
+                          <Input placeholder="https://example.com" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -315,7 +329,7 @@ const AddContact = () => {
                       <FormItem>
                         <FormLabel>Address</FormLabel>
                         <FormControl>
-                          <Input placeholder="123 Main St" {...field} />
+                          <Input placeholder="123 Main St" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -329,7 +343,7 @@ const AddContact = () => {
                       <FormItem>
                         <FormLabel>City</FormLabel>
                         <FormControl>
-                          <Input placeholder="Anytown" {...field} />
+                          <Input placeholder="Anytown" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -343,7 +357,7 @@ const AddContact = () => {
                       <FormItem>
                         <FormLabel>State/Province</FormLabel>
                         <FormControl>
-                          <Input placeholder="CA" {...field} />
+                          <Input placeholder="CA" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -357,7 +371,7 @@ const AddContact = () => {
                       <FormItem>
                         <FormLabel>Postal Code</FormLabel>
                         <FormControl>
-                          <Input placeholder="12345" {...field} />
+                          <Input placeholder="12345" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -371,7 +385,7 @@ const AddContact = () => {
                       <FormItem>
                         <FormLabel>Country</FormLabel>
                         <FormControl>
-                          <Input placeholder="USA" {...field} />
+                          <Input placeholder="USA" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -394,7 +408,8 @@ const AddContact = () => {
                         <Textarea 
                           placeholder="Additional notes about this contact..." 
                           className="min-h-32"
-                          {...field} 
+                          {...field}
+                          value={field.value || ""} 
                         />
                       </FormControl>
                       <FormMessage />

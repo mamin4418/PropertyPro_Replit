@@ -1,58 +1,60 @@
 import { useState } from "react";
 import { useParams, useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
+import { 
+  Card, 
+  CardContent, 
+  CardDescription, 
+  CardHeader, 
   CardTitle,
+  CardFooter
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose
+} from "@/components/ui/dialog";
 import { 
   User, 
-  Mail, 
+  Building2, 
   Phone, 
+  Mail, 
   MapPin, 
-  Building, 
   Globe, 
   Briefcase, 
-  FileText, 
-  Trash2, 
   Edit, 
+  Trash2, 
   ArrowLeft, 
-  Loader2 
+  Loader2
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 import type { Contact } from "@shared/schema";
 
 const ViewContact = () => {
   const params = useParams<{ id: string }>();
   const [, navigate] = useLocation();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const { toast } = useToast();
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   
   // Get contact ID from URL params
   const contactId = params?.id ? parseInt(params.id) : null;
-  
+
   // Fetch contact data
-  const { data: contact, isLoading, isError } = useQuery({
+  const { 
+    data: contact, 
+    isLoading, 
+    isError,
+    error
+  } = useQuery({
     queryKey: ['/api/contacts', contactId],
     queryFn: async () => {
       if (!contactId) throw new Error("No contact ID provided");
@@ -69,9 +71,7 @@ const ViewContact = () => {
   const { mutate: deleteContact, isPending: isDeleting } = useMutation({
     mutationFn: async () => {
       if (!contactId) throw new Error("No contact ID provided");
-      return apiRequest(`/api/contacts/${contactId}`, {
-        method: 'DELETE',
-      });
+      return apiRequest('DELETE', `/api/contacts/${contactId}`);
     },
     onSuccess: () => {
       toast({
@@ -91,9 +91,10 @@ const ViewContact = () => {
     },
   });
 
-  // Function to format the contact type with proper capitalization
-  const formatContactType = (type: string) => {
-    return type.charAt(0).toUpperCase() + type.slice(1);
+  // Function to handle delete confirmation
+  const handleDelete = () => {
+    deleteContact();
+    setDeleteDialogOpen(false);
   };
 
   // Function to get appropriate icon based on contact type
@@ -102,8 +103,10 @@ const ViewContact = () => {
       case "tenant":
         return <User className="h-4 w-4" />;
       case "owner":
-        return <Building className="h-4 w-4" />;
+        return <Building2 className="h-4 w-4" />;
       case "vendor":
+        return <Briefcase className="h-4 w-4" />;
+      case "employee":
         return <Briefcase className="h-4 w-4" />;
       default:
         return <User className="h-4 w-4" />;
@@ -137,12 +140,27 @@ const ViewContact = () => {
     );
   }
 
-  if (isError || !contact) {
+  if (isError) {
     return (
       <div className="p-6">
         <div className="max-w-4xl mx-auto text-center p-10">
           <h2 className="text-2xl font-bold text-destructive mb-4">Error</h2>
           <p className="mb-6">Failed to load contact information</p>
+          <Button onClick={() => navigate("/contacts")}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Contacts
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!contact) {
+    return (
+      <div className="p-6">
+        <div className="max-w-4xl mx-auto text-center p-10">
+          <h2 className="text-2xl font-bold mb-4">Contact Not Found</h2>
+          <p className="mb-6">The requested contact could not be found</p>
           <Button onClick={() => navigate("/contacts")}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Contacts
@@ -162,188 +180,183 @@ const ViewContact = () => {
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Contacts
         </Button>
-        <div className="space-x-2">
-          <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive">
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete the contact 
-                  "{contact.firstName} {contact.lastName}" and remove their data from the server.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction 
-                  onClick={() => deleteContact()}
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                >
-                  {isDeleting ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Deleting...
-                    </>
-                  ) : (
-                    "Delete"
-                  )}
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-          
+        <div className="flex gap-2">
           <Button 
-            variant="outline" 
-            onClick={() => navigate(`/edit-contact/${contact.id}`)}
+            variant="outline"
+            onClick={() => navigate(`/edit-contact/${contactId}`)}
           >
             <Edit className="mr-2 h-4 w-4" />
             Edit
           </Button>
+          <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="destructive">
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Delete Contact</DialogTitle>
+                <DialogDescription>
+                  Are you sure you want to delete this contact? This action cannot be undone.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline">Cancel</Button>
+                </DialogClose>
+                <Button 
+                  variant="destructive" 
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                >
+                  {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Delete
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto grid grid-cols-1 gap-6">
-        {/* Contact Header */}
-        <Card>
-          <CardHeader className="pb-3">
-            <div className="flex justify-between items-start">
-              <div>
-                <CardTitle className="text-2xl">
-                  {contact.firstName} {contact.lastName}
-                </CardTitle>
-                <CardDescription className="flex items-center mt-1">
-                  <Badge 
-                    variant="outline"
-                    className={`flex items-center space-x-1 ${getContactTypeBadgeStyle(contact.contactType)}`}
-                  >
-                    {getContactTypeIcon(contact.contactType)}
-                    <span>{formatContactType(contact.contactType)}</span>
-                  </Badge>
-                  
-                  {contact.title && (
-                    <span className="ml-2 text-muted-foreground">
-                      • {contact.title}
-                    </span>
-                  )}
-                  
-                  {contact.companyName && (
-                    <span className="ml-2 text-muted-foreground">
-                      • {contact.companyName}
-                    </span>
-                  )}
-                </CardDescription>
-              </div>
-              <Badge
-                variant={contact.status === "active" ? "default" : 
-                      contact.status === "inactive" ? "secondary" : "outline"}
-              >
-                {formatContactType(contact.status)}
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Contact Information */}
-              <div>
-                <h3 className="text-lg font-medium mb-3">Contact Information</h3>
-                <div className="space-y-3">
-                  {contact.email && (
-                    <div className="flex items-start space-x-3">
-                      <Mail className="h-5 w-5 mt-0.5 text-muted-foreground" />
-                      <div>
-                        <p className="text-sm font-medium">Email</p>
-                        <p className="text-sm">{contact.email}</p>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {contact.phone && (
-                    <div className="flex items-start space-x-3">
-                      <Phone className="h-5 w-5 mt-0.5 text-muted-foreground" />
-                      <div>
-                        <p className="text-sm font-medium">Primary Phone</p>
-                        <p className="text-sm">{contact.phone}</p>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {contact.alternatePhone && (
-                    <div className="flex items-start space-x-3">
-                      <Phone className="h-5 w-5 mt-0.5 text-muted-foreground" />
-                      <div>
-                        <p className="text-sm font-medium">Alternate Phone</p>
-                        <p className="text-sm">{contact.alternatePhone}</p>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {contact.website && (
-                    <div className="flex items-start space-x-3">
-                      <Globe className="h-5 w-5 mt-0.5 text-muted-foreground" />
-                      <div>
-                        <p className="text-sm font-medium">Website</p>
-                        <p className="text-sm">
-                          <a 
-                            href={contact.website} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-primary hover:underline"
-                          >
-                            {contact.website}
-                          </a>
-                        </p>
-                      </div>
-                    </div>
-                  )}
+      <div className="max-w-5xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-2">{contact.firstName} {contact.lastName}</h1>
+          <div className="flex items-center gap-3">
+            <Badge 
+              variant="outline"
+              className={`flex items-center space-x-1 ${getContactTypeBadgeStyle(contact.contactType)}`}
+            >
+              {getContactTypeIcon(contact.contactType)}
+              <span>
+                {contact.contactType.charAt(0).toUpperCase() + contact.contactType.slice(1)}
+              </span>
+            </Badge>
+            <Badge 
+              variant={contact.status === "active" ? "default" : 
+                     contact.status === "inactive" ? "secondary" : "outline"}
+            >
+              {contact.status.charAt(0).toUpperCase() + contact.status.slice(1)}
+            </Badge>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Contact Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Contact Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {contact.email && (
+                <div className="flex items-start gap-2">
+                  <Mail className="h-5 w-5 text-muted-foreground mt-0.5" />
+                  <div>
+                    <p className="font-medium">Email</p>
+                    <p className="text-muted-foreground">{contact.email}</p>
+                  </div>
                 </div>
-              </div>
+              )}
               
-              {/* Address Information */}
-              <div>
-                <h3 className="text-lg font-medium mb-3">Address</h3>
-                {(contact.address || contact.city || contact.state) ? (
-                  <div className="flex items-start space-x-3">
-                    <MapPin className="h-5 w-5 mt-0.5 text-muted-foreground" />
-                    <div>
-                      {contact.address && <p className="text-sm">{contact.address}</p>}
+              {contact.phone && (
+                <div className="flex items-start gap-2">
+                  <Phone className="h-5 w-5 text-muted-foreground mt-0.5" />
+                  <div>
+                    <p className="font-medium">Phone</p>
+                    <p className="text-muted-foreground">{contact.phone}</p>
+                  </div>
+                </div>
+              )}
+              
+              {contact.alternatePhone && (
+                <div className="flex items-start gap-2">
+                  <Phone className="h-5 w-5 text-muted-foreground mt-0.5" />
+                  <div>
+                    <p className="font-medium">Alternate Phone</p>
+                    <p className="text-muted-foreground">{contact.alternatePhone}</p>
+                  </div>
+                </div>
+              )}
+              
+              {(contact.address || contact.city || contact.state || contact.zipcode || contact.country) && (
+                <div className="flex items-start gap-2">
+                  <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
+                  <div>
+                    <p className="font-medium">Address</p>
+                    <div className="text-muted-foreground">
+                      {contact.address && <p>{contact.address}</p>}
                       {(contact.city || contact.state || contact.zipcode) && (
-                        <p className="text-sm">
-                          {[
-                            contact.city, 
-                            contact.state, 
-                            contact.zipcode
-                          ].filter(Boolean).join(", ")}
+                        <p>
+                          {contact.city}{contact.city && contact.state ? ", " : ""}
+                          {contact.state} {contact.zipcode}
                         </p>
                       )}
-                      {contact.country && <p className="text-sm">{contact.country}</p>}
+                      {contact.country && <p>{contact.country}</p>}
                     </div>
                   </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">No address information provided</p>
-                )}
-              </div>
-            </div>
-            
-            {/* Notes Section */}
-            {contact.notes && (
-              <>
-                <Separator className="my-6" />
-                <div>
-                  <h3 className="text-lg font-medium mb-3">Notes</h3>
-                  <div className="flex items-start space-x-3">
-                    <FileText className="h-5 w-5 mt-0.5 text-muted-foreground" />
-                    <p className="text-sm whitespace-pre-wrap">{contact.notes}</p>
+                </div>
+              )}
+              
+              {contact.website && (
+                <div className="flex items-start gap-2">
+                  <Globe className="h-5 w-5 text-muted-foreground mt-0.5" />
+                  <div>
+                    <p className="font-medium">Website</p>
+                    <a 
+                      href={contact.website.startsWith('http') ? contact.website : `https://${contact.website}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >
+                      {contact.website}
+                    </a>
                   </div>
                 </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
+              )}
+            </CardContent>
+          </Card>
+          
+          {/* Business Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Business Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {contact.companyName && (
+                <div className="flex items-start gap-2">
+                  <Building2 className="h-5 w-5 text-muted-foreground mt-0.5" />
+                  <div>
+                    <p className="font-medium">Company</p>
+                    <p className="text-muted-foreground">{contact.companyName}</p>
+                  </div>
+                </div>
+              )}
+              
+              {contact.title && (
+                <div className="flex items-start gap-2">
+                  <Briefcase className="h-5 w-5 text-muted-foreground mt-0.5" />
+                  <div>
+                    <p className="font-medium">Job Title</p>
+                    <p className="text-muted-foreground">{contact.title}</p>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+        
+        {/* Notes */}
+        {contact.notes && (
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle>Notes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="whitespace-pre-wrap">{contact.notes}</p>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

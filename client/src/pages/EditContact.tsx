@@ -33,7 +33,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 import { insertContactSchema } from "@shared/schema";
 import type { Contact } from "@shared/schema";
@@ -53,11 +54,12 @@ const EditContact = () => {
   const params = useParams<{ id: string }>();
   const [, navigate] = useLocation();
   const { toast } = useToast();
+  const [loadError, setLoadError] = useState<string | null>(null);
   
   // Get contact ID from URL params
   const contactId = params?.id ? parseInt(params.id) : null;
 
-  // Initialize form with empty values that will be filled after fetching
+  // Initialize form
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
@@ -81,7 +83,12 @@ const EditContact = () => {
   });
 
   // Fetch contact data
-  const { data: contact, isLoading, isError } = useQuery({
+  const { 
+    data: contact, 
+    isLoading, 
+    isError,
+    error
+  } = useQuery({
     queryKey: ['/api/contacts', contactId],
     queryFn: async () => {
       if (!contactId) throw new Error("No contact ID provided");
@@ -94,43 +101,37 @@ const EditContact = () => {
     enabled: !!contactId,
   });
 
-  // Update form values when contact data is loaded
+  // Update form when contact data is loaded
   useEffect(() => {
     if (contact) {
       form.reset({
         firstName: contact.firstName,
         lastName: contact.lastName,
-        email: contact.email || "",
-        phone: contact.phone || "",
-        alternatePhone: contact.alternatePhone || "",
-        address: contact.address || "",
-        city: contact.city || "",
-        state: contact.state || "",
-        zipcode: contact.zipcode || "",
-        country: contact.country || "",
-        companyName: contact.companyName || "",
-        title: contact.title || "",
-        website: contact.website || "",
-        notes: contact.notes || "",
-        contactType: contact.contactType as any, // Type cast is safe because we control the values
+        email: contact.email,
+        phone: contact.phone,
+        alternatePhone: contact.alternatePhone,
+        address: contact.address,
+        city: contact.city,
+        state: contact.state,
+        zipcode: contact.zipcode,
+        country: contact.country,
+        companyName: contact.companyName,
+        title: contact.title,
+        website: contact.website,
+        notes: contact.notes,
+        contactType: contact.contactType as any, // Cast to match enum type
         status: contact.status,
       });
     }
   }, [contact, form]);
 
   // Update contact mutation
-  const { mutate, isPending } = useMutation({
+  const { mutate: updateContact, isPending } = useMutation({
     mutationFn: async (data: ContactFormValues) => {
       if (!contactId) throw new Error("No contact ID provided");
-      return apiRequest(`/api/contacts/${contactId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
+      return apiRequest('PUT', `/api/contacts/${contactId}`, data);
     },
-    onSuccess: () => {
+    onSuccess: async (response) => {
       toast({
         title: "Contact updated",
         description: "The contact has been updated successfully",
@@ -150,7 +151,7 @@ const EditContact = () => {
 
   // Form submission handler
   const onSubmit = (values: ContactFormValues) => {
-    mutate(values);
+    updateContact(values);
   };
 
   if (isLoading) {
@@ -167,9 +168,29 @@ const EditContact = () => {
   if (isError) {
     return (
       <div className="p-6">
+        <div className="max-w-4xl mx-auto">
+          <Alert variant="destructive" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>
+              Failed to load contact information. {error instanceof Error ? error.message : ""}
+            </AlertDescription>
+          </Alert>
+          <Button onClick={() => navigate("/contacts")}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Contacts
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!contact) {
+    return (
+      <div className="p-6">
         <div className="max-w-4xl mx-auto text-center p-10">
-          <h2 className="text-2xl font-bold text-destructive mb-4">Error</h2>
-          <p className="mb-6">Failed to load contact information</p>
+          <h2 className="text-2xl font-bold mb-4">Contact Not Found</h2>
+          <p className="mb-6">The requested contact could not be found</p>
           <Button onClick={() => navigate("/contacts")}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Contacts
@@ -195,12 +216,20 @@ const EditContact = () => {
 
       <Card className="max-w-4xl mx-auto">
         <CardHeader>
-          <CardTitle>Contact Information</CardTitle>
+          <CardTitle>Edit Contact Information</CardTitle>
           <CardDescription>
-            Update the details of this contact
+            Update the details for {contact.firstName} {contact.lastName}
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {loadError && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{loadError}</AlertDescription>
+            </Alert>
+          )}
+          
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -243,7 +272,7 @@ const EditContact = () => {
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input placeholder="john.doe@example.com" {...field} />
+                          <Input placeholder="john.doe@example.com" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -257,7 +286,7 @@ const EditContact = () => {
                       <FormItem>
                         <FormLabel>Phone Number</FormLabel>
                         <FormControl>
-                          <Input placeholder="(555) 123-4567" {...field} />
+                          <Input placeholder="(555) 123-4567" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -271,7 +300,7 @@ const EditContact = () => {
                       <FormItem>
                         <FormLabel>Alternate Phone</FormLabel>
                         <FormControl>
-                          <Input placeholder="(555) 765-4321" {...field} />
+                          <Input placeholder="(555) 765-4321" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -346,7 +375,7 @@ const EditContact = () => {
                       <FormItem>
                         <FormLabel>Company Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Acme Inc." {...field} />
+                          <Input placeholder="Acme Inc." {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -360,7 +389,7 @@ const EditContact = () => {
                       <FormItem>
                         <FormLabel>Job Title</FormLabel>
                         <FormControl>
-                          <Input placeholder="Manager" {...field} />
+                          <Input placeholder="Manager" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -374,7 +403,7 @@ const EditContact = () => {
                       <FormItem>
                         <FormLabel>Website</FormLabel>
                         <FormControl>
-                          <Input placeholder="https://example.com" {...field} />
+                          <Input placeholder="https://example.com" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -395,7 +424,7 @@ const EditContact = () => {
                       <FormItem>
                         <FormLabel>Address</FormLabel>
                         <FormControl>
-                          <Input placeholder="123 Main St" {...field} />
+                          <Input placeholder="123 Main St" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -409,7 +438,7 @@ const EditContact = () => {
                       <FormItem>
                         <FormLabel>City</FormLabel>
                         <FormControl>
-                          <Input placeholder="Anytown" {...field} />
+                          <Input placeholder="Anytown" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -423,7 +452,7 @@ const EditContact = () => {
                       <FormItem>
                         <FormLabel>State/Province</FormLabel>
                         <FormControl>
-                          <Input placeholder="CA" {...field} />
+                          <Input placeholder="CA" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -437,7 +466,7 @@ const EditContact = () => {
                       <FormItem>
                         <FormLabel>Postal Code</FormLabel>
                         <FormControl>
-                          <Input placeholder="12345" {...field} />
+                          <Input placeholder="12345" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -451,7 +480,7 @@ const EditContact = () => {
                       <FormItem>
                         <FormLabel>Country</FormLabel>
                         <FormControl>
-                          <Input placeholder="USA" {...field} />
+                          <Input placeholder="USA" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -474,7 +503,8 @@ const EditContact = () => {
                         <Textarea 
                           placeholder="Additional notes about this contact..." 
                           className="min-h-32"
-                          {...field} 
+                          {...field}
+                          value={field.value || ""} 
                         />
                       </FormControl>
                       <FormMessage />

@@ -79,7 +79,7 @@ const leases = [
 
 const Leases = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  
+
   // Get status badge color
   const getStatusBadge = useCallback((status: string) => {
     switch (status) {
@@ -97,18 +97,18 @@ const Leases = () => {
         return <Badge variant="outline">{status.charAt(0).toUpperCase() + status.slice(1)}</Badge>;
     }
   }, []);
-  
+
   // Format date to human readable format
   const formatDate = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
-  
+
   const handleResetFilters = () => {
     // Reset filter state
     console.log("Filters reset");
   };
-  
+
   return (
     <div>
       {/* Page Header */}
@@ -127,14 +127,21 @@ const Leases = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <Link href="/add-lease">
-            <Button>
-              <Plus className="mr-2 h-4 w-4" /> Add Lease
-            </Button>
-          </Link>
+          <div className="flex gap-2">
+            <Link href="/generate-lease-template">
+              <Button variant="outline">
+                <FileText className="mr-2 h-4 w-4" /> Generate Template
+              </Button>
+            </Link>
+            <Link href="/add-lease">
+              <Button>
+                <Plus className="mr-2 h-4 w-4" /> Add Lease
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
-      
+
       {/* Filters */}
       <Card className="mb-6">
         <CardContent className="p-4">
@@ -154,7 +161,7 @@ const Leases = () => {
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="w-full sm:w-auto">
               <Label className="mb-1 block">Status</Label>
               <Select defaultValue="all">
@@ -170,7 +177,7 @@ const Leases = () => {
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="w-full sm:w-auto">
               <Label className="mb-1 block">Lease Period</Label>
               <Select defaultValue="all">
@@ -186,7 +193,7 @@ const Leases = () => {
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="w-full sm:w-auto sm:ml-auto sm:self-end">
               <Button
                 variant="outline"
@@ -199,7 +206,7 @@ const Leases = () => {
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Lease Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <Card>
@@ -215,7 +222,7 @@ const Leases = () => {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex justify-between items-start">
@@ -229,7 +236,7 @@ const Leases = () => {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex justify-between items-start">
@@ -243,7 +250,7 @@ const Leases = () => {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex justify-between items-start">
@@ -258,7 +265,7 @@ const Leases = () => {
           </CardContent>
         </Card>
       </div>
-      
+
       {/* Leases Table */}
       <Card>
         <CardContent className="p-0">
@@ -313,7 +320,7 @@ const Leases = () => {
           </Table>
         </CardContent>
       </Card>
-      
+
       {/* Pagination */}
       <div className="flex justify-between items-center mt-4">
         <div className="text-sm text-muted-foreground">

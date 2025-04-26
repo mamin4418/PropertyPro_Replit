@@ -2,7 +2,7 @@
 import { Route } from "wouter";
 
 // This component allows all access without any protection
-const ProtectedRoute = ({
+export const ProtectedRoute = ({
   path,
   component: Component,
   allowedRoles = ["manager"],

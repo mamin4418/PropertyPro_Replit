@@ -69,7 +69,7 @@ const Sidebar = () => {
   const currentPage = location.split("/")[1] || "dashboard";
   
   const [propertiesOpen, setPropertiesOpen] = useState(
-    ["properties", "add-property"].includes(currentPage)
+    ["properties", "add-property", "appliances", "add-appliance", "edit-appliance", "view-appliance"].includes(currentPage)
   );
   const [contactsOpen, setContactsOpen] = useState(
     ["contacts", "add-contact", "view-contact", "edit-contact", "tenants", "add-tenant", "vendors", "add-vendor"].includes(currentPage)
@@ -102,7 +102,7 @@ const Sidebar = () => {
           <button
             onClick={() => setPropertiesOpen(!propertiesOpen)}
             className={`w-full flex items-center justify-between p-3 rounded-md transition-colors ${
-              ["properties", "add-property"].includes(currentPage) 
+              ["properties", "add-property", "appliances", "add-appliance", "edit-appliance", "view-appliance"].includes(currentPage) 
                 ? "bg-primary/10 text-primary" 
                 : "hover:bg-secondary"
             }`}
@@ -126,6 +126,9 @@ const Sidebar = () => {
               <SubNavLink href="/add-property" isActive={currentPage === "add-property"}>
                 Add Property
               </SubNavLink>
+              <SubNavLink href="/appliances" isActive={["appliances", "add-appliance", "edit-appliance", "view-appliance"].includes(currentPage)}>
+                Appliances
+              </SubNavLink>
             </div>
           )}
         </div>
@@ -146,12 +149,6 @@ const Sidebar = () => {
         <NavLink href="/maintenance" isActive={currentPage === "maintenance"}>
           <Drill className="w-5 h-5" />
           <span className="ml-3">Maintenance</span>
-        </NavLink>
-        
-        {/* Appliances */}
-        <NavLink href="/appliances" isActive={["appliances", "add-appliance", "edit-appliance", "view-appliance"].includes(currentPage)}>
-          <Wrench className="w-5 h-5" />
-          <span className="ml-3">Appliances</span>
         </NavLink>
         
         {/* Vacancies */}

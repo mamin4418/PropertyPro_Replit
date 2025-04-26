@@ -7,6 +7,55 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Building2, Plus, Search } from "lucide-react";
 
+// Sample company data
+const sampleCompanies = [
+  { 
+    id: 1, 
+    companyName: "ABC Properties", 
+    legalName: "ABC Properties LLC", 
+    ein: "12-3456789", 
+    email: "info@abcproperties.com",
+    phone: "(555) 123-4567",
+    type: "LLC"
+  },
+  { 
+    id: 2, 
+    companyName: "XYZ Real Estate", 
+    legalName: "XYZ Real Estate Group, Inc.", 
+    ein: "98-7654321", 
+    email: "contact@xyzrealestate.com",
+    phone: "(555) 987-6543",
+    type: "Corporation"
+  },
+  { 
+    id: 3, 
+    companyName: "Sunshine Properties", 
+    legalName: "Sunshine Properties Management LLC", 
+    ein: "45-6789123", 
+    email: "hello@sunshineproperties.com",
+    phone: "(555) 456-7890",
+    type: "LLC"
+  },
+  { 
+    id: 4, 
+    companyName: "Urban Living", 
+    legalName: "Urban Living Apartments Inc.", 
+    ein: "56-7891234", 
+    email: "support@urbanliving.com",
+    phone: "(555) 789-0123",
+    type: "Corporation"
+  },
+  { 
+    id: 5, 
+    companyName: "Coastal Rentals", 
+    legalName: "Coastal Rentals & Management Co.", 
+    ein: "67-8912345", 
+    email: "info@coastalrentals.com",
+    phone: "(555) 234-5678",
+    type: "Partnership"
+  }
+];
+
 const Companies = () => {
   const [, navigate] = useLocation();
   const [search, setSearch] = useState("");
@@ -20,36 +69,8 @@ const Companies = () => {
         return response.json();
       } catch (error) {
         console.error("Failed to fetch companies:", error);
-        // Return sample data for now
-        return [
-          { 
-            id: 1, 
-            companyName: "ABC Properties", 
-            legalName: "ABC Properties LLC", 
-            ein: "12-3456789", 
-            email: "info@abcproperties.com",
-            phone: "(555) 123-4567",
-            type: "LLC"
-          },
-          { 
-            id: 2, 
-            companyName: "XYZ Real Estate", 
-            legalName: "XYZ Real Estate Group, Inc.", 
-            ein: "98-7654321", 
-            email: "contact@xyzrealestate.com",
-            phone: "(555) 987-6543",
-            type: "Corporation"
-          },
-          { 
-            id: 3, 
-            companyName: "Sunshine Properties", 
-            legalName: "Sunshine Properties Management LLC", 
-            ein: "45-6789123", 
-            email: "hello@sunshineproperties.com",
-            phone: "(555) 456-7890",
-            type: "LLC"
-          }
-        ];
+        // Return sample data
+        return sampleCompanies;
       }
     }
   });

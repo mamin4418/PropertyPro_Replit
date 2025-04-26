@@ -9,7 +9,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, FileText, Plus, Trash2, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import mammoth from "mammoth";
-import * as pdfjs from "pdfjs-dist";
+import * as pdfjs from "pdfjs-dist/build/pdf";
+import "pdfjs-dist/build/pdf.worker.entry";
 import JSZip from "jszip";
 
 interface TemplateSection {

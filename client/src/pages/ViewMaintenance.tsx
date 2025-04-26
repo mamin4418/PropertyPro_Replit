@@ -24,6 +24,7 @@ import {
   FileText,
   Home,
   Image,
+  Mail,
   MapPin,
   MessageCircle,
   MessagesSquare,
@@ -360,7 +361,7 @@ const ViewMaintenance = () => {
                     <div>
                       <h4 className="text-sm font-medium text-muted-foreground mb-2">Assigned To</h4>
                       <div className="flex items-start space-x-3 p-3 border rounded-md">
-                        <Tool className="h-5 w-5 text-amber-500 mt-0.5" />
+                        <Wrench className="h-5 w-5 text-amber-500 mt-0.5" />
                         <div>
                           <div className="font-medium">{maintenance.assignedTo.name}</div>
                           <div className="text-sm text-muted-foreground">{maintenance.assignedTo.type}</div>

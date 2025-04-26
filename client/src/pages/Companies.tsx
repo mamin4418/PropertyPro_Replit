@@ -5,25 +5,71 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Building2, Plus, Search } from "lucide-react";
+import { Building2, Plus, Search, Loader2 } from "lucide-react";
 
 const Companies = () => {
   const [, navigate] = useLocation();
   const [search, setSearch] = useState("");
 
-  const { data: companies, isLoading } = useQuery({
+  const { data: companies, isLoading, isError } = useQuery({
     queryKey: ['/api/companies'],
     queryFn: async () => {
       const response = await fetch('/api/companies');
       if (!response.ok) throw new Error("Failed to fetch companies");
       return response.json();
-    }
+    },
+    // Mock data for now until API is implemented
+    initialData: [
+      {
+        id: 1,
+        legalName: "Cornerstone Properties LLC",
+        companyName: "Cornerstone Properties",
+        ein: "12-3456789",
+        email: "info@cornerstoneproperties.com",
+        phone: "(555) 123-4567",
+        type: "LLC",
+        status: "active"
+      },
+      {
+        id: 2,
+        legalName: "Urban Living Investments Inc.",
+        companyName: "Urban Living",
+        ein: "98-7654321",
+        email: "contact@urbanliving.com",
+        phone: "(555) 987-6543",
+        type: "Corporation",
+        status: "active"
+      }
+    ]
   });
 
   const filteredCompanies = companies?.filter(company => 
     company.companyName.toLowerCase().includes(search.toLowerCase()) ||
     company.legalName.toLowerCase().includes(search.toLowerCase())
   );
+
+  if (isLoading) {
+    return (
+      <div className="p-6 flex justify-center items-center min-h-96">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mb-2 mx-auto" />
+          <p>Loading companies...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="p-6">
+        <div className="max-w-4xl mx-auto text-center p-10">
+          <h2 className="text-2xl font-bold text-destructive mb-4">Error</h2>
+          <p className="mb-6">Failed to load companies</p>
+          <Button onClick={() => window.location.reload()}>Try Again</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">

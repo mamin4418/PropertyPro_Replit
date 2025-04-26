@@ -42,6 +42,10 @@ import AddLead from "./pages/AddLead";
 import Applications from "./pages/Applications";
 import ApplicationTemplates from "./pages/ApplicationTemplates";
 import CreateApplicationTemplate from "./pages/CreateApplicationTemplate";
+import VacancyListing from "./pages/VacancyListing";
+import ManageVacancies from "./pages/ManageVacancies";
+import CreateVacancy from "./pages/CreateVacancy";
+import ViewVacancy from "./pages/ViewVacancy";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import { Menu, X } from "lucide-react";
@@ -177,6 +181,14 @@ function App() {
                   <Route path="/applications" component={Applications} />
                   <Route path="/application-templates" component={ApplicationTemplates} />
                   <Route path="/create-template" component={CreateApplicationTemplate} />
+                  
+                  {/* Vacancy Management Routes */}
+                  <Route path="/vacancy-listing" component={VacancyListing} />
+                  <Route path="/manage-vacancies" component={ManageVacancies} />
+                  <Route path="/create-vacancy" component={CreateVacancy} />
+                  <Route path="/edit-vacancy/:id" component={CreateVacancy} />
+                  <Route path="/view-vacancy/:id" component={ViewVacancy} />
+                  <Route path="/vacancy/:id" component={ViewVacancy} />
                   
                   {/* Reports and Settings */}
                   <Route path="/reports" component={Reports} />

@@ -162,6 +162,424 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(400).json({ error: 'Invalid template data' });
     }
   });
+  
+  // Vacancy API endpoints
+  app.get('/api/vacancies', async (req: Request, res: Response) => {
+    try {
+      // In a real implementation, fetch from database
+      // For now, return mock data
+      const vacancies = [
+        {
+          id: 1,
+          unitId: 101,
+          propertyId: 1,
+          propertyName: "Parkside Apartments",
+          propertyAddress: "123 Main St, Anytown, CA 91234",
+          title: "Modern 1 Bedroom Apartment",
+          description: "Beautiful renovated 1 bedroom apartment with hardwood floors, stainless steel appliances, and a private balcony.",
+          rentAmount: 1250,
+          depositAmount: 1250,
+          availableFrom: "2023-06-01",
+          leaseDuration: 12,
+          bedrooms: 1,
+          bathrooms: 1,
+          sqft: 750,
+          amenities: ["Dishwasher", "A/C", "In-unit Laundry", "Balcony"],
+          petPolicy: "Cats only, $500 pet deposit",
+          includedUtilities: ["Water", "Trash"],
+          images: [
+            "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267",
+            "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688"
+          ],
+          status: "active"
+        },
+        {
+          id: 2,
+          unitId: 203,
+          propertyId: 1,
+          propertyName: "Parkside Apartments",
+          propertyAddress: "123 Main St, Anytown, CA 91234",
+          title: "Spacious 2 Bedroom Apartment",
+          description: "Spacious 2 bedroom apartment with modern finishes and open floor plan.",
+          rentAmount: 1650,
+          depositAmount: 1650,
+          availableFrom: "2023-05-15",
+          leaseDuration: 12,
+          bedrooms: 2,
+          bathrooms: 2,
+          sqft: 1050,
+          amenities: ["Dishwasher", "A/C", "In-unit Laundry", "Walk-in Closets", "Fireplace"],
+          petPolicy: "Pet friendly, $750 pet deposit",
+          includedUtilities: ["Water", "Trash", "Internet"],
+          images: [
+            "https://images.unsplash.com/photo-1493809842364-78817add7ffb",
+            "https://images.unsplash.com/photo-1484154218962-a197022b5858"
+          ],
+          status: "active"
+        }
+      ];
+      
+      res.json(vacancies);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to retrieve vacancies' });
+    }
+  });
+  
+  app.get('/api/vacancies/manage', async (req: Request, res: Response) => {
+    try {
+      // This endpoint would normally include more management data
+      // For now, return similar data to the regular endpoint
+      const vacancies = [
+        {
+          id: 1,
+          unitId: 101,
+          propertyId: 1,
+          propertyName: "Parkside Apartments",
+          propertyAddress: "123 Main St, Anytown, CA 91234",
+          title: "Modern 1 Bedroom Apartment",
+          description: "Beautiful renovated 1 bedroom apartment with hardwood floors.",
+          rentAmount: 1250,
+          depositAmount: 1250,
+          availableFrom: "2023-06-01",
+          leaseDuration: 12,
+          bedrooms: 1,
+          bathrooms: 1,
+          sqft: 750,
+          amenities: ["Dishwasher", "A/C", "In-unit Laundry", "Balcony"],
+          petPolicy: "Cats only, $500 pet deposit",
+          includedUtilities: ["Water", "Trash"],
+          images: [
+            "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267"
+          ],
+          status: "active",
+          inquiries: 7,
+          applications: 3,
+          createdAt: "2023-04-15T10:30:00Z",
+          updatedAt: "2023-04-20T15:45:00Z"
+        },
+        {
+          id: 2,
+          unitId: 203,
+          propertyId: 1,
+          propertyName: "Parkside Apartments",
+          propertyAddress: "123 Main St, Anytown, CA 91234",
+          title: "Spacious 2 Bedroom Apartment",
+          description: "Spacious 2 bedroom apartment with modern finishes.",
+          rentAmount: 1650,
+          depositAmount: 1650,
+          availableFrom: "2023-05-15",
+          leaseDuration: 12,
+          bedrooms: 2,
+          bathrooms: 2,
+          sqft: 1050,
+          amenities: ["Dishwasher", "A/C", "In-unit Laundry", "Walk-in Closets"],
+          petPolicy: "Pet friendly, $750 pet deposit",
+          includedUtilities: ["Water", "Trash", "Internet"],
+          images: [
+            "https://images.unsplash.com/photo-1493809842364-78817add7ffb"
+          ],
+          status: "active",
+          inquiries: 4,
+          applications: 1,
+          createdAt: "2023-04-10T09:15:00Z",
+          updatedAt: "2023-04-18T11:20:00Z"
+        },
+        {
+          id: 3,
+          unitId: 305,
+          propertyId: 2,
+          propertyName: "The Willows",
+          propertyAddress: "456 Oak Lane, Anytown, CA 91234",
+          title: "Luxury Studio Apartment",
+          description: "Compact but luxurious studio apartment with full kitchen.",
+          rentAmount: 1050,
+          depositAmount: 1050,
+          availableFrom: "2023-06-15",
+          leaseDuration: 12,
+          bedrooms: 0,
+          bathrooms: 1,
+          sqft: 550,
+          amenities: ["Dishwasher", "A/C", "Gym Access", "Rooftop Terrace"],
+          petPolicy: "No pets allowed",
+          includedUtilities: ["Water", "Trash", "Heat"],
+          images: [
+            "https://images.unsplash.com/photo-1502672023488-70e25813eb80"
+          ],
+          status: "inactive",
+          inquiries: 2,
+          applications: 0,
+          createdAt: "2023-04-05T14:20:00Z",
+          updatedAt: "2023-04-12T16:30:00Z"
+        }
+      ];
+      
+      res.json(vacancies);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to retrieve vacancies' });
+    }
+  });
+  
+  app.get('/api/vacancies/:id', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      // In a real implementation, fetch from database
+      // For now, return mock data for this specific ID
+      const mockVacancies = {
+        1: {
+          id: 1,
+          unitId: 101,
+          propertyId: 1,
+          propertyName: "Parkside Apartments",
+          propertyAddress: "123 Main St, Anytown, CA 91234",
+          title: "Modern 1 Bedroom Apartment",
+          description: "Beautiful renovated 1 bedroom apartment with hardwood floors, stainless steel appliances, and a private balcony. Plenty of natural light and storage space. Located in a quiet neighborhood with easy access to shopping, restaurants, and public transportation.",
+          rentAmount: 1250,
+          depositAmount: 1250,
+          availableFrom: "2023-06-01",
+          leaseDuration: 12,
+          bedrooms: 1,
+          bathrooms: 1,
+          sqft: 750,
+          minimumIncome: 3000,
+          creditScoreRequirement: 650,
+          petPolicy: "Cats only, $500 pet deposit",
+          petDeposit: 500,
+          smokingAllowed: false,
+          includedUtilities: ["Water", "Trash"],
+          advertisingChannels: ["Website", "Zillow"],
+          amenities: ["Dishwasher", "A/C", "In-unit Laundry", "Balcony", "Hardwood Floors", "Stainless Steel Appliances"],
+          images: [
+            "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267",
+            "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688",
+            "https://images.unsplash.com/photo-1493809842364-78817add7ffb"
+          ],
+          status: "active",
+          inquiries: 7,
+          applications: 3,
+          createdAt: "2023-04-15T10:30:00Z",
+          updatedAt: "2023-04-20T15:45:00Z",
+        },
+        2: {
+          id: 2,
+          unitId: 203,
+          propertyId: 1,
+          propertyName: "Parkside Apartments",
+          propertyAddress: "123 Main St, Anytown, CA 91234",
+          title: "Spacious 2 Bedroom Apartment",
+          description: "Spacious 2 bedroom apartment with modern finishes, open floor plan, and mountain views. Features a chef's kitchen and walk-in closets.",
+          rentAmount: 1650,
+          depositAmount: 1650,
+          availableFrom: "2023-05-15",
+          leaseDuration: 12,
+          bedrooms: 2,
+          bathrooms: 2,
+          sqft: 1050,
+          minimumIncome: 4000,
+          creditScoreRequirement: 650,
+          petPolicy: "Pet friendly, $750 pet deposit",
+          petDeposit: 750,
+          smokingAllowed: false,
+          includedUtilities: ["Water", "Trash", "Internet"],
+          advertisingChannels: ["Website", "Zillow", "Apartments.com"],
+          amenities: ["Dishwasher", "A/C", "In-unit Laundry", "Walk-in Closets", "Fireplace"],
+          images: [
+            "https://images.unsplash.com/photo-1493809842364-78817add7ffb",
+            "https://images.unsplash.com/photo-1484154218962-a197022b5858"
+          ],
+          status: "active",
+          inquiries: 4,
+          applications: 1,
+          createdAt: "2023-04-10T09:15:00Z",
+          updatedAt: "2023-04-18T11:20:00Z",
+        },
+        3: {
+          id: 3,
+          unitId: 305,
+          propertyId: 2,
+          propertyName: "The Willows",
+          propertyAddress: "456 Oak Lane, Anytown, CA 91234",
+          title: "Luxury Studio Apartment",
+          description: "Compact but luxurious studio apartment with high-end finishes, full kitchen, and city views. Perfect for professionals.",
+          rentAmount: 1050,
+          depositAmount: 1050,
+          availableFrom: "2023-06-15",
+          leaseDuration: 12,
+          bedrooms: 0,
+          bathrooms: 1,
+          sqft: 550,
+          minimumIncome: 2500,
+          creditScoreRequirement: 620,
+          petPolicy: "No pets allowed",
+          petDeposit: 0,
+          smokingAllowed: false,
+          includedUtilities: ["Water", "Trash", "Heat"],
+          advertisingChannels: ["Website", "Craigslist"],
+          amenities: ["Dishwasher", "A/C", "Gym Access", "Rooftop Terrace"],
+          images: [
+            "https://images.unsplash.com/photo-1502672023488-70e25813eb80",
+            "https://images.unsplash.com/photo-1518481612222-68bbe828ecd1"
+          ],
+          status: "inactive",
+          inquiries: 2,
+          applications: 0,
+          createdAt: "2023-04-05T14:20:00Z",
+          updatedAt: "2023-04-12T16:30:00Z",
+        }
+      };
+      
+      const vacancy = mockVacancies[id as keyof typeof mockVacancies];
+      
+      if (!vacancy) {
+        res.status(404).json({ error: 'Vacancy not found' });
+        return;
+      }
+      
+      res.json(vacancy);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to retrieve vacancy' });
+    }
+  });
+  
+  app.post('/api/vacancies', async (req: Request, res: Response) => {
+    try {
+      // In a real implementation, validate and save to database
+      const vacancy = {
+        id: Date.now(),
+        ...req.body,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        inquiries: 0,
+        applications: 0
+      };
+      
+      res.status(201).json(vacancy);
+    } catch (error) {
+      res.status(400).json({ error: 'Invalid vacancy data' });
+    }
+  });
+  
+  app.put('/api/vacancies/:id', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      // In a real implementation, validate, check if exists, and update in database
+      const updatedVacancy = {
+        id,
+        ...req.body,
+        updatedAt: new Date().toISOString()
+      };
+      
+      res.json(updatedVacancy);
+    } catch (error) {
+      res.status(400).json({ error: 'Failed to update vacancy' });
+    }
+  });
+  
+  app.patch('/api/vacancies/:id/status', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { status } = req.body;
+      
+      if (!status || !['active', 'inactive', 'rented'].includes(status)) {
+        res.status(400).json({ error: 'Invalid status value' });
+        return;
+      }
+      
+      // In a real implementation, update in database
+      res.json({ id, status, updatedAt: new Date().toISOString() });
+    } catch (error) {
+      res.status(400).json({ error: 'Failed to update vacancy status' });
+    }
+  });
+  
+  app.delete('/api/vacancies/:id', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      // In a real implementation, check if exists and delete from database
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to delete vacancy' });
+    }
+  });
+  
+  // Lead inquiry endpoints
+  app.post('/api/leads/inquiry', async (req: Request, res: Response) => {
+    try {
+      const { firstName, lastName, email, phone, moveInDate, message, contactPreference, vacancyId, unitId, propertyId } = req.body;
+      
+      // Create a contact with lead type
+      const contactData = {
+        firstName,
+        lastName,
+        email,
+        phone,
+        contactType: "lead",
+        notes: `Inquiry for Property ID: ${propertyId}, Unit: ${unitId}\nDesired Move-in: ${moveInDate}\nMessage: ${message || 'No message provided'}`
+      };
+      
+      const validatedData = insertContactSchema.parse(contactData);
+      const contact = await storage.createContact(validatedData);
+      
+      // In a real app, you'd store the inquiry details and link to the vacancy
+      
+      // Return lead format with inquiry info
+      const lead = {
+        id: contact.id,
+        contactId: contact.id,
+        source: "Website Inquiry",
+        status: "new",
+        interestLevel: "high",
+        vacancyId,
+        unitId,
+        propertyId,
+        desiredMoveInDate: moveInDate,
+        hasApplied: false,
+        preQualified: false,
+        assignedTo: null,
+        lastContactDate: new Date().toISOString(),
+        nextFollowUpDate: null,
+        preferredContactMethod: contactPreference
+      };
+      
+      res.status(201).json(lead);
+    } catch (error) {
+      console.error("Error processing inquiry:", error);
+      res.status(400).json({ error: 'Invalid inquiry data' });
+    }
+  });
+  
+  // Send application endpoint
+  app.post('/api/applications/send', async (req: Request, res: Response) => {
+    try {
+      const { applicantEmail, message, templateId, dueDate, vacancyId, unitId, propertyId } = req.body;
+      
+      // In a real implementation, you would:
+      // 1. Generate a unique application link
+      // 2. Send an email to the applicant
+      // 3. Track the application in the database
+      
+      const applicationSent = {
+        id: Date.now(),
+        applicantEmail,
+        message,
+        templateId,
+        dueDate,
+        vacancyId,
+        unitId,
+        propertyId,
+        status: "sent",
+        sentAt: new Date().toISOString(),
+        completedAt: null,
+        expiresAt: dueDate ? new Date(dueDate).toISOString() : null
+      };
+      
+      res.status(201).json(applicationSent);
+    } catch (error) {
+      res.status(400).json({ error: 'Failed to send application' });
+    }
+  });
 
   // Address routes
   app.get('/api/addresses', async (req: Request, res: Response) => {

@@ -38,6 +38,10 @@ import Vendors from "./pages/Vendors";
 import AddVendor from "./pages/AddVendor";
 import ViewVendor from "./pages/ViewVendor";
 import EditVendor from "./pages/EditVendor";
+import Companies from "./pages/Companies";
+import AddCompany from "./pages/AddCompany";
+import ViewCompany from "./pages/ViewCompany";
+import EditCompany from "./pages/EditCompany";
 import Contacts from "./pages/Contacts";
 import AddContact from "./pages/AddContact";
 import ViewContact from "./pages/ViewContact";
@@ -59,12 +63,6 @@ import ViewAppliance from "./pages/ViewAppliance";
 import EditAppliance from "./pages/EditAppliance";
 import GenerateLeaseTemplate from "./pages/GenerateLeaseTemplate";
 import { Menu, X } from "lucide-react";
-// Placeholder components for company routes
-const Companies = () => <div>Companies Page</div>;
-const AddCompany = () => <div>Add Company Page</div>;
-const ViewCompany = () => <div>View Company Page</div>;
-const EditCompany = () => <div>Edit Company Page</div>;
-
 
 function AppRoutes() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -189,12 +187,12 @@ function AppRoutes() {
               <ProtectedRoute path="/edit-vendor/:id" component={EditVendor} />
 
               {/* Company Routes */}
-              <ProtectedRoute path="/companies" component={Companies} />
-              <ProtectedRoute path="/add-company" component={AddCompany} />
-              <ProtectedRoute path="/view-company/:id" component={ViewCompany} />
-              <ProtectedRoute path="/edit-company/:id" component={EditCompany} />
+<ProtectedRoute path="/companies" component={Companies} />
+<ProtectedRoute path="/add-company" component={AddCompany} />
+<ProtectedRoute path="/view-company/:id" component={ViewCompany} />
+<ProtectedRoute path="/edit-company/:id" component={EditCompany} />
 
-              {/* Contacts Routes */}
+{/* Contacts Routes */}
               <ProtectedRoute path="/contacts" component={Contacts} />
               <ProtectedRoute path="/add-contact" component={AddContact} />
               <ProtectedRoute path="/view-contact/:id" component={ViewContact} />

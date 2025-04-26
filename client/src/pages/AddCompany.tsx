@@ -1,9 +1,11 @@
 
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { toast } from "@/hooks/use-toast";
 import {
   Form,
@@ -16,7 +18,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -24,31 +26,46 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Building2 } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Loader2 } from "lucide-react";
 
-// Company form validation schema
-const companySchema = z.object({
+// Form validation schema
+const companyFormSchema = z.object({
   legalName: z.string().min(1, "Legal name is required"),
   companyName: z.string().min(1, "Company name is required"),
   type: z.string().min(1, "Company type is required"),
   ein: z.string().optional(),
   email: z.string().email("Invalid email format").optional().or(z.literal("")),
   phone: z.string().optional(),
-  address: z.string().optional(),
-  city: z.string().optional(),
-  state: z.string().optional(),
-  zipcode: z.string().optional(),
-  country: z.string().optional(),
+  // Address fields
+  streetAddress: z.string().min(1, "Street address is required"),
+  unit: z.string().optional(),
+  city: z.string().min(1, "City is required"),
+  state: z.string().min(1, "State is required"),
+  zipcode: z.string().min(1, "Zip code is required"),
+  country: z.string().min(1, "Country is required"),
+  // Additional fields
+  businessLicense: z.string().optional(),
+  notes: z.string().optional(),
 });
 
-type CompanyFormValues = z.infer<typeof companySchema>;
+type CompanyFormValues = z.infer<typeof companyFormSchema>;
 
 const AddCompany = () => {
   const [, navigate] = useLocation();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedTab, setSelectedTab] = useState("general");
 
+  // Initialize form with default values
   const form = useForm<CompanyFormValues>({
-    resolver: zodResolver(companySchema),
+    resolver: zodResolver(companyFormSchema),
     defaultValues: {
       legalName: "",
       companyName: "",
@@ -56,186 +73,272 @@ const AddCompany = () => {
       ein: "",
       email: "",
       phone: "",
-      address: "",
+      streetAddress: "",
+      unit: "",
       city: "",
       state: "",
       zipcode: "",
       country: "United States",
+      businessLicense: "",
+      notes: "",
     },
   });
 
-  const onSubmit = async (data: CompanyFormValues) => {
-    setIsSubmitting(true);
-    
-    try {
-      // In a real app, this would be an API call
-      console.log("Submitting company data:", data);
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+  // Mutation for creating a company
+  const { mutate: createCompany, isPending } = useMutation({
+    mutationFn: async (data: CompanyFormValues) => {
+      return await apiRequest("POST", "/api/companies", data);
+    },
+    onSuccess: (data) => {
       toast({
         title: "Company created",
-        description: `${data.companyName} has been successfully created.`,
+        description: "The company has been successfully created",
       });
-      
-      navigate("/companies");
-    } catch (error) {
+      navigate(`/view-company/${data.id}`);
+    },
+    onError: (error) => {
       console.error("Error creating company:", error);
       toast({
         title: "Error",
-        description: "There was a problem creating the company. Please try again.",
+        description: "Failed to create company. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      setIsSubmitting(false);
-    }
+    },
+  });
+
+  // Company types options
+  const companyTypes = [
+    "LLC",
+    "S-Corp",
+    "C-Corp",
+    "Partnership",
+    "Sole Proprietorship",
+    "Non-Profit",
+    "Other",
+  ];
+
+  // States and countries for form selection
+  const usStates = [
+    "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
+    "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
+    "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
+    "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
+    "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY",
+    "DC"
+  ];
+
+  const countries = [
+    "United States",
+    "Canada",
+    "United Kingdom",
+    "Australia",
+    "Germany",
+    "France",
+    "Spain",
+    "Italy",
+    "Japan",
+    "China",
+    "India",
+    "Brazil",
+    "Mexico",
+    "Other",
+  ];
+
+  const onSubmit = (data: CompanyFormValues) => {
+    createCompany(data);
   };
 
   return (
     <div className="p-6">
-      <div className="flex items-center mb-6">
-        <Button variant="ghost" onClick={() => navigate("/companies")} className="mr-4">
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
-        </Button>
+      <div className="mb-6">
         <h1 className="text-3xl font-bold">Add Company</h1>
+        <p className="text-muted-foreground">
+          Create a new company in the property management system
+        </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Building2 className="h-5 w-5" />
-            Company Information
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Basic Information */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="legalName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Legal Name *</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Legal entity name" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        The official registered name of the company
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <Tabs
+            defaultValue="general"
+            value={selectedTab}
+            onValueChange={setSelectedTab}
+            className="w-full"
+          >
+            <TabsList className="mb-4">
+              <TabsTrigger value="general">General Information</TabsTrigger>
+              <TabsTrigger value="address">Address</TabsTrigger>
+              <TabsTrigger value="additional">Additional Details</TabsTrigger>
+            </TabsList>
 
-                <FormField
-                  control={form.control}
-                  name="companyName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Company Name (DBA) *</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Doing Business As name" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        The name used for business operations
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+            {/* General Information Tab */}
+            <TabsContent value="general">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Company Information</CardTitle>
+                  <CardDescription>
+                    Enter the basic information about the company
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="legalName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Legal Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="XYZ Properties LLC" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            The official legal name of the company
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-              {/* Company Type & EIN */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Company Type *</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select company type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="LLC">LLC</SelectItem>
-                          <SelectItem value="S-Corp">S-Corporation</SelectItem>
-                          <SelectItem value="C-Corp">C-Corporation</SelectItem>
-                          <SelectItem value="Partnership">Partnership</SelectItem>
-                          <SelectItem value="Sole Proprietorship">
-                            Sole Proprietorship
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormDescription>Legal business structure</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    <FormField
+                      control={form.control}
+                      name="companyName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Company Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="XYZ Properties" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            The name used for branding and display
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-                <FormField
-                  control={form.control}
-                  name="ein"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>EIN (Tax ID)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="XX-XXXXXXX" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Employer Identification Number
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Company Type</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select company type" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {companyTypes.map((type) => (
+                                <SelectItem key={type} value={type}>
+                                  {type}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormDescription>
+                            The legal structure of the company
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-              {/* Contact Information */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input type="email" placeholder="company@example.com" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    <FormField
+                      control={form.control}
+                      name="ein"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>EIN / Tax ID</FormLabel>
+                          <FormControl>
+                            <Input placeholder="XX-XXXXXXX" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            Employer Identification Number or Tax ID
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-                <FormField
-                  control={form.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phone</FormLabel>
-                      <FormControl>
-                        <Input placeholder="(555) 123-4567" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="email"
+                              placeholder="contact@company.com"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Primary contact email for the company
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-              {/* Address Information */}
-              <div>
-                <h3 className="text-lg font-medium mb-4">Address Information</h3>
-                
-                <div className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Phone</FormLabel>
+                          <FormControl>
+                            <Input placeholder="(555) 123-4567" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            Primary contact phone for the company
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => navigate("/companies")}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => setSelectedTab("address")}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Address Tab */}
+            <TabsContent value="address">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Company Address</CardTitle>
+                  <CardDescription>
+                    Enter the physical address of the company
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
                   <FormField
                     control={form.control}
-                    name="address"
+                    name="streetAddress"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Street Address</FormLabel>
@@ -247,7 +350,21 @@ const AddCompany = () => {
                     )}
                   />
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="unit"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Unit / Suite / Apt (Optional)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Suite 100" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
                       control={form.control}
                       name="city"
@@ -255,7 +372,7 @@ const AddCompany = () => {
                         <FormItem>
                           <FormLabel>City</FormLabel>
                           <FormControl>
-                            <Input placeholder="Anytown" {...field} />
+                            <Input placeholder="New York" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -267,25 +384,39 @@ const AddCompany = () => {
                       name="state"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>State</FormLabel>
-                          <FormControl>
-                            <Input placeholder="CA" {...field} />
-                          </FormControl>
+                          <FormLabel>State / Province</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select state" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {usStates.map((state) => (
+                                <SelectItem key={state} value={state}>
+                                  {state}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
                       control={form.control}
                       name="zipcode"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Zip Code</FormLabel>
+                          <FormLabel>Zip / Postal Code</FormLabel>
                           <FormControl>
-                            <Input placeholder="12345" {...field} />
+                            <Input placeholder="10001" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -308,11 +439,11 @@ const AddCompany = () => {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="United States">United States</SelectItem>
-                              <SelectItem value="Canada">Canada</SelectItem>
-                              <SelectItem value="United Kingdom">United Kingdom</SelectItem>
-                              <SelectItem value="Australia">Australia</SelectItem>
-                              <SelectItem value="Other">Other</SelectItem>
+                              {countries.map((country) => (
+                                <SelectItem key={country} value={country}>
+                                  {country}
+                                </SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -320,25 +451,96 @@ const AddCompany = () => {
                       )}
                     />
                   </div>
-                </div>
-              </div>
 
-              <div className="flex justify-end space-x-4 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => navigate("/companies")}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? "Creating..." : "Create Company"}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setSelectedTab("general")}
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => setSelectedTab("additional")}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Additional Details Tab */}
+            <TabsContent value="additional">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Additional Details</CardTitle>
+                  <CardDescription>
+                    Optional information about the company
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="businessLicense"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Business License (Optional)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="License number" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          Business license or registration number
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="notes"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Notes</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Additional information about this company"
+                            className="min-h-[100px]"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <CardFooter className="flex justify-end gap-2 px-0">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setSelectedTab("address")}
+                    >
+                      Back
+                    </Button>
+                    <Button type="submit" disabled={isPending}>
+                      {isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Creating...
+                        </>
+                      ) : (
+                        "Create Company"
+                      )}
+                    </Button>
+                  </CardFooter>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </form>
+      </Form>
     </div>
   );
 };

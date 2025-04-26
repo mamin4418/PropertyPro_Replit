@@ -1,4 +1,4 @@
-import { users, type User, type InsertUser, type Contact, type InsertContact, type Address, type InsertAddress, type ContactAddress } from "@shared/schema";
+import { users, type User, type InsertUser, type Contact, type InsertContact, type Address, type InsertAddress, type ContactAddress, type Appliance, type InsertAppliance } from "@shared/schema";
 
 // modify the interface with any CRUD methods
 // you might need
@@ -55,10 +55,12 @@ export class MemStorage implements IStorage {
     this.contacts = new Map();
     this.addresses = new Map();
     this.contactAddresses = new Map();
+    this.appliances = new Map();
     this.userIdCounter = 1;
     this.contactIdCounter = 1;
     this.addressIdCounter = 1;
     this.contactAddressIdCounter = 1;
+    this.applianceIdCounter = 1;
   }
 
   // User methods
@@ -264,6 +266,67 @@ export class MemStorage implements IStorage {
   async removeAddressFromContact(contactId: number, addressId: number): Promise<boolean> {
     const key = `${contactId}-${addressId}`;
     return this.contactAddresses.delete(key);
+  }
+  
+  // Appliance methods
+  async getAppliance(id: number): Promise<Appliance | undefined> {
+    return this.appliances.get(id);
+  }
+  
+  async getAppliances(): Promise<Appliance[]> {
+    return Array.from(this.appliances.values());
+  }
+  
+  async getAppliancesByUnit(unitId: number): Promise<Appliance[]> {
+    return Array.from(this.appliances.values()).filter(
+      (appliance) => appliance.unitId === unitId
+    );
+  }
+  
+  async createAppliance(insertAppliance: InsertAppliance): Promise<Appliance> {
+    const id = this.applianceIdCounter++;
+    const now = new Date();
+    
+    const appliance: Appliance = {
+      id,
+      unitId: insertAppliance.unitId,
+      type: insertAppliance.type,
+      make: insertAppliance.make || null,
+      model: insertAppliance.model || null,
+      serialNumber: insertAppliance.serialNumber || null,
+      purchaseDate: insertAppliance.purchaseDate || null,
+      installDate: insertAppliance.installDate || null,
+      lastServiceDate: insertAppliance.lastServiceDate || null,
+      warranty: insertAppliance.warranty || null,
+      notes: insertAppliance.notes || null,
+      images: insertAppliance.images || [],
+      status: insertAppliance.status || 'active',
+      createdAt: now,
+      updatedAt: now
+    };
+    
+    this.appliances.set(id, appliance);
+    return appliance;
+  }
+  
+  async updateAppliance(id: number, updateData: Partial<InsertAppliance>): Promise<Appliance | undefined> {
+    const appliance = this.appliances.get(id);
+    if (!appliance) {
+      return undefined;
+    }
+    
+    const updatedAppliance: Appliance = {
+      ...appliance,
+      ...updateData,
+      updatedAt: new Date()
+    };
+    
+    this.appliances.set(id, updatedAppliance);
+    return updatedAppliance;
+  }
+  
+  async deleteAppliance(id: number): Promise<boolean> {
+    return this.appliances.delete(id);
   }
 }
 

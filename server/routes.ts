@@ -696,6 +696,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Appliance endpoints
+  app.get('/api/appliances', async (req: Request, res: Response) => {
+    try {
+      const appliances = await storage.getAppliances();
+      res.status(200).json(appliances);
+    } catch (error) {
+      console.error('Error getting appliances:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+  
+  app.get('/api/appliances/:id', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const appliance = await storage.getAppliance(id);
+      
+      if (!appliance) {
+        return res.status(404).json({ error: "Appliance not found" });
+      }
+      
+      res.status(200).json(appliance);
+    } catch (error) {
+      console.error('Error getting appliance:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+  
+  app.get('/api/units/:unitId/appliances', async (req: Request, res: Response) => {
+    try {
+      const unitId = parseInt(req.params.unitId);
+      const appliances = await storage.getAppliancesByUnit(unitId);
+      res.status(200).json(appliances);
+    } catch (error) {
+      console.error('Error getting unit appliances:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+  
+  app.post('/api/appliances', async (req: Request, res: Response) => {
+    try {
+      const applianceData = insertApplianceSchema.parse(req.body);
+      const appliance = await storage.createAppliance(applianceData);
+      res.status(201).json(appliance);
+    } catch (error) {
+      console.error('Error creating appliance:', error);
+      res.status(400).json({ error: 'Invalid appliance data' });
+    }
+  });
+  
+  app.put('/api/appliances/:id', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const applianceData = insertApplianceSchema.partial().parse(req.body);
+      
+      const updatedAppliance = await storage.updateAppliance(id, applianceData);
+      
+      if (!updatedAppliance) {
+        return res.status(404).json({ error: "Appliance not found" });
+      }
+      
+      res.status(200).json(updatedAppliance);
+    } catch (error) {
+      console.error('Error updating appliance:', error);
+      res.status(400).json({ error: 'Invalid appliance data' });
+    }
+  });
+  
+  app.delete('/api/appliances/:id', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const success = await storage.deleteAppliance(id);
+      
+      if (!success) {
+        return res.status(404).json({ error: "Appliance not found" });
+      }
+      
+      res.status(204).send();
+    } catch (error) {
+      console.error('Error deleting appliance:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

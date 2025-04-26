@@ -11,7 +11,7 @@ const Companies = () => {
   const [, navigate] = useLocation();
   const [search, setSearch] = useState("");
 
-  const { data: companies, isLoading } = useQuery({
+  const { data: companies, isLoading, error } = useQuery({
     queryKey: ['/api/companies'],
     queryFn: async () => {
       const response = await fetch('/api/companies');
@@ -23,7 +23,7 @@ const Companies = () => {
   const filteredCompanies = companies?.filter(company => 
     company.companyName.toLowerCase().includes(search.toLowerCase()) ||
     company.legalName.toLowerCase().includes(search.toLowerCase())
-  );
+  ) || [];
 
   return (
     <div className="p-6">
@@ -45,30 +45,80 @@ const Companies = () => {
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCompanies?.map((company) => (
-          <Card 
-            key={company.id}
-            className="cursor-pointer hover:bg-accent/50 transition-colors"
-            onClick={() => navigate(`/view-company/${company.id}`)}
-          >
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Building2 className="h-5 w-5" />
-                {company.companyName}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2 text-sm">
-                <p className="text-muted-foreground">Legal Name: {company.legalName}</p>
-                {company.email && <p className="text-muted-foreground">Email: {company.email}</p>}
-                {company.phone && <p className="text-muted-foreground">Phone: {company.phone}</p>}
-                <p className="text-muted-foreground">Type: {company.type}</p>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="opacity-70">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Building2 className="h-5 w-5" />
+                  Loading...
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2 text-sm">
+                  <p className="text-muted-foreground">Loading company details...</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : error ? (
+        <Card className="p-6 text-center">
+          <CardContent>
+            <h3 className="text-xl font-semibold text-destructive">Error Loading Companies</h3>
+            <p className="text-muted-foreground mt-2">Unable to fetch company data</p>
+            <Button 
+              variant="outline" 
+              className="mt-4" 
+              onClick={() => window.location.reload()}
+            >
+              Try Again
+            </Button>
+          </CardContent>
+        </Card>
+      ) : filteredCompanies.length === 0 ? (
+        <Card className="p-6 text-center">
+          <CardContent>
+            <h3 className="text-xl font-semibold">No Companies Found</h3>
+            <p className="text-muted-foreground mt-2">
+              {search ? "No companies match your search criteria" : "Add your first company to get started"}
+            </p>
+            <Button 
+              className="mt-4" 
+              onClick={() => navigate("/add-company")}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Company
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredCompanies.map((company) => (
+            <Card 
+              key={company.id}
+              className="cursor-pointer hover:bg-accent/50 transition-colors"
+              onClick={() => navigate(`/view-company/${company.id}`)}
+            >
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Building2 className="h-5 w-5" />
+                  {company.companyName}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2 text-sm">
+                  <p className="text-muted-foreground">Legal Name: {company.legalName}</p>
+                  {company.email && <p className="text-muted-foreground">Email: {company.email}</p>}
+                  {company.phone && <p className="text-muted-foreground">Phone: {company.phone}</p>}
+                  <p className="text-muted-foreground">Type: {company.type}</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

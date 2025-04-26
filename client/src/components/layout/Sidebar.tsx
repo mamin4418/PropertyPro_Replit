@@ -198,15 +198,33 @@ const Sidebar = () => {
         </div>
         
         {/* Companies */}
-<button
-  onClick={() => navigate("/companies")}
-  className={`w-full flex items-center p-3 rounded-md transition-colors ${
-    currentPage === "companies" ? "bg-primary/10 text-primary" : "hover:bg-secondary"
-  }`}
->
-  <Building2 className="w-5 h-5" />
-  <span className="ml-3">Companies</span>
-</button>
+        <div className="space-y-2">
+          <button
+            onClick={() => toggleSection("companies")}
+            className="w-full flex items-center justify-between p-3 rounded-md transition-colors hover:bg-secondary"
+          >
+            <div className="flex items-center">
+              <Building2 className="w-5 h-5" />
+              <span className="ml-3">Companies</span>
+            </div>
+            <ChevronRight
+              className={`w-4 h-4 transition-transform ${
+                openSections.companies ? "rotate-90" : ""
+              }`}
+            />
+          </button>
+          
+          {openSections.companies && (
+            <div className="pl-10 space-y-1">
+              <SubNavLink href="/companies" isActive={currentPage === "companies"}>
+                All Companies
+              </SubNavLink>
+              <SubNavLink href="/add-company" isActive={currentPage === "add-company"}>
+                Add Company
+              </SubNavLink>
+            </div>
+          )}
+        </div>
 
 {/* Contacts - Centralized contact management */}
         <div className="space-y-1">

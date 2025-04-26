@@ -1,4 +1,4 @@
-import { users, type User, type InsertUser, type Contact, type InsertContact, type Address, type InsertAddress } from "@shared/schema";
+import { users, type User, type InsertUser, type Contact, type InsertContact, type Address, type InsertAddress, type ContactAddress } from "@shared/schema";
 
 // modify the interface with any CRUD methods
 // you might need
@@ -181,7 +181,8 @@ export class MemStorage implements IStorage {
   
   async deleteAddress(id: number): Promise<boolean> {
     // First, remove any contact-address relationships
-    for (const [key, contactAddress] of this.contactAddresses.entries()) {
+    const entries = Array.from(this.contactAddresses.entries());
+    for (const [key, contactAddress] of entries) {
       if (contactAddress.addressId === id) {
         this.contactAddresses.delete(key);
       }
@@ -223,7 +224,8 @@ export class MemStorage implements IStorage {
     
     // If this is the primary address, make all other addresses for this contact non-primary
     if (isPrimary) {
-      for (const [existingKey, existingRel] of this.contactAddresses.entries()) {
+      const entries = Array.from(this.contactAddresses.entries());
+      for (const [existingKey, existingRel] of entries) {
         if (existingRel.contactId === contactId && existingRel.isPrimary) {
           const updated = { ...existingRel, isPrimary: false, updatedAt: now };
           this.contactAddresses.set(existingKey, updated);

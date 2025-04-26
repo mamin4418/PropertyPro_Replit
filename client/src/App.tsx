@@ -38,6 +38,7 @@ import AddContact from "./pages/AddContact";
 import ViewContact from "./pages/ViewContact";
 import EditContact from "./pages/EditContact";
 import Leads from "./pages/Leads";
+import AddLead from "./pages/AddLead";
 import Applications from "./pages/Applications";
 import ApplicationTemplates from "./pages/ApplicationTemplates";
 import CreateApplicationTemplate from "./pages/CreateApplicationTemplate";
@@ -170,7 +171,7 @@ function App() {
                   
                   {/* Tenant Acquisition Process Routes */}
                   <Route path="/leads" component={Leads} />
-                  <Route path="/add-lead" component={AddContact} /> {/* Reusing AddContact with lead type */}
+                  <Route path="/add-lead" component={AddLead} />
                   <Route path="/view-lead/:id" component={ViewContact} /> {/* Reusing ViewContact */}
                   <Route path="/edit-lead/:id" component={EditContact} /> {/* Reusing EditContact */}
                   <Route path="/applications" component={Applications} />

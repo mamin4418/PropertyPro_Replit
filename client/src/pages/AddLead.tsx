@@ -80,10 +80,11 @@ const AddLead = () => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (data: LeadFormValues) => {
-      const response = await apiRequest("/api/leads", {
-        method: "POST",
-        data,
-      });
+      const response = await apiRequest(
+        "POST",
+        "/api/leads",
+        data
+      );
       return response;
     },
     onSuccess: () => {

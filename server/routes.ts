@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertContactSchema } from "@shared/schema";
+import { insertContactSchema, insertAddressSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Contacts API endpoints
@@ -160,6 +160,121 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(201).json(template);
     } catch (error) {
       res.status(400).json({ error: 'Invalid template data' });
+    }
+  });
+
+  // Address routes
+  app.get('/api/addresses', async (req: Request, res: Response) => {
+    try {
+      const addresses = await storage.getAddresses();
+      res.json(addresses);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to retrieve addresses' });
+    }
+  });
+  
+  app.get('/api/addresses/:id', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const address = await storage.getAddress(id);
+      if (!address) {
+        return res.status(404).json({ error: 'Address not found' });
+      }
+      res.json(address);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to retrieve address' });
+    }
+  });
+  
+  app.post('/api/addresses', async (req: Request, res: Response) => {
+    try {
+      const validatedData = insertAddressSchema.parse(req.body);
+      const address = await storage.createAddress(validatedData);
+      res.status(201).json(address);
+    } catch (error) {
+      res.status(400).json({ error: 'Invalid address data' });
+    }
+  });
+  
+  app.put('/api/addresses/:id', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const validatedData = insertAddressSchema.partial().parse(req.body);
+      const address = await storage.updateAddress(id, validatedData);
+      if (!address) {
+        return res.status(404).json({ error: 'Address not found' });
+      }
+      res.json(address);
+    } catch (error) {
+      res.status(400).json({ error: 'Invalid address data' });
+    }
+  });
+  
+  app.delete('/api/addresses/:id', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const success = await storage.deleteAddress(id);
+      if (!success) {
+        return res.status(404).json({ error: 'Address not found' });
+      }
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to delete address' });
+    }
+  });
+  
+  // Contact-Address routes
+  app.get('/api/contacts/:contactId/addresses', async (req: Request, res: Response) => {
+    try {
+      const contactId = parseInt(req.params.contactId);
+      const contactAddresses = await storage.getContactAddresses(contactId);
+      res.json(contactAddresses);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to retrieve contact addresses' });
+    }
+  });
+  
+  app.post('/api/contacts/:contactId/addresses', async (req: Request, res: Response) => {
+    try {
+      const contactId = parseInt(req.params.contactId);
+      // Create a new address and link it to the contact
+      const validatedAddress = insertAddressSchema.parse(req.body.address);
+      const isPrimary = req.body.isPrimary === true;
+      
+      const address = await storage.createAddress(validatedAddress);
+      const contactAddress = await storage.addAddressToContact(contactId, address.id, isPrimary);
+      
+      res.status(201).json({ ...contactAddress, address });
+    } catch (error) {
+      res.status(400).json({ error: 'Invalid data' });
+    }
+  });
+  
+  app.post('/api/contacts/:contactId/addresses/:addressId', async (req: Request, res: Response) => {
+    try {
+      const contactId = parseInt(req.params.contactId);
+      const addressId = parseInt(req.params.addressId);
+      const isPrimary = req.body.isPrimary === true;
+      
+      const contactAddress = await storage.addAddressToContact(contactId, addressId, isPrimary);
+      res.status(201).json(contactAddress);
+    } catch (error) {
+      res.status(400).json({ error: 'Failed to link address to contact' });
+    }
+  });
+  
+  app.delete('/api/contacts/:contactId/addresses/:addressId', async (req: Request, res: Response) => {
+    try {
+      const contactId = parseInt(req.params.contactId);
+      const addressId = parseInt(req.params.addressId);
+      
+      const success = await storage.removeAddressFromContact(contactId, addressId);
+      if (!success) {
+        return res.status(404).json({ error: 'Address link not found' });
+      }
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to remove address from contact' });
     }
   });
 

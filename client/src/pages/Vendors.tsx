@@ -123,8 +123,8 @@ const Vendors = () => {
       vendor.contactPerson.toLowerCase().includes(searchTerm.toLowerCase()) ||
       vendor.email.toLowerCase().includes(searchTerm.toLowerCase());
       
-    const matchesCategory = categoryFilter ? vendor.category === categoryFilter : true;
-    const matchesStatus = statusFilter ? vendor.status === statusFilter : true;
+    const matchesCategory = categoryFilter === "all" || !categoryFilter ? true : vendor.category === categoryFilter;
+    const matchesStatus = statusFilter === "all" || !statusFilter ? true : vendor.status === statusFilter;
     
     return matchesSearch && matchesCategory && matchesStatus;
   });
@@ -176,7 +176,7 @@ const Vendors = () => {
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Categories</SelectItem>
+                  <SelectItem value="all">All Categories</SelectItem>
                   <SelectItem value="Plumbing">Plumbing</SelectItem>
                   <SelectItem value="Electrical">Electrical</SelectItem>
                   <SelectItem value="Landscaping">Landscaping</SelectItem>
@@ -191,7 +191,7 @@ const Vendors = () => {
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Statuses</SelectItem>
+                  <SelectItem value="all">All Statuses</SelectItem>
                   <SelectItem value="active">Active</SelectItem>
                   <SelectItem value="inactive">Inactive</SelectItem>
                 </SelectContent>

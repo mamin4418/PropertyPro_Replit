@@ -237,6 +237,12 @@ export default function AuthPage() {
               </Card>
             </TabsContent>
           </Tabs>
+          
+          <div className="mt-4 text-center">
+            <Button variant="link" onClick={() => window.location.href = "/tenant-auth"}>
+              Tenant? Login here
+            </Button>
+          </div>
         </div>
       </div>
 

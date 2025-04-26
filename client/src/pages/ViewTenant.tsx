@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  AlertTriangle,
   ArrowLeft,
   Building,
   Calendar,
@@ -26,8 +27,20 @@ import {
   Edit,
   FilePlus2,
   DollarSign,
-  ClipboardList
+  ClipboardList,
+  RefreshCw,
+  X
 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 
 
@@ -124,7 +137,92 @@ const CommunicationHistory = ({ communications }) => {
 const ViewTenant = () => {
   const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState("details");
+  const [isTerminateDialogOpen, setIsTerminateDialogOpen] = useState(false);
   const { toast } = useToast();
+
+  const handleRenewLease = async () => {
+    try {
+      const response = await fetch(`/api/leases/${tenant.id}/renew`, {
+        method: 'POST',
+      });
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: "Lease renewal initiated successfully",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to initiate lease renewal",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDownloadLease = async () => {
+    try {
+      const response = await fetch(`/api/leases/${tenant.id}/download`);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `lease-${tenant.id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to download lease document",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAddNote = async (note: string) => {
+    try {
+      const response = await fetch(`/api/leases/${tenant.id}/notes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ note }),
+      });
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: "Note added successfully",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add note",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleTerminateLease = async () => {
+    try {
+      const response = await fetch(`/api/leases/${tenant.id}/terminate`, {
+        method: 'POST',
+      });
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: "Lease terminated successfully",
+        });
+        setIsTerminateDialogOpen(false);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to terminate lease",
+        variant: "destructive",
+      });
+    }
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -230,6 +328,7 @@ const ViewTenant = () => {
           <TabsTrigger value="documents">Documents</TabsTrigger>
           <TabsTrigger value="payments">Payments</TabsTrigger>
           <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
+          <TabsTrigger value="lease">Lease</TabsTrigger>
           <TabsTrigger value="communications">Communications</TabsTrigger>
         </TabsList>
 
@@ -556,6 +655,82 @@ const ViewTenant = () => {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        <TabsContent value="lease" className="space-y-4">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="flex justify-between items-center">
+                <span>Lease Management</span>
+                <div className="flex gap-2">
+                  <Button onClick={handleRenewLease}>
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                    Renew Lease
+                  </Button>
+                  <Button variant="outline" onClick={handleDownloadLease}>
+                    <Download className="mr-2 h-4 w-4" />
+                    Download PDF
+                  </Button>
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-sm text-muted-foreground">Start Date</div>
+                    <div className="font-medium">{formatDate(tenant.moveinDate)}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground">End Date</div>
+                    <div className="font-medium">{formatDate(tenant.leaseEnd)}</div>
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="font-medium">Actions</div>
+                  </div>
+                  <div className="space-y-2">
+                    <Button variant="outline" className="w-full justify-start" onClick={() => navigate(`/damage-report/${tenant.id}`)}>
+                      <AlertTriangle className="mr-2 h-4 w-4" />
+                      Create Damage Report
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start" onClick={() => {
+                      const note = prompt("Enter note:");
+                      if (note) handleAddNote(note);
+                    }}>
+                      <FileText className="mr-2 h-4 w-4" />
+                      Add Note
+                    </Button>
+                    <Button variant="destructive" className="w-full justify-start" onClick={() => setIsTerminateDialogOpen(true)}>
+                      <X className="mr-2 h-4 w-4" />
+                      Terminate Lease
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <AlertDialog open={isTerminateDialogOpen} onOpenChange={setIsTerminateDialogOpen}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Terminate Lease</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to terminate this lease? This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleTerminateLease}>
+                  Confirm Termination
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </TabsContent>
       </Tabs>
     </div>

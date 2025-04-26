@@ -107,6 +107,29 @@ export const propertyAmenities = pgTable("property_amenities", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Contacts Table (centralized for Tenants, Vendors, Owners, etc.)
+export const contacts = pgTable("contacts", {
+  id: serial("id").primaryKey(),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  email: text("email"),
+  phone: text("phone"),
+  alternatePhone: text("alternate_phone"),
+  address: text("address"),
+  city: text("city"),
+  state: text("state"),
+  zipcode: text("zipcode"),
+  country: text("country"),
+  companyName: text("company_name"),
+  title: text("title"),
+  website: text("website"),
+  notes: text("notes"),
+  contactType: text("contact_type").notNull(), // tenant, vendor, owner, employee, other
+  status: text("status").notNull().default("active"), // active, inactive, archived
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Define insert schemas
 export const insertPropertySchema = createInsertSchema(properties).omit({
   id: true,
@@ -150,6 +173,12 @@ export const insertPropertyAmenitySchema = createInsertSchema(propertyAmenities)
   updatedAt: true,
 });
 
+export const insertContactSchema = createInsertSchema(contacts).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Define types
 export type Property = typeof properties.$inferSelect;
 export type InsertProperty = z.infer<typeof insertPropertySchema>;
@@ -171,6 +200,9 @@ export type InsertMaintenanceRequest = z.infer<typeof insertMaintenanceRequestSc
 
 export type PropertyAmenity = typeof propertyAmenities.$inferSelect;
 export type InsertPropertyAmenity = z.infer<typeof insertPropertyAmenitySchema>;
+
+export type Contact = typeof contacts.$inferSelect;
+export type InsertContact = z.infer<typeof insertContactSchema>;
 
 // Also export the users table from the original schema
 export const users = pgTable("users", {

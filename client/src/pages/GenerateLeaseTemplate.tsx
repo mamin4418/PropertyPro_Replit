@@ -6,7 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, FileText, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, FileText, Plus, Trash2, Upload } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import mammoth from "mammoth";
+import * as pdfjs from "pdfjs-dist";
+import JSZip from "jszip";
 
 interface TemplateSection {
   id: string;
@@ -16,14 +20,102 @@ interface TemplateSection {
 
 const GenerateLeaseTemplate = () => {
   const [, navigate] = useLocation();
+  const { toast } = useToast();
   const [templateName, setTemplateName] = useState("");
-  const [sections, setSections] = useState<TemplateSection[]>([
-    {
-      id: "1",
-      title: "Rent Details",
-      content: "The monthly rent is {{RENT_AMOUNT}} payable by {{DUE_DATE}} of each month."
+  const [sections, setSections] = useState<TemplateSection[]>([]);
+  const [processing, setProcessing] = useState(false);
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setProcessing(true);
+    try {
+      let text = "";
+      
+      // Handle different file types
+      if (file.name.toLowerCase().endsWith(".docx")) {
+        const arrayBuffer = await file.arrayBuffer();
+        const result = await mammoth.extractRawText({ arrayBuffer });
+        text = result.value;
+      } 
+      else if (file.name.toLowerCase().endsWith(".pdf")) {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
+        let fullText = "";
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const content = await page.getTextContent();
+          const pageText = content.items.map((item: any) => item.str).join(" ");
+          fullText += pageText + "\n";
+        }
+        text = fullText;
+      }
+      else {
+        throw new Error("Unsupported file format");
+      }
+
+      // Split text into sections based on common lease section headers
+      const sectionHeaders = [
+        "PARTIES",
+        "TERM",
+        "RENT",
+        "SECURITY DEPOSIT",
+        "UTILITIES",
+        "MAINTENANCE",
+        "PETS",
+        "ALTERATIONS",
+        "ACCESS",
+        "TERMINATION"
+      ];
+
+      let currentSection = { title: "General", content: "" };
+      const parsedSections: TemplateSection[] = [];
+      
+      const lines = text.split("\n");
+      lines.forEach(line => {
+        const upperLine = line.trim().toUpperCase();
+        const matchedHeader = sectionHeaders.find(header => upperLine.includes(header));
+        
+        if (matchedHeader) {
+          if (currentSection.content.trim()) {
+            parsedSections.push({
+              id: Date.now().toString() + parsedSections.length,
+              title: currentSection.title,
+              content: currentSection.content.trim()
+            });
+          }
+          currentSection = { title: matchedHeader, content: line + "\n" };
+        } else {
+          currentSection.content += line + "\n";
+        }
+      });
+
+      // Add the last section
+      if (currentSection.content.trim()) {
+        parsedSections.push({
+          id: Date.now().toString() + parsedSections.length,
+          title: currentSection.title,
+          content: currentSection.content.trim()
+        });
+      }
+
+      setSections(parsedSections);
+      toast({
+        title: "Document processed successfully",
+        description: `Created ${parsedSections.length} sections from the document.`
+      });
+    } catch (error) {
+      console.error("Error processing file:", error);
+      toast({
+        title: "Error processing document",
+        description: "Failed to process the uploaded document. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setProcessing(false);
     }
-  ]);
+  };
 
   const addSection = () => {
     setSections([
@@ -47,8 +139,24 @@ const GenerateLeaseTemplate = () => {
   };
 
   const handleSave = () => {
-    // TODO: Implement save functionality
-    console.log("Template saved:", { name: templateName, sections });
+    if (!templateName.trim()) {
+      toast({
+        title: "Template name required",
+        description: "Please enter a name for your template",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Save template to localStorage
+    const templates = JSON.parse(localStorage.getItem('leaseTemplates') || '{}');
+    templates[templateName] = sections;
+    localStorage.setItem('leaseTemplates', JSON.stringify(templates));
+
+    toast({
+      title: "Template saved",
+      description: "Your lease template has been saved successfully"
+    });
     navigate("/leases");
   };
 
@@ -77,6 +185,22 @@ const GenerateLeaseTemplate = () => {
                 placeholder="Enter template name"
                 className="mt-1"
               />
+            </div>
+            <div>
+              <Label htmlFor="fileUpload">Upload Existing Lease</Label>
+              <div className="mt-1">
+                <Input
+                  id="fileUpload"
+                  type="file"
+                  accept=".docx,.pdf"
+                  onChange={handleFileUpload}
+                  disabled={processing}
+                  className="mt-1"
+                />
+                <p className="text-sm text-muted-foreground mt-1">
+                  Supported formats: DOCX, PDF
+                </p>
+              </div>
             </div>
           </div>
         </CardContent>

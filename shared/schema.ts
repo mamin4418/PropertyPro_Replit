@@ -305,6 +305,24 @@ export const screeningCriteria = pgTable("screening_criteria", {
 });
 
 // Application Documents - Track documents submitted with applications
+export const appliances = pgTable("appliances", {
+  id: serial("id").primaryKey(),
+  unitId: integer("unit_id").notNull().references(() => units.id),
+  type: text("type").notNull(), // Gas Water Boiler, Refrigerator, etc.
+  make: text("make"),
+  model: text("model"),
+  serialNumber: text("serial_number"),
+  purchaseDate: date("purchase_date"),
+  installDate: date("install_date"),
+  lastServiceDate: date("last_service_date"),
+  warranty: text("warranty"),
+  notes: text("notes"),
+  images: text("images").array(),
+  status: text("status").default("active"), // active, repair-needed, inactive
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const applicationDocuments = pgTable("application_documents", {
   id: serial("id").primaryKey(),
   applicationId: integer("application_id").notNull().references(() => rentalApplications.id),
@@ -424,6 +442,12 @@ export const insertScreeningCriteriaSchema = createInsertSchema(screeningCriteri
   updatedAt: true,
 });
 
+export const insertApplianceSchema = createInsertSchema(appliances).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const insertApplicationDocumentSchema = createInsertSchema(applicationDocuments).omit({
   id: true,
   createdAt: true,
@@ -484,6 +508,9 @@ export type InsertScreeningCriteria = z.infer<typeof insertScreeningCriteriaSche
 
 export type ApplicationDocument = typeof applicationDocuments.$inferSelect;
 export type InsertApplicationDocument = z.infer<typeof insertApplicationDocumentSchema>;
+
+export type Appliance = typeof appliances.$inferSelect;
+export type InsertAppliance = z.infer<typeof insertApplianceSchema>;
 
 // Also export the users table from the original schema
 export const users = pgTable("users", {

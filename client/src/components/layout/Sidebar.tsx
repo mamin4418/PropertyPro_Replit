@@ -179,6 +179,15 @@ const Sidebar = () => {
               <SubNavLink href="/create-vacancy" isActive={currentPage === "create-vacancy"}>
                 Create Listing
               </SubNavLink>
+              <SubNavLink href="/leads" isActive={currentPage === "leads"}>
+                Leads
+              </SubNavLink>
+              <SubNavLink href="/applications" isActive={currentPage === "applications"}>
+                Applications
+              </SubNavLink>
+              <SubNavLink href="/application-templates" isActive={currentPage === "application-templates"}>
+                Application Templates
+              </SubNavLink>
             </div>
           )}
         </div>
@@ -214,12 +223,6 @@ const Sidebar = () => {
               </SubNavLink>
               <SubNavLink href="/vendors" isActive={currentPage === "vendors"}>
                 All Vendors
-              </SubNavLink>
-              <SubNavLink href="/leads" isActive={currentPage === "leads"}>
-                Leads
-              </SubNavLink>
-              <SubNavLink href="/applications" isActive={currentPage === "applications"}>
-                Applications
               </SubNavLink>
               <SubNavLink href="/add-contact" isActive={currentPage === "add-contact"}>
                 Add Contact

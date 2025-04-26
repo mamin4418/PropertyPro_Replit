@@ -28,6 +28,14 @@ export interface IStorage {
   createContact(contact: InsertContact): Promise<Contact>;
   updateContact(id: number, contact: Partial<InsertContact>): Promise<Contact | undefined>;
   deleteContact(id: number): Promise<boolean>;
+  
+  // Appliance methods
+  getAppliance(id: number): Promise<Appliance | undefined>;
+  getAppliances(): Promise<Appliance[]>;
+  getAppliancesByUnit(unitId: number): Promise<Appliance[]>;
+  createAppliance(appliance: InsertAppliance): Promise<Appliance>;
+  updateAppliance(id: number, appliance: Partial<InsertAppliance>): Promise<Appliance | undefined>;
+  deleteAppliance(id: number): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -35,10 +43,12 @@ export class MemStorage implements IStorage {
   private contacts: Map<number, Contact>;
   private addresses: Map<number, Address>;
   private contactAddresses: Map<string, ContactAddress>; // key is contactId-addressId
+  private appliances: Map<number, Appliance>;
   private userIdCounter: number;
   private contactIdCounter: number;
   private addressIdCounter: number;
   private contactAddressIdCounter: number;
+  private applianceIdCounter: number;
 
   constructor() {
     this.users = new Map();

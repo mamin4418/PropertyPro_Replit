@@ -4,6 +4,9 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
+import AuthPage from "@/pages/auth-page";
+import { AuthProvider } from "@/hooks/use-auth";
+import { ProtectedRoute } from "@/lib/protected-route";
 import { useState, useEffect } from "react";
 import Sidebar from "./components/layout/Sidebar";
 import Header from "./components/layout/Header";
@@ -84,7 +87,8 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
+      <AuthProvider>
+        <TooltipProvider>
         <div className="app-container">
           {/* Mobile Header - Only visible on mobile */}
           <header className="mobile-header lg:hidden flex items-center justify-between p-4 shadow-sm">
@@ -215,6 +219,7 @@ function App() {
         
         <Toaster />
       </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

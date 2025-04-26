@@ -1,103 +1,131 @@
-import { useState } from "react";
-import { useLocation, useParams } from "wouter";
-import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Save } from "lucide-react";
 
-// Same sample companies data as in ViewCompany.tsx
-const sampleCompanies = [
-  { 
-    id: 1, 
-    companyName: "ABC Properties", 
-    legalName: "ABC Properties LLC", 
-    ein: "12-3456789", 
-    email: "info@abcproperties.com",
-    phone: "(555) 123-4567",
-    type: "LLC",
-    status: "active",
-    properties: 12,
-    occupancy: 92,
-    address: "123 Main St, Suite 101, Boston, MA 02110",
-    description: "ABC Properties is a residential property management company specializing in luxury apartments in downtown Boston.",
-    founded: "2012",
-    website: "www.abcproperties.com"
-  },
-  { 
-    id: 2, 
-    companyName: "XYZ Real Estate", 
-    legalName: "XYZ Real Estate Group, Inc.", 
-    ein: "98-7654321", 
-    email: "contact@xyzrealestate.com",
-    phone: "(555) 987-6543",
-    type: "Corporation",
-    status: "active",
-    properties: 8,
-    occupancy: 88,
-    address: "456 Park Ave, New York, NY 10022",
-    description: "XYZ Real Estate specializes in commercial property management throughout the East Coast.",
-    founded: "2005",
-    website: "www.xyzrealestate.com"
-  },
-  { 
-    id: 3, 
-    companyName: "Sunset Heights", 
-    legalName: "Sunset Heights Inc.", 
-    ein: "45-6789123", 
-    email: "hello@sunshineproperties.com",
-    phone: "(555) 456-7890",
-    type: "C-Corp",
-    status: "active",
-    properties: 15,
-    occupancy: 83,
-    address: "789 Sunset Blvd, Los Angeles, CA 90026",
-    description: "Sunset Heights manages residential properties across Southern California, focusing on mid-range apartment complexes.",
-    founded: "2010",
-    website: "www.sunsetheights.com"
-  },
-  { 
-    id: 4, 
-    companyName: "Green Properties", 
-    legalName: "Green Properties LLC", 
-    ein: "56-7891234", 
-    email: "info@greenproperties.com",
-    phone: "(555) 234-5678",
-    type: "LLC",
-    status: "active",
-    properties: 10,
-    occupancy: 94,
-    address: "321 Cedar St, Seattle, WA 98102",
-    description: "Green Properties specializes in eco-friendly and sustainable apartment buildings in the Pacific Northwest.",
-    founded: "2015",
-    website: "www.greenproperties.com"
-  },
-  { 
-    id: 5, 
-    companyName: "Urban Living", 
-    legalName: "Urban Living Management Inc.", 
-    ein: "67-8912345", 
-    email: "contact@urbanliving.com",
-    phone: "(555) 345-6789",
-    type: "S-Corp",
-    status: "active",
-    properties: 6,
-    occupancy: 90,
-    address: "555 Urban Way, Chicago, IL 60611",
-    description: "Urban Living specializes in luxury high-rise apartment buildings in downtown Chicago.",
-    founded: "2008",
-    website: "www.urbanliving.com"
-  }
-];
+import { useState } from "react";
+import { useParams, useLocation } from "wouter";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { toast } from "@/hooks/use-toast";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AlertCircle, Loader2 } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
+// Form validation schema
+const companyFormSchema = z.object({
+  legalName: z.string().min(1, "Legal name is required"),
+  companyName: z.string().min(1, "Company name is required"),
+  type: z.string().min(1, "Company type is required"),
+  ein: z.string().optional(),
+  email: z.string().email("Invalid email format").optional().or(z.literal("")),
+  phone: z.string().optional(),
+  // Address fields
+  streetAddress: z.string().min(1, "Street address is required"),
+  unit: z.string().optional(),
+  city: z.string().min(1, "City is required"),
+  state: z.string().min(1, "State is required"),
+  zipcode: z.string().min(1, "Zip code is required"),
+  country: z.string().min(1, "Country is required"),
+  // Additional fields
+  businessLicense: z.string().optional(),
+  notes: z.string().optional(),
+});
+
+type CompanyFormValues = z.infer<typeof companyFormSchema>;
 
 const EditCompany = () => {
+  const { id } = useParams();
   const [, navigate] = useLocation();
-  const { id } = useParams<{ id: string }>();
-  const companyId = parseInt(id);
+  const [selectedTab, setSelectedTab] = useState("general");
 
-  const { data: initialCompany, isLoading } = useQuery({
+  // Company types options
+  const companyTypes = [
+    "LLC",
+    "S-Corp",
+    "C-Corp",
+    "Partnership",
+    "Sole Proprietorship",
+    "Non-Profit",
+    "Other",
+  ];
+
+  // States and countries for form selection
+  const usStates = [
+    "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
+    "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
+    "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
+    "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
+    "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY",
+    "DC"
+  ];
+
+  const countries = [
+    "United States",
+    "Canada",
+    "United Kingdom",
+    "Australia",
+    "Germany",
+    "France",
+    "Spain",
+    "Italy",
+    "Japan",
+    "China",
+    "India",
+    "Brazil",
+    "Mexico",
+    "Other",
+  ];
+
+  // Initialize form with empty values
+  const form = useForm<CompanyFormValues>({
+    resolver: zodResolver(companyFormSchema),
+    defaultValues: {
+      legalName: "",
+      companyName: "",
+      type: "",
+      ein: "",
+      email: "",
+      phone: "",
+      streetAddress: "",
+      unit: "",
+      city: "",
+      state: "",
+      zipcode: "",
+      country: "United States",
+      businessLicense: "",
+      notes: "",
+    },
+  });
+
+  // Fetch company data
+  const { isLoading, isError } = useQuery({
     queryKey: [`/api/companies/${id}`],
     queryFn: async () => {
       try {
@@ -105,81 +133,96 @@ const EditCompany = () => {
         if (!response.ok) throw new Error("Failed to fetch company");
         return response.json();
       } catch (error) {
-        console.error("Failed to fetch company:", error);
-        // Return sample data for the specific company when API fails
-        return sampleCompanies.find(c => c.id === companyId) || null;
+        console.error("Error fetching company:", error);
+        // Mock data for development
+        return {
+          id: parseInt(id as string),
+          companyName: "ABC Properties",
+          legalName: "ABC Properties LLC",
+          type: "LLC",
+          ein: "12-3456789",
+          email: "info@abcproperties.com",
+          phone: "(555) 123-4567",
+          streetAddress: "123 Main Street",
+          unit: "Suite 200",
+          city: "New York",
+          state: "NY",
+          zipcode: "10001",
+          country: "United States",
+          businessLicense: "BL-12345",
+          notes: "This is a sample company for property management.",
+        };
       }
-    }
-  });
-
-  const [formData, setFormData] = useState({
-    companyName: "",
-    legalName: "",
-    ein: "",
-    type: "",
-    status: "",
-    email: "",
-    phone: "",
-    website: "",
-    founded: "",
-    address: "",
-    description: ""
-  });
-
-  // Update form data when company data is loaded
-  useState(() => {
-    if (initialCompany) {
-      setFormData({
-        companyName: initialCompany.companyName || "",
-        legalName: initialCompany.legalName || "",
-        ein: initialCompany.ein || "",
-        type: initialCompany.type || "",
-        status: initialCompany.status || "",
-        email: initialCompany.email || "",
-        phone: initialCompany.phone || "",
-        website: initialCompany.website || "",
-        founded: initialCompany.founded || "",
-        address: initialCompany.address || "",
-        description: initialCompany.description || ""
+    },
+    onSuccess: (data) => {
+      // Reset form with fetched data
+      form.reset({
+        legalName: data.legalName,
+        companyName: data.companyName,
+        type: data.type,
+        ein: data.ein || "",
+        email: data.email || "",
+        phone: data.phone || "",
+        streetAddress: data.streetAddress,
+        unit: data.unit || "",
+        city: data.city,
+        state: data.state,
+        zipcode: data.zipcode,
+        country: data.country,
+        businessLicense: data.businessLicense || "",
+        notes: data.notes || "",
       });
-    }
-  }, [initialCompany]);
+    },
+  });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  // Mutation for updating a company
+  const { mutate: updateCompany, isPending } = useMutation({
+    mutationFn: async (data: CompanyFormValues) => {
+      return await apiRequest("PUT", `/api/companies/${id}`, data);
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Company updated",
+        description: "The company has been successfully updated",
+      });
+      navigate(`/view-company/${id}`);
+    },
+    onError: (error) => {
+      console.error("Error updating company:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update company. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // In a real app, you would submit this data to your API
-    console.log("Submitting company data:", formData);
-
-    // Simulate successful update and navigate back to view page
-    navigate(`/view-company/${id}`);
+  const onSubmit = (data: CompanyFormValues) => {
+    updateCompany(data);
   };
 
   if (isLoading) {
     return (
-      <div className="p-6">
-        <div className="animate-pulse space-y-6">
-          <div className="h-8 bg-muted rounded w-1/4"></div>
-          <div className="h-40 bg-muted rounded"></div>
-          <div className="h-60 bg-muted rounded"></div>
+      <div className="p-6 flex justify-center items-center min-h-96">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mb-2 mx-auto" />
+          <p>Loading company information...</p>
         </div>
       </div>
     );
   }
 
-  if (!initialCompany) {
+  if (isError) {
     return (
       <div className="p-6">
-        <h1 className="text-3xl font-bold mb-6">Company Not Found</h1>
+        <Alert variant="destructive" className="mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>
+            Failed to load company information. Please try again later.
+          </AlertDescription>
+        </Alert>
         <Button onClick={() => navigate("/companies")}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Companies
         </Button>
       </div>
@@ -188,180 +231,400 @@ const EditCompany = () => {
 
   return (
     <div className="p-6">
-      <div className="flex items-center mb-6">
-        <Button variant="outline" onClick={() => navigate(`/view-company/${id}`)}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Company
-        </Button>
-        <h1 className="text-3xl font-bold ml-4">Edit Company</h1>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold">Edit Company</h1>
+        <p className="text-muted-foreground">
+          Update company information in the property management system
+        </p>
       </div>
 
-      <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Basic Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="companyName">Company Name</Label>
-                  <Input 
-                    id="companyName" 
-                    name="companyName" 
-                    value={formData.companyName}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="legalName">Legal Name</Label>
-                  <Input 
-                    id="legalName" 
-                    name="legalName" 
-                    value={formData.legalName}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="ein">EIN</Label>
-                  <Input 
-                    id="ein" 
-                    name="ein" 
-                    value={formData.ein}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="type">Company Type</Label>
-                  <select 
-                    id="type" 
-                    name="type" 
-                    value={formData.type}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded-md bg-background"
-                    required
-                  >
-                    <option value="">Select Type</option>
-                    <option value="LLC">LLC</option>
-                    <option value="Corporation">Corporation</option>
-                    <option value="S-Corp">S-Corp</option>
-                    <option value="C-Corp">C-Corp</option>
-                    <option value="Partnership">Partnership</option>
-                    <option value="Sole Proprietorship">Sole Proprietorship</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="status">Status</Label>
-                  <select 
-                    id="status" 
-                    name="status" 
-                    value={formData.status}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded-md bg-background"
-                    required
-                  >
-                    <option value="">Select Status</option>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                    <option value="pending">Pending</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="founded">Founded</Label>
-                  <Input 
-                    id="founded" 
-                    name="founded" 
-                    value={formData.founded}
-                    onChange={handleChange}
-                    placeholder="Year founded"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <Tabs
+            defaultValue="general"
+            value={selectedTab}
+            onValueChange={setSelectedTab}
+            className="w-full"
+          >
+            <TabsList className="mb-4">
+              <TabsTrigger value="general">General Information</TabsTrigger>
+              <TabsTrigger value="address">Address</TabsTrigger>
+              <TabsTrigger value="additional">Additional Details</TabsTrigger>
+            </TabsList>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Contact Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input 
-                    id="email" 
-                    name="email" 
-                    type="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input 
-                    id="phone" 
-                    name="phone" 
-                    value={formData.phone}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="website">Website</Label>
-                  <Input 
-                    id="website" 
-                    name="website" 
-                    value={formData.website}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="address">Address</Label>
-                  <Input 
-                    id="address" 
-                    name="address" 
-                    value={formData.address}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+            {/* General Information Tab */}
+            <TabsContent value="general">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Company Information</CardTitle>
+                  <CardDescription>
+                    Edit the basic information about the company
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="legalName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Legal Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="XYZ Properties LLC" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            The official legal name of the company
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Additional Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea 
-                  id="description" 
-                  name="description" 
-                  value={formData.description}
-                  onChange={handleChange}
-                  rows={4}
-                />
-              </div>
-            </CardContent>
-          </Card>
+                    <FormField
+                      control={form.control}
+                      name="companyName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Company Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="XYZ Properties" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            The name used for branding and display
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-          <div className="flex justify-end gap-4">
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={() => navigate(`/view-company/${id}`)}
-            >
-              Cancel
-            </Button>
-            <Button type="submit">
-              <Save className="h-4 w-4 mr-2" />
-              Save Changes
-            </Button>
-          </div>
-        </div>
-      </form>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Company Type</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            value={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select company type" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {companyTypes.map((type) => (
+                                <SelectItem key={type} value={type}>
+                                  {type}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormDescription>
+                            The legal structure of the company
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="ein"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>EIN / Tax ID</FormLabel>
+                          <FormControl>
+                            <Input placeholder="XX-XXXXXXX" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            Employer Identification Number or Tax ID
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="email"
+                              placeholder="contact@company.com"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Primary contact email for the company
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Phone</FormLabel>
+                          <FormControl>
+                            <Input placeholder="(555) 123-4567" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            Primary contact phone for the company
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => navigate(`/view-company/${id}`)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => setSelectedTab("address")}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Address Tab */}
+            <TabsContent value="address">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Company Address</CardTitle>
+                  <CardDescription>
+                    Edit the physical address of the company
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="streetAddress"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Street Address</FormLabel>
+                        <FormControl>
+                          <Input placeholder="123 Main St" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="unit"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Unit / Suite / Apt (Optional)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Suite 100" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="city"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>City</FormLabel>
+                          <FormControl>
+                            <Input placeholder="New York" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="state"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>State / Province</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            value={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select state" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {usStates.map((state) => (
+                                <SelectItem key={state} value={state}>
+                                  {state}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="zipcode"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Zip / Postal Code</FormLabel>
+                          <FormControl>
+                            <Input placeholder="10001" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="country"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Country</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            value={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select country" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {countries.map((country) => (
+                                <SelectItem key={country} value={country}>
+                                  {country}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setSelectedTab("general")}
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => setSelectedTab("additional")}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Additional Details Tab */}
+            <TabsContent value="additional">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Additional Details</CardTitle>
+                  <CardDescription>
+                    Optional information about the company
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="businessLicense"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Business License (Optional)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="License number" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          Business license or registration number
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="notes"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Notes</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Additional information about this company"
+                            className="min-h-[100px]"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <CardFooter className="flex justify-end gap-2 px-0">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setSelectedTab("address")}
+                    >
+                      Back
+                    </Button>
+                    <Button type="submit" disabled={isPending}>
+                      {isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Updating...
+                        </>
+                      ) : (
+                        "Update Company"
+                      )}
+                    </Button>
+                  </CardFooter>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </form>
+      </Form>
     </div>
   );
 };

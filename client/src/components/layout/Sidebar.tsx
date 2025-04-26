@@ -1,447 +1,263 @@
-
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import {
-  Building,
-  Building2,
-  ChevronDown,
-  ChevronRight,
-  ClipboardList,
   Home,
-  LayoutDashboard,
-  MessageSquare,
-  Settings,
-  User,
+  Building2,
   Users,
-  Wrench,
+  FileText,
+  DollarSign,
+  Drill,
+  BarChart,
+  Settings,
+  ChevronRight,
+  ChevronDown,
+  Hammer,
+  Store,
+  BookUser,
+  Contact,
+  HomeIcon,
+  ListFilter,
+  Wrench
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import ThemeSwitch from "./ThemeSwitch";
+
+interface NavLinkProps {
+  href: string;
+  isActive: boolean;
+  children: React.ReactNode;
+  className?: string;
+}
+
+// Custom navigation link that doesn't use nested <a> tags
+const NavLink = ({ href, isActive, children, className = "" }: NavLinkProps) => {
+  return (
+    <Link href={href}>
+      <div 
+        className={`w-full cursor-pointer flex items-center p-3 rounded-md transition-colors ${
+          isActive ? "bg-primary/10 text-primary" : "hover:bg-secondary"
+        } ${className}`}
+      >
+        {children}
+      </div>
+    </Link>
+  );
+};
+
+interface SubNavLinkProps {
+  href: string;
+  isActive: boolean;
+  children: React.ReactNode;
+}
+
+// Sub-navigation link for dropdowns
+const SubNavLink = ({ href, isActive, children }: SubNavLinkProps) => {
+  return (
+    <Link href={href}>
+      <div 
+        className={`w-full cursor-pointer text-left p-2 rounded-md transition-colors ${
+          isActive ? "bg-primary/5 text-primary" : "hover:bg-secondary"
+        }`}
+      >
+        {children}
+      </div>
+    </Link>
+  );
+};
 
 const Sidebar = () => {
   const [location] = useLocation();
-  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    companies: true,
-    properties: true,
-    tenants: true,
-    leases: false,
-    maintenance: false,
-    communications: false,
-  });
-
-  const toggleSection = (section: string) => {
-    setOpenSections((prev) => ({
-      ...prev,
-      [section]: !prev[section],
-    }));
-  };
-
-  const isActive = (path: string) => location === path;
+  const currentPage = location.split("/")[1] || "dashboard";
+  
+  const [propertiesOpen, setPropertiesOpen] = useState(
+    ["properties", "add-property", "appliances", "add-appliance", "edit-appliance", "view-appliance"].includes(currentPage)
+  );
+  const [contactsOpen, setContactsOpen] = useState(
+    ["contacts", "add-contact", "view-contact", "edit-contact", "tenants", "add-tenant", "vendors", "add-vendor"].includes(currentPage)
+  );
+  
+  const [vacanciesOpen, setVacanciesOpen] = useState(
+    ["vacancy-listing", "manage-vacancies", "create-vacancy", "edit-vacancy", "view-vacancy", 
+     "applications", "application-templates", "create-template", "edit-template"].includes(currentPage)
+  );
 
   return (
-    <div className="h-full w-64 bg-background border-r flex flex-col">
-      <div className="p-4 border-b">
-        <h1 className="text-xl font-bold">PropertyPro</h1>
+    <div className="h-full flex flex-col pt-0 lg:pt-4">
+      {/* Logo (desktop only) */}
+      <div className="hidden lg:flex items-center p-4">
+        <div className="w-8 h-8 rounded bg-primary flex items-center justify-center text-primary-foreground font-bold">
+          PM
+        </div>
+        <div className="ml-3 font-semibold text-xl">PropManager</div>
       </div>
-
-      <nav className="flex-1 overflow-y-auto p-2">
-        <ul className="space-y-1">
-          {/* Dashboard */}
-          <li>
-            <Link href="/dashboard">
-              <Button
-                variant={isActive("/dashboard") ? "secondary" : "ghost"}
-                className="w-full justify-start"
-              >
-                <LayoutDashboard className="mr-2 h-4 w-4" />
-                Dashboard
-              </Button>
-            </Link>
-          </li>
-
-          {/* Companies Section */}
-          <li>
-            <Button
-              variant="ghost"
-              className="w-full justify-start"
-              onClick={() => toggleSection("companies")}
-            >
-              <Building2 className="mr-2 h-4 w-4" />
-              Companies
-              {openSections.companies ? (
-                <ChevronDown className="ml-auto h-4 w-4 transition-transform" />
-              ) : (
-                <ChevronRight className="ml-auto h-4 w-4 transition-transform" />
-              )}
-            </Button>
-            {openSections.companies && (
-              <ul className="pl-6 space-y-1 mt-1">
-                <li>
-                  <Link href="/companies">
-                    <Button
-                      variant={isActive("/companies") ? "secondary" : "ghost"}
-                      className="w-full justify-start"
-                      size="sm"
-                    >
-                      All Companies
-                    </Button>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/add-company">
-                    <Button
-                      variant={isActive("/add-company") ? "secondary" : "ghost"}
-                      className="w-full justify-start"
-                      size="sm"
-                    >
-                      Add Company
-                    </Button>
-                  </Link>
-                </li>
-              </ul>
+      
+      {/* Navigation */}
+      <nav className="flex-1 p-4 space-y-1">
+        {/* Dashboard */}
+        <NavLink href="/dashboard" isActive={currentPage === "dashboard"}>
+          <Home className="w-5 h-5" />
+          <span className="ml-3">Dashboard</span>
+        </NavLink>
+        
+        {/* Properties */}
+        <div className="space-y-1">
+          <button
+            onClick={() => setPropertiesOpen(!propertiesOpen)}
+            className={`w-full flex items-center justify-between p-3 rounded-md transition-colors ${
+              ["properties", "add-property", "appliances", "add-appliance", "edit-appliance", "view-appliance"].includes(currentPage) 
+                ? "bg-primary/10 text-primary" 
+                : "hover:bg-secondary"
+            }`}
+          >
+            <div className="flex items-center">
+              <Building2 className="w-5 h-5" />
+              <span className="ml-3">Properties</span>
+            </div>
+            {propertiesOpen ? (
+              <ChevronDown className="w-4 h-4" />
+            ) : (
+              <ChevronRight className="w-4 h-4" />
             )}
-          </li>
-
-          {/* Properties Section */}
-          <li>
-            <Button
-              variant="ghost"
-              className="w-full justify-start"
-              onClick={() => toggleSection("properties")}
-            >
-              <Building className="mr-2 h-4 w-4" />
-              Properties
-              {openSections.properties ? (
-                <ChevronDown className="ml-auto h-4 w-4 transition-transform" />
-              ) : (
-                <ChevronRight className="ml-auto h-4 w-4 transition-transform" />
-              )}
-            </Button>
-            {openSections.properties && (
-              <ul className="pl-6 space-y-1 mt-1">
-                <li>
-                  <Link href="/properties">
-                    <Button
-                      variant={isActive("/properties") ? "secondary" : "ghost"}
-                      className="w-full justify-start"
-                      size="sm"
-                    >
-                      All Properties
-                    </Button>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/add-property">
-                    <Button
-                      variant={
-                        isActive("/add-property") ? "secondary" : "ghost"
-                      }
-                      className="w-full justify-start"
-                      size="sm"
-                    >
-                      Add Property
-                    </Button>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/manage-units">
-                    <Button
-                      variant={
-                        isActive("/manage-units") ? "secondary" : "ghost"
-                      }
-                      className="w-full justify-start"
-                      size="sm"
-                    >
-                      Manage Units
-                    </Button>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/manage-vacancies">
-                    <Button
-                      variant={
-                        isActive("/manage-vacancies") ? "secondary" : "ghost"
-                      }
-                      className="w-full justify-start"
-                      size="sm"
-                    >
-                      Vacancies
-                    </Button>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/appliances">
-                    <Button
-                      variant={isActive("/appliances") ? "secondary" : "ghost"}
-                      className="w-full justify-start"
-                      size="sm"
-                    >
-                      Appliances
-                    </Button>
-                  </Link>
-                </li>
-              </ul>
+          </button>
+          
+          {propertiesOpen && (
+            <div className="pl-10 space-y-1">
+              <SubNavLink href="/properties" isActive={currentPage === "properties"}>
+                All Properties
+              </SubNavLink>
+              <SubNavLink href="/add-property" isActive={currentPage === "add-property"}>
+                Add Property
+              </SubNavLink>
+              <SubNavLink href="/appliances" isActive={["appliances", "add-appliance", "edit-appliance", "view-appliance"].includes(currentPage)}>
+                Appliances
+              </SubNavLink>
+            </div>
+          )}
+        </div>
+        
+        {/* Leases */}
+        <NavLink href="/leases" isActive={currentPage === "leases"}>
+          <FileText className="w-5 h-5" />
+          <span className="ml-3">Leases</span>
+        </NavLink>
+        
+        {/* Payments */}
+        <NavLink href="/payments" isActive={currentPage === "payments"}>
+          <DollarSign className="w-5 h-5" />
+          <span className="ml-3">Payments</span>
+        </NavLink>
+        
+        {/* Maintenance */}
+        <NavLink href="/maintenance" isActive={currentPage === "maintenance"}>
+          <Drill className="w-5 h-5" />
+          <span className="ml-3">Maintenance</span>
+        </NavLink>
+        
+        {/* Vacancies */}
+        <div className="space-y-1">
+          <button
+            onClick={() => setVacanciesOpen(!vacanciesOpen)}
+            className={`w-full flex items-center justify-between p-3 rounded-md transition-colors ${
+              ["vacancy-listing", "manage-vacancies", "create-vacancy", "edit-vacancy", "view-vacancy"].includes(currentPage) 
+                ? "bg-primary/10 text-primary" 
+                : "hover:bg-secondary"
+            }`}
+          >
+            <div className="flex items-center">
+              <HomeIcon className="w-5 h-5" />
+              <span className="ml-3">Vacancies</span>
+            </div>
+            {vacanciesOpen ? (
+              <ChevronDown className="w-4 h-4" />
+            ) : (
+              <ChevronRight className="w-4 h-4" />
             )}
-          </li>
+          </button>
+          
+          {vacanciesOpen && (
+            <div className="pl-10 space-y-1">
+              <SubNavLink href="/vacancy-listing" isActive={currentPage === "vacancy-listing"}>
+                Apartment Listings
+              </SubNavLink>
+              <SubNavLink href="/manage-vacancies" isActive={currentPage === "manage-vacancies"}>
+                Manage Listings
+              </SubNavLink>
+              <SubNavLink href="/create-vacancy" isActive={currentPage === "create-vacancy"}>
+                Create Listing
+              </SubNavLink>
+              <SubNavLink href="/leads" isActive={currentPage === "leads"}>
+                Leads
+              </SubNavLink>
+              <SubNavLink href="/applications" isActive={currentPage === "applications"}>
+                Applications
+              </SubNavLink>
+              <SubNavLink href="/application-templates" isActive={currentPage === "application-templates"}>
+                Application Templates
+              </SubNavLink>
+            </div>
+          )}
+        </div>
+        
+        {/* Companies */}
+<NavLink href="/companies" isActive={["companies", "add-company", "view-company", "edit-company"].includes(currentPage)}>
+  <Building2 className="w-5 h-5" />
+  <span className="ml-3">Companies</span>
+</NavLink>
 
-          {/* Tenants Section */}
-          <li>
-            <Button
-              variant="ghost"
-              className="w-full justify-start"
-              onClick={() => toggleSection("tenants")}
-            >
-              <Users className="mr-2 h-4 w-4" />
-              Contacts
-              {openSections.tenants ? (
-                <ChevronDown className="ml-auto h-4 w-4 transition-transform" />
-              ) : (
-                <ChevronRight className="ml-auto h-4 w-4 transition-transform" />
-              )}
-            </Button>
-            {openSections.tenants && (
-              <ul className="pl-6 space-y-1 mt-1">
-                <li>
-                  <Link href="/tenants">
-                    <Button
-                      variant={isActive("/tenants") ? "secondary" : "ghost"}
-                      className="w-full justify-start"
-                      size="sm"
-                    >
-                      Tenants
-                    </Button>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/add-tenant">
-                    <Button
-                      variant={isActive("/add-tenant") ? "secondary" : "ghost"}
-                      className="w-full justify-start"
-                      size="sm"
-                    >
-                      Add Tenant
-                    </Button>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/leads">
-                    <Button
-                      variant={isActive("/leads") ? "secondary" : "ghost"}
-                      className="w-full justify-start"
-                      size="sm"
-                    >
-                      Leads
-                    </Button>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/vendors">
-                    <Button
-                      variant={isActive("/vendors") ? "secondary" : "ghost"}
-                      className="w-full justify-start"
-                      size="sm"
-                    >
-                      Vendors
-                    </Button>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/contacts">
-                    <Button
-                      variant={isActive("/contacts") ? "secondary" : "ghost"}
-                      className="w-full justify-start"
-                      size="sm"
-                    >
-                      All Contacts
-                    </Button>
-                  </Link>
-                </li>
-              </ul>
+{/* Contacts - Centralized contact management */}
+        <div className="space-y-1">
+          <button
+            onClick={() => setContactsOpen(!contactsOpen)}
+            className={`w-full flex items-center justify-between p-3 rounded-md transition-colors ${
+              ["contacts", "add-contact", "view-contact", "edit-contact", "tenants", "add-tenant", "vendors", "add-vendor"].includes(currentPage) 
+                ? "bg-primary/10 text-primary" 
+                : "hover:bg-secondary"
+            }`}
+          >
+            <div className="flex items-center">
+              <Contact className="w-5 h-5" />
+              <span className="ml-3">Contacts</span>
+            </div>
+            {contactsOpen ? (
+              <ChevronDown className="w-4 h-4" />
+            ) : (
+              <ChevronRight className="w-4 h-4" />
             )}
-          </li>
-
-          {/* Leases Section */}
-          <li>
-            <Button
-              variant="ghost"
-              className="w-full justify-start"
-              onClick={() => toggleSection("leases")}
-            >
-              <ClipboardList className="mr-2 h-4 w-4" />
-              Leases
-              {openSections.leases ? (
-                <ChevronDown className="ml-auto h-4 w-4 transition-transform" />
-              ) : (
-                <ChevronRight className="ml-auto h-4 w-4 transition-transform" />
-              )}
-            </Button>
-            {openSections.leases && (
-              <ul className="pl-6 space-y-1 mt-1">
-                <li>
-                  <Link href="/leases">
-                    <Button
-                      variant={isActive("/leases") ? "secondary" : "ghost"}
-                      className="w-full justify-start"
-                      size="sm"
-                    >
-                      All Leases
-                    </Button>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/add-lease">
-                    <Button
-                      variant={isActive("/add-lease") ? "secondary" : "ghost"}
-                      className="w-full justify-start"
-                      size="sm"
-                    >
-                      Add Lease
-                    </Button>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/applications">
-                    <Button
-                      variant={
-                        isActive("/applications") ? "secondary" : "ghost"
-                      }
-                      className="w-full justify-start"
-                      size="sm"
-                    >
-                      Applications
-                    </Button>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/application-templates">
-                    <Button
-                      variant={
-                        isActive("/application-templates")
-                          ? "secondary"
-                          : "ghost"
-                      }
-                      className="w-full justify-start"
-                      size="sm"
-                    >
-                      Templates
-                    </Button>
-                  </Link>
-                </li>
-              </ul>
-            )}
-          </li>
-
-          {/* Maintenance Section */}
-          <li>
-            <Button
-              variant="ghost"
-              className="w-full justify-start"
-              onClick={() => toggleSection("maintenance")}
-            >
-              <Wrench className="mr-2 h-4 w-4" />
-              Maintenance
-              {openSections.maintenance ? (
-                <ChevronDown className="ml-auto h-4 w-4 transition-transform" />
-              ) : (
-                <ChevronRight className="ml-auto h-4 w-4 transition-transform" />
-              )}
-            </Button>
-            {openSections.maintenance && (
-              <ul className="pl-6 space-y-1 mt-1">
-                <li>
-                  <Link href="/maintenance">
-                    <Button
-                      variant={isActive("/maintenance") ? "secondary" : "ghost"}
-                      className="w-full justify-start"
-                      size="sm"
-                    >
-                      Requests
-                    </Button>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/add-maintenance">
-                    <Button
-                      variant={
-                        isActive("/add-maintenance") ? "secondary" : "ghost"
-                      }
-                      className="w-full justify-start"
-                      size="sm"
-                    >
-                      New Request
-                    </Button>
-                  </Link>
-                </li>
-              </ul>
-            )}
-          </li>
-
-          {/* Finances */}
-          <li>
-            <Link href="/payments">
-              <Button
-                variant={isActive("/payments") ? "secondary" : "ghost"}
-                className="w-full justify-start"
-              >
-                <Home className="mr-2 h-4 w-4" />
-                Payments
-              </Button>
-            </Link>
-          </li>
-
-          {/* Communications Section */}
-          <li>
-            <Button
-              variant="ghost"
-              className="w-full justify-start"
-              onClick={() => toggleSection("communications")}
-            >
-              <MessageSquare className="mr-2 h-4 w-4" />
-              Communications
-              {openSections.communications ? (
-                <ChevronDown className="ml-auto h-4 w-4 transition-transform" />
-              ) : (
-                <ChevronRight className="ml-auto h-4 w-4 transition-transform" />
-              )}
-            </Button>
-            {openSections.communications && (
-              <ul className="pl-6 space-y-1 mt-1">
-                <li>
-                  <Link href="/reports">
-                    <Button
-                      variant={isActive("/reports") ? "secondary" : "ghost"}
-                      className="w-full justify-start"
-                      size="sm"
-                    >
-                      Reports
-                    </Button>
-                  </Link>
-                </li>
-              </ul>
-            )}
-          </li>
-
-          {/* Settings */}
-          <li>
-            <Link href="/settings">
-              <Button
-                variant={isActive("/settings") ? "secondary" : "ghost"}
-                className="w-full justify-start"
-              >
-                <Settings className="mr-2 h-4 w-4" />
-                Settings
-              </Button>
-            </Link>
-          </li>
-        </ul>
+          </button>
+          
+          {contactsOpen && (
+            <div className="pl-10 space-y-1">
+              <SubNavLink href="/contacts" isActive={currentPage === "contacts"}>
+                All Contacts
+              </SubNavLink>
+              <SubNavLink href="/tenants" isActive={currentPage === "tenants"}>
+                All Tenants
+              </SubNavLink>
+              <SubNavLink href="/vendors" isActive={currentPage === "vendors"}>
+                All Vendors
+              </SubNavLink>
+              <SubNavLink href="/add-contact" isActive={currentPage === "add-contact"}>
+                Add Contact
+              </SubNavLink>
+            </div>
+          )}
+        </div>
+        
+        {/* Reports */}
+        <NavLink href="/reports" isActive={currentPage === "reports"}>
+          <BarChart className="w-5 h-5" />
+          <span className="ml-3">Reports</span>
+        </NavLink>
+        
+        {/* Settings */}
+        <NavLink href="/settings" isActive={currentPage === "settings"}>
+          <Settings className="w-5 h-5" />
+          <span className="ml-3">Settings</span>
+        </NavLink>
       </nav>
-
-      <div className="p-4 border-t">
-        <Link href="/profile">
-          <Button variant="ghost" className="w-full justify-start">
-            <User className="mr-2 h-4 w-4" />
-            Profile
-          </Button>
-        </Link>
+      
+      {/* Theme Switcher */}
+      <div className="p-4 border-t border-custom mt-auto">
+        <ThemeSwitch />
       </div>
     </div>
   );

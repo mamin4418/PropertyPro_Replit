@@ -57,12 +57,13 @@ import Appliances from "./pages/Appliances";
 import AddAppliance from "./pages/AddAppliance";
 import ViewAppliance from "./pages/ViewAppliance";
 import EditAppliance from "./pages/EditAppliance";
+import GenerateLeaseTemplate from "./pages/GenerateLeaseTemplate";
 import { Menu, X } from "lucide-react";
 
 function AppRoutes() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  
+
   // Check if we're on mobile and update state
   useEffect(() => {
     const checkMobile = () => {
@@ -72,17 +73,17 @@ function AppRoutes() {
         setMobileMenuOpen(false);
       }
     };
-    
+
     // Check on initial load
     checkMobile();
-    
+
     // Setup listener for window resize
     window.addEventListener('resize', checkMobile);
-    
+
     // Cleanup
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-  
+
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
@@ -117,7 +118,7 @@ function AppRoutes() {
           )}
           <Sidebar />
         </aside>
-        
+
         {/* Mobile Backdrop */}
         {mobileMenuOpen && isMobile && (
           <div 
@@ -125,67 +126,68 @@ function AppRoutes() {
             onClick={() => setMobileMenuOpen(false)}
           />
         )}
-        
+
         {/* Main Content Area */}
         <main className="app-main">
           {/* Desktop Header */}
           <Header />
-          
+
           {/* Page Content */}
           <div className="content-container">
             <Switch>
               {/* Dashboard accessible without login for easier testing */}
               <Route path="/dashboard" component={Dashboard} />
-              
+
               {/* Properties Routes */}
               <ProtectedRoute path="/properties" component={Properties} />
               <ProtectedRoute path="/add-property" component={AddProperty} />
               <ProtectedRoute path="/view-property/:id" component={ViewProperty} />
               <ProtectedRoute path="/edit-property/:id" component={EditProperty} />
               <ProtectedRoute path="/manage-units/:id" component={ManageUnits} />
-              
+
               {/* Tenants Routes */}
               <ProtectedRoute path="/tenants" component={Tenants} />
               <ProtectedRoute path="/add-tenant" component={AddTenant} />
               <ProtectedRoute path="/view-tenant/:id" component={ViewTenant} />
               <ProtectedRoute path="/edit-tenant/:id" component={EditTenant} />
-              
+
               {/* Leases Routes */}
               <ProtectedRoute path="/leases" component={Leases} />
               <ProtectedRoute path="/add-lease" component={AddLease} />
               <ProtectedRoute path="/view-lease/:id" component={ViewLease} />
               <ProtectedRoute path="/edit-lease/:id" component={EditLease} />
-              
+              <Route path="/generate-lease-template" component={GenerateLeaseTemplate} />
+
               {/* Payments Routes */}
               <ProtectedRoute path="/payments" component={Payments} />
               <ProtectedRoute path="/add-payment" component={AddPayment} />
               <ProtectedRoute path="/view-payment/:id" component={ViewPayment} />
               <ProtectedRoute path="/edit-payment/:id" component={EditPayment} />
-              
+
               {/* Maintenance Routes */}
               <ProtectedRoute path="/maintenance" component={Maintenance} />
               <ProtectedRoute path="/add-maintenance" component={AddMaintenance} />
               <ProtectedRoute path="/view-maintenance/:id" component={ViewMaintenance} />
               <ProtectedRoute path="/edit-maintenance/:id" component={EditMaintenance} />
-              
+
               {/* Appliances Routes */}
               <ProtectedRoute path="/appliances" component={Appliances} />
               <ProtectedRoute path="/add-appliance" component={AddAppliance} />
               <ProtectedRoute path="/view-appliance/:id" component={ViewAppliance} />
               <ProtectedRoute path="/edit-appliance/:id" component={EditAppliance} />
-              
+
               {/* Vendors Routes */}
               <ProtectedRoute path="/vendors" component={Vendors} />
               <ProtectedRoute path="/add-vendor" component={AddVendor} />
               <ProtectedRoute path="/view-vendor/:id" component={ViewVendor} />
               <ProtectedRoute path="/edit-vendor/:id" component={EditVendor} />
-              
+
               {/* Contacts Routes */}
               <ProtectedRoute path="/contacts" component={Contacts} />
               <ProtectedRoute path="/add-contact" component={AddContact} />
               <ProtectedRoute path="/view-contact/:id" component={ViewContact} />
               <ProtectedRoute path="/edit-contact/:id" component={EditContact} />
-              
+
               {/* Tenant Acquisition Process Routes */}
               <ProtectedRoute path="/leads" component={Leads} />
               <ProtectedRoute path="/add-lead" component={AddLead} />
@@ -195,7 +197,7 @@ function AppRoutes() {
               <ProtectedRoute path="/application-templates" component={ApplicationTemplates} />
               <ProtectedRoute path="/create-template" component={CreateApplicationTemplate} />
               <ProtectedRoute path="/edit-template/:id" component={CreateApplicationTemplate} />
-              
+
               {/* Vacancy Management Routes */}
               <ProtectedRoute path="/vacancy-listing" component={VacancyListing} />
               <ProtectedRoute path="/manage-vacancies" component={ManageVacancies} />
@@ -203,19 +205,19 @@ function AppRoutes() {
               <ProtectedRoute path="/edit-vacancy/:id" component={CreateVacancy} />
               <ProtectedRoute path="/view-vacancy/:id" component={ViewVacancy} />
               <ProtectedRoute path="/vacancy/:id" component={ViewVacancy} />
-              
+
               {/* Reports and Settings */}
               <Route path="/reports" component={Reports} /> {/* Removed authentication for testing */}
               <ProtectedRoute path="/settings" component={Settings} />
-              
+
               {/* Auth Routes - Keep them accessible without login */}
               <Route path="/auth" component={AuthPage} />
               <Route path="/tenant-auth" component={TenantAuthPage} />
               <Route path="/tenant-dashboard" component={TenantDashboard} />
-              
+
               {/* Make Dashboard accessible without login for testing */}
               <Route path="/" component={Dashboard} />
-              
+
               {/* Catch all */}
               <Route component={NotFound} />
             </Switch>

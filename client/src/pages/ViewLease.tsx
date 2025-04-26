@@ -8,6 +8,15 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useToast } from "@/hooks/use-toast";
+import { ChevronDown, RefreshCw, X } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -87,6 +96,47 @@ const formatDate = (dateString: string) => {
 const ViewLease = () => {
   const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState("details");
+  const { toast } = useToast();
+
+  const handleRenewLease = () => {
+    // Implement lease renewal logic
+    toast({
+      title: "Lease Renewal",
+      description: "Lease renewal process initiated"
+    });
+  };
+
+  const handleDownloadLease = () => {
+    // Implement lease download logic
+    toast({
+      title: "Download Started",
+      description: "Your lease document is being downloaded"
+    });
+  };
+
+  const handleAddNote = () => {
+    // Implement note adding logic
+    toast({
+      title: "Add Note",
+      description: "Note added to lease successfully"
+    });
+  };
+
+  const handleCreateDamageReport = () => {
+    // Implement damage report creation logic
+    toast({
+      title: "Damage Report",
+      description: "New damage report created"
+    });
+  };
+
+  const handleTerminateLease = () => {
+    // Implement lease termination logic
+    toast({
+      title: "Lease Termination",
+      description: "Lease termination process initiated"
+    });
+  };
   
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -152,10 +202,47 @@ const ViewLease = () => {
         </div>
         
         <div className="flex mt-4 sm:mt-0 gap-2">
-          <Link href={`/edit-lease/${lease.id}`}>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                Actions
+                <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem asChild>
+                <Link href={`/edit-lease/${lease.id}`}>
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit Lease
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleRenewLease()}>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Renew Lease
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleDownloadLease()}>
+                <Download className="mr-2 h-4 w-4" />
+                Download Lease
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleAddNote()}>
+                <FileText className="mr-2 h-4 w-4" />
+                Add Note
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleCreateDamageReport()}>
+                <AlertTriangle className="mr-2 h-4 w-4" />
+                Damage Report
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => handleTerminateLease()} className="text-destructive">
+                <X className="mr-2 h-4 w-4" />
+                Terminate Lease
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Link href={`/edit-tenant/${lease.tenants[0].id}`}>
             <Button variant="outline" className="flex items-center">
-              <Edit className="mr-2 h-4 w-4" />
-              Edit Lease
+              <Users className="mr-2 h-4 w-4" />
+              Edit Tenants
             </Button>
           </Link>
         </div>

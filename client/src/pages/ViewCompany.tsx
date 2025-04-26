@@ -31,6 +31,36 @@ const ViewCompany = () => {
   const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState("overview");
 
+  // Sample company data
+  const sampleCompany = {
+    id: parseInt(id as string),
+    companyName: "ABC Properties",
+    legalName: "ABC Properties LLC",
+    type: "LLC",
+    ein: "12-3456789",
+    email: "info@abcproperties.com",
+    phone: "(555) 123-4567",
+    streetAddress: "123 Main Street",
+    unit: "Suite 200",
+    city: "New York",
+    state: "NY",
+    zipcode: "10001",
+    country: "United States",
+    businessLicense: "BL-12345",
+    notes: "This is a sample company for property management.",
+    // Associated data
+    properties: [
+      { id: 1, name: "Parkside Apartments", units: 24, city: "New York", state: "NY" },
+      { id: 2, name: "Riverside Condos", units: 12, city: "Brooklyn", state: "NY" },
+      { id: 3, name: "Hillview Residences", units: 18, city: "Queens", state: "NY" }
+    ],
+    contacts: [
+      { id: 1, name: "John Smith", role: "Owner", email: "john@abcproperties.com" },
+      { id: 2, name: "Jane Doe", role: "Manager", email: "jane@abcproperties.com" },
+      { id: 3, name: "Robert Johnson", role: "Accountant", email: "robert@abcproperties.com" }
+    ]
+  };
+
   // Fetch company data
   const { data: company, isLoading, isError } = useQuery({
     queryKey: [`/api/companies/${id}`],
@@ -41,33 +71,8 @@ const ViewCompany = () => {
         return response.json();
       } catch (error) {
         console.error("Error fetching company:", error);
-        // Mock data for development
-        return {
-          id: parseInt(id as string),
-          companyName: "ABC Properties",
-          legalName: "ABC Properties LLC",
-          type: "LLC",
-          ein: "12-3456789",
-          email: "info@abcproperties.com",
-          phone: "(555) 123-4567",
-          streetAddress: "123 Main Street",
-          unit: "Suite 200",
-          city: "New York",
-          state: "NY",
-          zipcode: "10001",
-          country: "United States",
-          businessLicense: "BL-12345",
-          notes: "This is a sample company for property management.",
-          // Associated data
-          properties: [
-            { id: 1, name: "Parkside Apartments", units: 24, city: "New York", state: "NY" },
-            { id: 2, name: "Riverside Condos", units: 12, city: "Brooklyn", state: "NY" }
-          ],
-          contacts: [
-            { id: 1, name: "John Smith", role: "Owner", email: "john@abcproperties.com" },
-            { id: 2, name: "Jane Doe", role: "Manager", email: "jane@abcproperties.com" }
-          ]
-        };
+        // Return sample data
+        return sampleCompany;
       }
     },
   });

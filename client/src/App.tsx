@@ -1,3 +1,4 @@
+
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -187,12 +188,12 @@ function AppRoutes() {
               <ProtectedRoute path="/edit-vendor/:id" component={EditVendor} />
 
               {/* Company Routes */}
-<ProtectedRoute path="/companies" component={Companies} />
-<ProtectedRoute path="/add-company" component={AddCompany} />
-<ProtectedRoute path="/view-company/:id" component={ViewCompany} />
-<ProtectedRoute path="/edit-company/:id" component={EditCompany} />
+              <ProtectedRoute path="/companies" component={Companies} />
+              <ProtectedRoute path="/add-company" component={AddCompany} />
+              <ProtectedRoute path="/view-company/:id" component={ViewCompany} />
+              <ProtectedRoute path="/edit-company/:id" component={EditCompany} />
 
-{/* Contacts Routes */}
+              {/* Contacts Routes */}
               <ProtectedRoute path="/contacts" component={Contacts} />
               <ProtectedRoute path="/add-contact" component={AddContact} />
               <ProtectedRoute path="/view-contact/:id" component={ViewContact} />

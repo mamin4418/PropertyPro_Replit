@@ -77,7 +77,9 @@ const PropertiesOverview = ({ properties }: PropertiesOverviewProps) => {
                   </span>
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button variant="link" className="text-primary h-auto p-0">View</Button>
+                  <Link href={`/view-property/${property.id}`}>
+                    <Button variant="link" className="text-primary h-auto p-0">View</Button>
+                  </Link>
                 </TableCell>
               </TableRow>
             ))}

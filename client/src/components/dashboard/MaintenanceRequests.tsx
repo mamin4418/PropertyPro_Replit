@@ -1,3 +1,5 @@
+import { Link } from "wouter";
+
 interface MaintenanceCount {
   urgent: number;
   normal: number;
@@ -57,21 +59,22 @@ const MaintenanceRequests = ({ counts, recentRequests }: MaintenanceRequestsProp
         <h4 className="font-semibold mb-2">Recent Requests</h4>
         <div className="space-y-3">
           {recentRequests.map((request, index) => (
-            <div 
-              key={index} 
-              className={`p-3 ${priorityStyles[request.priority].bg} border ${priorityStyles[request.priority].border} rounded-md flex items-center justify-between`}
-            >
-              <div>
-                <p className="font-medium">{request.title}</p>
-                <p className="text-xs text-muted-foreground">{request.location}</p>
+            <Link href="/maintenance" key={index}>
+              <div 
+                className={`p-3 ${priorityStyles[request.priority].bg} border ${priorityStyles[request.priority].border} rounded-md flex items-center justify-between hover:shadow-sm cursor-pointer transition-shadow`}
+              >
+                <div>
+                  <p className="font-medium">{request.title}</p>
+                  <p className="text-xs text-muted-foreground">{request.location}</p>
+                </div>
+                <div className="text-right">
+                  <span className={`px-2 py-1 ${priorityStyles[request.priority].badge} text-xs rounded-full`}>
+                    {request.priority.charAt(0).toUpperCase() + request.priority.slice(1)}
+                  </span>
+                  <p className="text-xs text-muted-foreground mt-1">{request.timeAgo}</p>
+                </div>
               </div>
-              <div className="text-right">
-                <span className={`px-2 py-1 ${priorityStyles[request.priority].badge} text-xs rounded-full`}>
-                  {request.priority.charAt(0).toUpperCase() + request.priority.slice(1)}
-                </span>
-                <p className="text-xs text-muted-foreground mt-1">{request.timeAgo}</p>
-              </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

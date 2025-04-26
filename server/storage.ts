@@ -428,7 +428,9 @@ export class MemStorage implements IStorage {
       name: insertTemplate.name,
       description: insertTemplate.description || null,
       isDefault: insertTemplate.isDefault || false,
-      schema: insertTemplate.schema,
+      fields: insertTemplate.fields,
+      applicationFee: insertTemplate.applicationFee || null,
+      createdBy: insertTemplate.createdBy || null,
       createdAt: now,
       updatedAt: now
     };

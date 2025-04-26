@@ -1,7 +1,13 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertContactSchema, insertAddressSchema, insertApplianceSchema } from "@shared/schema";
+import { 
+  insertContactSchema, 
+  insertAddressSchema, 
+  insertApplianceSchema,
+  insertRentalApplicationSchema, 
+  insertApplicationTemplateSchema
+} from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Contacts API endpoints
@@ -130,36 +136,182 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Applications API endpoints
   app.get('/api/applications', async (req: Request, res: Response) => {
     try {
-      // For now, return an empty array since we don't have full implementation
-      res.json([]);
+      const applications = await storage.getRentalApplications();
+      res.json(applications);
     } catch (error) {
       res.status(500).json({ error: 'Failed to retrieve applications' });
+    }
+  });
+  
+  app.get('/api/applications/:id', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid ID format' });
+      }
+      
+      const application = await storage.getRentalApplication(id);
+      if (!application) {
+        return res.status(404).json({ error: 'Application not found' });
+      }
+      
+      res.json(application);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to retrieve application' });
+    }
+  });
+  
+  app.post('/api/applications', async (req: Request, res: Response) => {
+    try {
+      const validatedData = insertRentalApplicationSchema.safeParse(req.body);
+      
+      if (!validatedData.success) {
+        return res.status(400).json({ 
+          error: 'Invalid application data', 
+          details: validatedData.error.format() 
+        });
+      }
+      
+      const newApplication = await storage.createRentalApplication(validatedData.data);
+      res.status(201).json(newApplication);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to create application' });
+    }
+  });
+  
+  app.patch('/api/applications/:id/status', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid ID format' });
+      }
+      
+      const { status } = req.body;
+      if (!status || typeof status !== 'string') {
+        return res.status(400).json({ error: 'Status is required' });
+      }
+      
+      const application = await storage.getRentalApplication(id);
+      if (!application) {
+        return res.status(404).json({ error: 'Application not found' });
+      }
+      
+      const updatedApplication = await storage.updateRentalApplication(id, { status });
+      res.json(updatedApplication);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to update application status' });
+    }
+  });
+  
+  app.delete('/api/applications/:id', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid ID format' });
+      }
+      
+      const application = await storage.getRentalApplication(id);
+      if (!application) {
+        return res.status(404).json({ error: 'Application not found' });
+      }
+      
+      await storage.deleteRentalApplication(id);
+      res.status(204).end();
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to delete application' });
     }
   });
 
   // Application Templates API endpoints
   app.get('/api/application-templates', async (req: Request, res: Response) => {
     try {
-      // For now, return an empty array since we don't have full implementation
-      res.json([]);
+      const templates = await storage.getApplicationTemplates();
+      res.json(templates);
     } catch (error) {
       res.status(500).json({ error: 'Failed to retrieve application templates' });
+    }
+  });
+  
+  app.get('/api/application-templates/:id', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid ID format' });
+      }
+      
+      const template = await storage.getApplicationTemplate(id);
+      if (!template) {
+        return res.status(404).json({ error: 'Application template not found' });
+      }
+      
+      res.json(template);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to retrieve application template' });
     }
   });
 
   app.post('/api/application-templates', async (req: Request, res: Response) => {
     try {
-      // Mock response for now
-      const template = {
-        id: Date.now(),
-        ...req.body,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
+      const validatedData = insertApplicationTemplateSchema.safeParse(req.body);
       
-      res.status(201).json(template);
+      if (!validatedData.success) {
+        return res.status(400).json({ 
+          error: 'Invalid application template data', 
+          details: validatedData.error.format() 
+        });
+      }
+      
+      const newTemplate = await storage.createApplicationTemplate(validatedData.data);
+      res.status(201).json(newTemplate);
     } catch (error) {
-      res.status(400).json({ error: 'Invalid template data' });
+      res.status(500).json({ error: 'Failed to create application template' });
+    }
+  });
+  
+  app.put('/api/application-templates/:id', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid ID format' });
+      }
+      
+      const validatedData = insertApplicationTemplateSchema.partial().safeParse(req.body);
+      
+      if (!validatedData.success) {
+        return res.status(400).json({ 
+          error: 'Invalid application template data', 
+          details: validatedData.error.format() 
+        });
+      }
+      
+      const template = await storage.getApplicationTemplate(id);
+      if (!template) {
+        return res.status(404).json({ error: 'Application template not found' });
+      }
+      
+      const updatedTemplate = await storage.updateApplicationTemplate(id, validatedData.data);
+      res.json(updatedTemplate);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to update application template' });
+    }
+  });
+  
+  app.delete('/api/application-templates/:id', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid ID format' });
+      }
+      
+      const template = await storage.getApplicationTemplate(id);
+      if (!template) {
+        return res.status(404).json({ error: 'Application template not found' });
+      }
+      
+      await storage.deleteApplicationTemplate(id);
+      res.status(204).end();
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to delete application template' });
     }
   });
   

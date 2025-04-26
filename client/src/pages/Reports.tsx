@@ -261,12 +261,44 @@ const Reports = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
-                <img 
-                  src={financialReportImg} 
-                  alt="Financial Report" 
-                  className="mx-auto max-w-full rounded-md shadow-sm border border-border"
-                />
+              <div className="h-[400px] w-full overflow-x-auto">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RechartsBarChart
+                    data={financialData}
+                    margin={{
+                      top: 20,
+                      right: 30,
+                      left: 20,
+                      bottom: 5,
+                    }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip formatter={(value) => `$${value}`} />
+                    <Legend />
+                    <Bar dataKey="revenue" name="Revenue" fill="#0088FE" />
+                    <Bar dataKey="expenses" name="Expenses" fill="#FF8042" />
+                    <Bar dataKey="profit" name="Net Income" fill="#00C49F" />
+                  </RechartsBarChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                <div className="bg-blue-50 dark:bg-blue-950 rounded-md p-4">
+                  <div className="text-sm text-muted-foreground">Total Revenue</div>
+                  <div className="text-2xl font-bold mt-1">$259,600</div>
+                  <div className="text-xs text-green-500 mt-1">+5.8% year over year</div>
+                </div>
+                <div className="bg-orange-50 dark:bg-orange-950 rounded-md p-4">
+                  <div className="text-sm text-muted-foreground">Total Expenses</div>
+                  <div className="text-2xl font-bold mt-1">$183,000</div>
+                  <div className="text-xs text-red-500 mt-1">+4.2% year over year</div>
+                </div>
+                <div className="bg-green-50 dark:bg-green-950 rounded-md p-4">
+                  <div className="text-sm text-muted-foreground">Net Income</div>
+                  <div className="text-2xl font-bold mt-1">$76,600</div>
+                  <div className="text-xs text-green-500 mt-1">+9.1% year over year</div>
+                </div>
               </div>
             </CardContent>
             <CardFooter className="justify-between border-t px-6 py-4">
@@ -291,12 +323,79 @@ const Reports = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
-                <img 
-                  src={occupancyReportImg} 
-                  alt="Occupancy Report" 
-                  className="mx-auto max-w-full rounded-md shadow-sm border border-border"
-                />
+              <div className="h-[400px] w-full overflow-x-auto">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RechartsLineChart
+                    data={occupancyData}
+                    margin={{
+                      top: 20,
+                      right: 30,
+                      left: 20,
+                      bottom: 5,
+                    }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis domain={[75, 95]} />
+                    <Tooltip formatter={(value) => `${value}%`} />
+                    <Legend />
+                    <Line 
+                      type="monotone" 
+                      dataKey="occupancyRate" 
+                      name="Occupancy Rate" 
+                      stroke="#8884d8" 
+                      strokeWidth={2}
+                      dot={{ r: 4 }}
+                      activeDot={{ r: 6 }} 
+                    />
+                  </RechartsLineChart>
+                </ResponsiveContainer>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <div className="border rounded-md p-4">
+                  <h3 className="text-lg font-medium mb-3">Occupancy Trends</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Average Occupancy</p>
+                      <p className="text-2xl font-bold">85.8%</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Vacancy Rate</p>
+                      <p className="text-2xl font-bold">14.2%</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Peak Occupancy</p>
+                      <p className="text-2xl font-bold">88%</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Lowest Occupancy</p>
+                      <p className="text-2xl font-bold">82%</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="border rounded-md p-4">
+                  <h3 className="text-lg font-medium mb-3">Tenant Retention</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Renewal Rate</p>
+                      <p className="text-2xl font-bold">76%</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Avg. Tenant Stay</p>
+                      <p className="text-2xl font-bold">2.4 yrs</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Move-outs (YTD)</p>
+                      <p className="text-2xl font-bold">28</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Move-ins (YTD)</p>
+                      <p className="text-2xl font-bold">34</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </CardContent>
             <CardFooter className="justify-between border-t px-6 py-4">
@@ -321,12 +420,88 @@ const Reports = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
-                <img 
-                  src={maintenanceReportImg} 
-                  alt="Maintenance Report" 
-                  className="mx-auto max-w-full rounded-md shadow-sm border border-border"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-lg font-medium mb-3">Maintenance Requests by Category</h3>
+                  <div className="h-[300px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RechartsPieChart>
+                        <Pie
+                          data={maintenanceData}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          outerRadius={100}
+                          fill="#8884d8"
+                          dataKey="value"
+                          nameKey="category"
+                          label={({ category, percent }) => `${category}: ${(percent * 100).toFixed(0)}%`}
+                        >
+                          {maintenanceData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip formatter={(value) => `${value} requests`} />
+                        <Legend />
+                      </RechartsPieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="text-lg font-medium mb-3">Maintenance Performance</h3>
+                  <div className="space-y-6">
+                    <div className="border rounded-md p-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm text-muted-foreground">Total Requests</p>
+                          <p className="text-2xl font-bold">142</p>
+                          <p className="text-xs text-green-500">-8% from previous year</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">Avg. Response Time</p>
+                          <p className="text-2xl font-bold">1.4 days</p>
+                          <p className="text-xs text-green-500">-0.3 days from previous year</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h4 className="text-sm font-medium mb-2">Request Status</h4>
+                      <div className="grid grid-cols-3 gap-2 text-center">
+                        <div className="bg-green-50 dark:bg-green-950 p-2 rounded-md">
+                          <p className="text-sm text-muted-foreground">Completed</p>
+                          <p className="text-xl font-semibold">112</p>
+                          <p className="text-xs text-muted-foreground">78.9%</p>
+                        </div>
+                        <div className="bg-yellow-50 dark:bg-yellow-950 p-2 rounded-md">
+                          <p className="text-sm text-muted-foreground">In Progress</p>
+                          <p className="text-xl font-semibold">24</p>
+                          <p className="text-xs text-muted-foreground">16.9%</p>
+                        </div>
+                        <div className="bg-red-50 dark:bg-red-950 p-2 rounded-md">
+                          <p className="text-sm text-muted-foreground">Pending</p>
+                          <p className="text-xl font-semibold">6</p>
+                          <p className="text-xs text-muted-foreground">4.2%</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h4 className="text-sm font-medium mb-2">Maintenance Costs</h4>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm text-muted-foreground">Total Costs</p>
+                          <p className="text-xl font-semibold">$48,742</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">Avg. Cost/Unit</p>
+                          <p className="text-xl font-semibold">$724</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </CardContent>
             <CardFooter className="justify-between border-t px-6 py-4">
@@ -352,15 +527,34 @@ const Reports = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4 mx-auto">
-              <PieChart className="h-8 w-8 text-primary" />
+            <div className="h-[180px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <RechartsPieChart>
+                  <Pie
+                    data={demographicData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={40}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                    nameKey="name"
+                    label={(entry) => entry.name}
+                  >
+                    {demographicData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => `${value}%`} />
+                </RechartsPieChart>
+              </ResponsiveContainer>
             </div>
-            <p className="text-sm text-center text-muted-foreground">
-              View detailed demographic breakdowns of your tenant population across all properties.
+            <p className="text-sm text-center text-muted-foreground mt-4">
+              Age distribution of current tenants across all properties
             </p>
           </CardContent>
           <CardFooter>
-            <Button variant="outline" className="w-full">View Report</Button>
+            <Button variant="outline" className="w-full">View Full Report</Button>
           </CardFooter>
         </Card>
         

@@ -16,7 +16,8 @@ import {
   BookUser,
   Contact,
   HomeIcon,
-  ListFilter
+  ListFilter,
+  Wrench
 } from "lucide-react";
 import ThemeSwitch from "./ThemeSwitch";
 
@@ -145,6 +146,12 @@ const Sidebar = () => {
         <NavLink href="/maintenance" isActive={currentPage === "maintenance"}>
           <Drill className="w-5 h-5" />
           <span className="ml-3">Maintenance</span>
+        </NavLink>
+        
+        {/* Appliances */}
+        <NavLink href="/appliances" isActive={["appliances", "add-appliance", "edit-appliance", "view-appliance"].includes(currentPage)}>
+          <Wrench className="w-5 h-5" />
+          <span className="ml-3">Appliances</span>
         </NavLink>
         
         {/* Vacancies */}

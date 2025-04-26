@@ -75,6 +75,11 @@ export class MemStorage implements IStorage {
     this.addressIdCounter = 1;
     this.contactAddressIdCounter = 1;
     this.applianceIdCounter = 1;
+    
+    this.rentalApplications = new Map();
+    this.applicationTemplates = new Map();
+    this.rentalApplicationIdCounter = 1;
+    this.applicationTemplateIdCounter = 1;
   }
 
   // User methods
@@ -374,11 +379,17 @@ export class MemStorage implements IStorage {
       backgroundCheckAuthorized: insertApplication.backgroundCheckAuthorized || false,
       backgroundCheckComplete: insertApplication.backgroundCheckComplete || false,
       creditCheckComplete: insertApplication.creditCheckComplete || false,
+      creditScore: insertApplication.creditScore || null,
       incomeVerified: insertApplication.incomeVerified || false,
       rentalHistoryVerified: insertApplication.rentalHistoryVerified || false,
-      approvedOn: insertApplication.approvedOn || null,
-      deniedOn: insertApplication.deniedOn || null,
+      employmentVerified: insertApplication.employmentVerified || false,
+      criminalHistoryCheck: insertApplication.criminalHistoryCheck || false,
+      approvedBy: insertApplication.approvedBy || null,
+      approvalDate: insertApplication.approvalDate || null,
       denialReason: insertApplication.denialReason || null,
+      denialDate: insertApplication.denialDate || null,
+      documents: insertApplication.documents || null,
+      notes: insertApplication.notes || null,
       createdAt: now,
       updatedAt: now
     };

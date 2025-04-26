@@ -12,14 +12,24 @@ import Properties from "./pages/Properties";
 import AddProperty from "./pages/AddProperty";
 import Tenants from "./pages/Tenants";
 import AddTenant from "./pages/AddTenant";
+import ViewTenant from "./pages/ViewTenant";
+import EditTenant from "./pages/EditTenant";
 import Leases from "./pages/Leases";
 import AddLease from "./pages/AddLease";
+import ViewLease from "./pages/ViewLease";
+import EditLease from "./pages/EditLease";
 import Payments from "./pages/Payments";
 import AddPayment from "./pages/AddPayment";
+import ViewPayment from "./pages/ViewPayment";
+import EditPayment from "./pages/EditPayment";
 import Maintenance from "./pages/Maintenance";
 import AddMaintenance from "./pages/AddMaintenance";
+import ViewMaintenance from "./pages/ViewMaintenance";
+import EditMaintenance from "./pages/EditMaintenance";
 import Vendors from "./pages/Vendors";
 import AddVendor from "./pages/AddVendor";
+import ViewVendor from "./pages/ViewVendor";
+import EditVendor from "./pages/EditVendor";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import { Menu, X } from "lucide-react";
@@ -103,28 +113,49 @@ function App() {
                 <Switch>
                   <Route path="/" component={Dashboard} />
                   <Route path="/dashboard" component={Dashboard} />
+                  
+                  {/* Properties Routes */}
                   <Route path="/properties" component={Properties} />
                   <Route path="/add-property" component={AddProperty} />
+                  <Route path="/view-property/:id" component={NotFound} />
+                  <Route path="/edit-property/:id" component={NotFound} />
+                  <Route path="/manage-units/:id" component={NotFound} />
+                  
+                  {/* Tenants Routes */}
                   <Route path="/tenants" component={Tenants} />
                   <Route path="/add-tenant" component={AddTenant} />
+                  <Route path="/view-tenant/:id" component={ViewTenant} />
+                  <Route path="/edit-tenant/:id" component={EditTenant} />
+                  
+                  {/* Leases Routes */}
                   <Route path="/leases" component={Leases} />
                   <Route path="/add-lease" component={AddLease} />
-                  <Route path="/leases/:id" component={NotFound} />
-                  <Route path="/leases/:id/edit" component={NotFound} />
+                  <Route path="/view-lease/:id" component={ViewLease} />
+                  <Route path="/edit-lease/:id" component={EditLease} />
+                  
+                  {/* Payments Routes */}
                   <Route path="/payments" component={Payments} />
                   <Route path="/add-payment" component={AddPayment} />
-                  <Route path="/payments/:id" component={NotFound} />
-                  <Route path="/payments/:id/edit" component={NotFound} />
+                  <Route path="/view-payment/:id" component={ViewPayment} />
+                  <Route path="/edit-payment/:id" component={EditPayment} />
+                  
+                  {/* Maintenance Routes */}
                   <Route path="/maintenance" component={Maintenance} />
                   <Route path="/add-maintenance" component={AddMaintenance} />
-                  <Route path="/maintenance/:id" component={NotFound} />
-                  <Route path="/maintenance/:id/edit" component={NotFound} />
+                  <Route path="/view-maintenance/:id" component={ViewMaintenance} />
+                  <Route path="/edit-maintenance/:id" component={EditMaintenance} />
+                  
+                  {/* Vendors Routes */}
                   <Route path="/vendors" component={Vendors} />
                   <Route path="/add-vendor" component={AddVendor} />
-                  <Route path="/vendors/:id" component={NotFound} />
-                  <Route path="/vendors/:id/edit" component={NotFound} />
+                  <Route path="/view-vendor/:id" component={ViewVendor} />
+                  <Route path="/edit-vendor/:id" component={EditVendor} />
+                  
+                  {/* Reports and Settings */}
                   <Route path="/reports" component={Reports} />
                   <Route path="/settings" component={Settings} />
+                  
+                  {/* Catch all */}
                   <Route component={NotFound} />
                 </Switch>
               </div>

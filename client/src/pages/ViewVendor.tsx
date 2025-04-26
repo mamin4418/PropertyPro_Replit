@@ -23,7 +23,8 @@ import {
   MapPin,
   Phone,
   Star,
-  Tool
+  Wrench,
+  User
 } from "lucide-react";
 
 // Mock data for a vendor
@@ -182,7 +183,7 @@ const ViewVendor = () => {
           </Link>
           <Link href={`/add-maintenance?vendor=${vendor.id}`}>
             <Button className="flex items-center">
-              <Tool className="mr-2 h-4 w-4" />
+              <Wrench className="mr-2 h-4 w-4" />
               Assign Work
             </Button>
           </Link>
@@ -206,7 +207,7 @@ const ViewVendor = () => {
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex items-start">
-                    <Tool className="h-4 w-4 mr-2 mt-1 text-muted-foreground" />
+                    <Wrench className="h-4 w-4 mr-2 mt-1 text-muted-foreground" />
                     <div>
                       <div className="font-medium">{vendor.name}</div>
                       <div className="text-sm text-muted-foreground">{vendor.category}</div>
@@ -327,7 +328,7 @@ const ViewVendor = () => {
               <CardTitle className="flex justify-between items-center">
                 <span>Work History</span>
                 <Button size="sm">
-                  <Tool className="mr-2 h-4 w-4" />
+                  <Wrench className="mr-2 h-4 w-4" />
                   Assign New Work
                 </Button>
               </CardTitle>

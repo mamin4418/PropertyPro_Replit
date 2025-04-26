@@ -28,7 +28,7 @@ import {
   MessageCircle,
   MessagesSquare,
   Phone,
-  Tool,
+  Wrench,
   User,
   X
 } from "lucide-react";
@@ -170,7 +170,7 @@ const ViewMaintenance = () => {
       case "admin":
         return <ClipboardCheck className="h-5 w-5 text-purple-500" />;
       case "vendor":
-        return <Tool className="h-5 w-5 text-amber-500" />;
+        return <Wrench className="h-5 w-5 text-amber-500" />;
       default:
         return <MessageCircle className="h-5 w-5 text-gray-500" />;
     }

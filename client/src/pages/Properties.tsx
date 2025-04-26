@@ -124,21 +124,63 @@ const Properties = () => {
         </div>
       </div>
       
-      {/* Properties Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {properties.map((property) => (
-          <PropertyCard
-            key={property.id}
-            name={property.name}
-            address={property.address}
-            status={property.status}
-            revenue={property.revenue}
-            units={property.units}
-            occupancy={property.occupancy}
-            onViewDetails={() => handleViewDetails(property.id)}
-          />
-        ))}
-      </div>
+      {/* Properties View */}
+      {viewMode === "grid" ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {properties.map((property) => (
+            <PropertyCard
+              key={property.id}
+              name={property.name}
+              address={property.address}
+              status={property.status}
+              revenue={property.revenue}
+              units={property.units}
+              occupancy={property.occupancy}
+              onViewDetails={() => handleViewDetails(property.id)}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="border rounded-md overflow-hidden">
+          <table className="w-full">
+            <thead className="bg-muted">
+              <tr>
+                <th className="px-4 py-3 text-left font-medium text-xs uppercase">Property</th>
+                <th className="px-4 py-3 text-left font-medium text-xs uppercase">Address</th>
+                <th className="px-4 py-3 text-left font-medium text-xs uppercase">Status</th>
+                <th className="px-4 py-3 text-left font-medium text-xs uppercase">Units</th>
+                <th className="px-4 py-3 text-left font-medium text-xs uppercase">Occupancy</th>
+                <th className="px-4 py-3 text-left font-medium text-xs uppercase">Revenue</th>
+                <th className="px-4 py-3 text-left font-medium text-xs uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {properties.map((property) => (
+                <tr key={property.id} className="hover:bg-muted/50">
+                  <td className="px-4 py-3 font-medium">{property.name}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{property.address}</td>
+                  <td className="px-4 py-3">
+                    <span className={`inline-flex rounded-full px-2 py-1 text-xs font-medium
+                      ${property.status === 'active' ? 'bg-green-100 text-green-700' : 
+                        property.status === 'maintenance' ? 'bg-amber-100 text-amber-700' : 
+                        'bg-gray-100 text-gray-700'}`}>
+                      {property.status.charAt(0).toUpperCase() + property.status.slice(1)}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">{property.units.occupied}/{property.units.total}</td>
+                  <td className="px-4 py-3">{property.occupancy}%</td>
+                  <td className="px-4 py-3">${property.revenue.toLocaleString()}</td>
+                  <td className="px-4 py-3">
+                    <Button size="sm" variant="link" onClick={() => handleViewDetails(property.id)}>
+                      View Details
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
       
       {/* Pagination */}
       <div className="mt-6 flex items-center justify-between">

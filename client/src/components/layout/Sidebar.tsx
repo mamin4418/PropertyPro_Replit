@@ -1,3 +1,4 @@
+
 import { Link, useLocation } from "wouter";
 import {
   LayoutDashboard,
@@ -5,7 +6,6 @@ import {
   Users,
   ClipboardList,
   DollarSign,
-  Tool,
   Wrench,
   User,
   Settings,
@@ -15,9 +15,8 @@ import {
   Building2,
   Contact,
   UserCheck,
-  FileBox,
-  MenuIcon,
   LogOut,
+  Menu as MenuIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ThemeSwitch from "./ThemeSwitch";
@@ -91,7 +90,7 @@ export default function Sidebar() {
           Payments
         </SidebarNavItem>
 
-        <SidebarNavItem href="/maintenance" icon={Tool}>
+        <SidebarNavItem href="/maintenance" icon={Wrench}>
           Maintenance
         </SidebarNavItem>
 

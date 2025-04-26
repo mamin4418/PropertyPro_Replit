@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
+import TenantAuthPage from "@/pages/tenant-auth-page";
+import TenantDashboard from "@/pages/tenant-dashboard";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 import { useState, useEffect } from "react";
@@ -208,6 +210,8 @@ function AppRoutes() {
               
               {/* Auth Routes */}
               <Route path="/auth" component={AuthPage} />
+              <Route path="/tenant-auth" component={TenantAuthPage} />
+              <Route path="/tenant-dashboard" component={TenantDashboard} />
               
               {/* Catch all */}
               <Route component={NotFound} />

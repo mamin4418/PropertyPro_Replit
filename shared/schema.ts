@@ -517,11 +517,16 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+  role: text("role").notNull().default("manager"), // manager, tenant
+  // Tenants can have a reference to their contact info
+  contactId: integer("contact_id"),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
+  role: true,
+  contactId: true,
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

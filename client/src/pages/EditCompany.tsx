@@ -124,25 +124,6 @@ const EditCompany = () => {
     },
   });
 
-  // Sample company data for development
-  const sampleCompany = {
-    id: parseInt(id as string),
-    companyName: "ABC Properties",
-    legalName: "ABC Properties LLC",
-    type: "LLC",
-    ein: "12-3456789",
-    email: "info@abcproperties.com",
-    phone: "(555) 123-4567",
-    streetAddress: "123 Main Street",
-    unit: "Suite 200",
-    city: "New York",
-    state: "NY",
-    zipcode: "10001",
-    country: "United States",
-    businessLicense: "BL-12345",
-    notes: "This is a sample company for property management.",
-  };
-
   // Fetch company data
   const { isLoading, isError } = useQuery({
     queryKey: [`/api/companies/${id}`],
@@ -153,8 +134,24 @@ const EditCompany = () => {
         return response.json();
       } catch (error) {
         console.error("Error fetching company:", error);
-        // Return mock data for development
-        return sampleCompany;
+        // Mock data for development
+        return {
+          id: parseInt(id as string),
+          companyName: "ABC Properties",
+          legalName: "ABC Properties LLC",
+          type: "LLC",
+          ein: "12-3456789",
+          email: "info@abcproperties.com",
+          phone: "(555) 123-4567",
+          streetAddress: "123 Main Street",
+          unit: "Suite 200",
+          city: "New York",
+          state: "NY",
+          zipcode: "10001",
+          country: "United States",
+          businessLicense: "BL-12345",
+          notes: "This is a sample company for property management.",
+        };
       }
     },
     onSuccess: (data) => {

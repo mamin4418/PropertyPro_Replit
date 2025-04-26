@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import {
@@ -199,12 +198,12 @@ const Sidebar = () => {
         </div>
         
         {/* Companies */}
-        <NavLink href="/companies" isActive={["companies", "add-company", "view-company", "edit-company"].includes(currentPage)}>
-          <Building2 className="w-5 h-5" />
-          <span className="ml-3">Companies</span>
-        </NavLink>
+<NavLink href="/companies" isActive={["companies", "add-company", "view-company", "edit-company"].includes(currentPage)}>
+  <Building2 className="w-5 h-5" />
+  <span className="ml-3">Companies</span>
+</NavLink>
 
-        {/* Contacts - Centralized contact management */}
+{/* Contacts - Centralized contact management */}
         <div className="space-y-1">
           <button
             onClick={() => setContactsOpen(!contactsOpen)}

@@ -76,7 +76,8 @@ const Sidebar = () => {
   );
   
   const [vacanciesOpen, setVacanciesOpen] = useState(
-    ["vacancy-listing", "manage-vacancies", "create-vacancy", "edit-vacancy", "view-vacancy"].includes(currentPage)
+    ["vacancy-listing", "manage-vacancies", "create-vacancy", "edit-vacancy", "view-vacancy", 
+     "applications", "application-templates", "create-template", "edit-template"].includes(currentPage)
   );
 
   return (

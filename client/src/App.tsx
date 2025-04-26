@@ -191,6 +191,7 @@ function App() {
                   <Route path="/applications" component={Applications} />
                   <Route path="/application-templates" component={ApplicationTemplates} />
                   <Route path="/create-template" component={CreateApplicationTemplate} />
+                  <Route path="/edit-template/:id" component={CreateApplicationTemplate} />
                   
                   {/* Vacancy Management Routes */}
                   <Route path="/vacancy-listing" component={VacancyListing} />

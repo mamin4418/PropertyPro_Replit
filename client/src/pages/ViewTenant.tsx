@@ -28,7 +28,7 @@ import {
   DollarSign,
   ClipboardList
 } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 
 // Mock data for a tenant

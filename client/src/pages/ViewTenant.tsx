@@ -28,7 +28,7 @@ import {
   DollarSign,
   ClipboardList
 } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast"; // Added import
+import { useToast } from "@/components/ui/use-toast";
 
 
 // Mock data for a tenant
@@ -124,7 +124,7 @@ const CommunicationHistory = ({ communications }) => {
 const ViewTenant = () => {
   const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState("details");
-  const { toast } = useToast(); //Added this line
+  const { toast } = useToast();
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -518,13 +518,11 @@ const ViewTenant = () => {
                           tenantId: tenant.id,
                         }),
                       });
-                      const { toast } = useToast(); //Corrected this line
                       toast({
                         title: "Message sent successfully",
                         description: "The message has been sent to the tenant.",
                       });
                     } catch (error) {
-                      const { toast } = useToast(); //Corrected this line
                       toast({
                         title: "Failed to send message",
                         description: "There was an error sending the message.",

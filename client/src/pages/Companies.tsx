@@ -23,7 +23,7 @@ const Companies = () => {
   const filteredCompanies = companies?.filter(company => 
     company.companyName.toLowerCase().includes(search.toLowerCase()) ||
     company.legalName.toLowerCase().includes(search.toLowerCase())
-  ) || [];
+  );
 
   return (
     <div className="p-6">
@@ -45,42 +45,30 @@ const Companies = () => {
         />
       </div>
 
-      {isLoading ? (
-        <div className="flex justify-center items-center p-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCompanies.length > 0 ? (
-            filteredCompanies.map((company) => (
-              <Card 
-                key={company.id}
-                className="cursor-pointer hover:bg-accent/50 transition-colors"
-                onClick={() => navigate(`/view-company/${company.id}`)}
-              >
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Building2 className="h-5 w-5" />
-                    {company.companyName}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2 text-sm">
-                    <p className="text-muted-foreground">Legal Name: {company.legalName}</p>
-                    {company.email && <p className="text-muted-foreground">Email: {company.email}</p>}
-                    {company.phone && <p className="text-muted-foreground">Phone: {company.phone}</p>}
-                    <p className="text-muted-foreground">Type: {company.type}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
-          ) : (
-            <div className="col-span-3 text-center p-8">
-              <p className="text-muted-foreground">No companies found matching your search.</p>
-            </div>
-          )}
-        </div>
-      )}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredCompanies?.map((company) => (
+          <Card 
+            key={company.id}
+            className="cursor-pointer hover:bg-accent/50 transition-colors"
+            onClick={() => navigate(`/view-company/${company.id}`)}
+          >
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Building2 className="h-5 w-5" />
+                {company.companyName}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2 text-sm">
+                <p className="text-muted-foreground">Legal Name: {company.legalName}</p>
+                {company.email && <p className="text-muted-foreground">Email: {company.email}</p>}
+                {company.phone && <p className="text-muted-foreground">Phone: {company.phone}</p>}
+                <p className="text-muted-foreground">Type: {company.type}</p>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 };

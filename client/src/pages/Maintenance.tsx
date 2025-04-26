@@ -309,13 +309,13 @@ const Maintenance = () => {
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
                           <Button variant="ghost" size="icon" asChild>
-                            <Link href={`/maintenance/${request.id}`}>
+                            <Link href={`/view-maintenance/${request.id}`}>
                               <Eye className="h-4 w-4" />
                               <span className="sr-only">View</span>
                             </Link>
                           </Button>
                           <Button variant="ghost" size="icon" asChild>
-                            <Link href={`/maintenance/${request.id}/edit`}>
+                            <Link href={`/edit-maintenance/${request.id}`}>
                               <Edit className="h-4 w-4" />
                               <span className="sr-only">Edit</span>
                             </Link>
@@ -366,13 +366,13 @@ const Maintenance = () => {
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
                           <Button variant="ghost" size="icon" asChild>
-                            <Link href={`/maintenance/${request.id}`}>
+                            <Link href={`/view-maintenance/${request.id}`}>
                               <Eye className="h-4 w-4" />
                               <span className="sr-only">View</span>
                             </Link>
                           </Button>
                           <Button variant="ghost" size="icon" asChild>
-                            <Link href={`/maintenance/${request.id}/edit`}>
+                            <Link href={`/edit-maintenance/${request.id}`}>
                               <Edit className="h-4 w-4" />
                               <span className="sr-only">Edit</span>
                             </Link>
@@ -423,13 +423,13 @@ const Maintenance = () => {
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
                           <Button variant="ghost" size="icon" asChild>
-                            <Link href={`/maintenance/${request.id}`}>
+                            <Link href={`/view-maintenance/${request.id}`}>
                               <Eye className="h-4 w-4" />
                               <span className="sr-only">View</span>
                             </Link>
                           </Button>
                           <Button variant="ghost" size="icon" asChild>
-                            <Link href={`/maintenance/${request.id}/edit`}>
+                            <Link href={`/edit-maintenance/${request.id}`}>
                               <Edit className="h-4 w-4" />
                               <span className="sr-only">Edit</span>
                             </Link>
@@ -480,13 +480,13 @@ const Maintenance = () => {
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
                           <Button variant="ghost" size="icon" asChild>
-                            <Link href={`/maintenance/${request.id}`}>
+                            <Link href={`/view-maintenance/${request.id}`}>
                               <Eye className="h-4 w-4" />
                               <span className="sr-only">View</span>
                             </Link>
                           </Button>
                           <Button variant="ghost" size="icon" asChild>
-                            <Link href={`/maintenance/${request.id}/edit`}>
+                            <Link href={`/edit-maintenance/${request.id}`}>
                               <Edit className="h-4 w-4" />
                               <span className="sr-only">Edit</span>
                             </Link>

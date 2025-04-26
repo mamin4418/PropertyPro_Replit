@@ -374,13 +374,13 @@ const Payments = () => {
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
                           <Button variant="ghost" size="icon" asChild>
-                            <Link href={`/payments/${payment.id}`}>
+                            <Link href={`/view-payment/${payment.id}`}>
                               <Eye className="h-4 w-4" />
                               <span className="sr-only">View</span>
                             </Link>
                           </Button>
                           <Button variant="ghost" size="icon" asChild>
-                            <Link href={`/payments/${payment.id}/edit`}>
+                            <Link href={`/edit-payment/${payment.id}`}>
                               <Edit className="h-4 w-4" />
                               <span className="sr-only">Edit</span>
                             </Link>
@@ -444,13 +444,13 @@ const Payments = () => {
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
                           <Button variant="ghost" size="icon" asChild>
-                            <Link href={`/payments/${payment.id}`}>
+                            <Link href={`/view-payment/${payment.id}`}>
                               <Eye className="h-4 w-4" />
                               <span className="sr-only">View</span>
                             </Link>
                           </Button>
                           <Button variant="ghost" size="icon" asChild>
-                            <Link href={`/payments/${payment.id}/edit`}>
+                            <Link href={`/edit-payment/${payment.id}`}>
                               <Edit className="h-4 w-4" />
                               <span className="sr-only">Edit</span>
                             </Link>
@@ -514,13 +514,13 @@ const Payments = () => {
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
                           <Button variant="ghost" size="icon" asChild>
-                            <Link href={`/payments/${payment.id}`}>
+                            <Link href={`/view-payment/${payment.id}`}>
                               <Eye className="h-4 w-4" />
                               <span className="sr-only">View</span>
                             </Link>
                           </Button>
                           <Button variant="ghost" size="icon" asChild>
-                            <Link href={`/payments/${payment.id}/edit`}>
+                            <Link href={`/edit-payment/${payment.id}`}>
                               <Edit className="h-4 w-4" />
                               <span className="sr-only">Edit</span>
                             </Link>

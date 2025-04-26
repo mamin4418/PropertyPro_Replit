@@ -261,12 +261,16 @@ const Vendors = () => {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
-                              <FileEdit className="mr-2 h-4 w-4" />
-                              Edit
+                            <DropdownMenuItem asChild>
+                              <Link href={`/edit-vendor/${vendor.id}`}>
+                                <FileEdit className="mr-2 h-4 w-4" />
+                                Edit
+                              </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              View Details
+                            <DropdownMenuItem asChild>
+                              <Link href={`/view-vendor/${vendor.id}`}>
+                                View Details
+                              </Link>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem className="text-destructive">

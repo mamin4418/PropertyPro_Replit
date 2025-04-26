@@ -70,8 +70,8 @@ const Properties = () => {
   ] as const;
   
   const handleViewDetails = (id: number | string) => {
-    // In a real app, navigate to property details page
-    console.log(`View details for property ${id}`);
+    // Navigate to property details page
+    navigate(`/view-property/${id}`);
   };
   
   const handleResetFilters = () => {

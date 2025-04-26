@@ -67,18 +67,28 @@ const SubNavLink = ({ href, isActive, children }: SubNavLinkProps) => {
 const Sidebar = () => {
   const [location] = useLocation();
   const currentPage = location.split("/")[1] || "dashboard";
-  
+
   const [propertiesOpen, setPropertiesOpen] = useState(
     ["properties", "add-property", "appliances", "add-appliance", "edit-appliance", "view-appliance"].includes(currentPage)
   );
   const [contactsOpen, setContactsOpen] = useState(
     ["contacts", "add-contact", "view-contact", "edit-contact", "tenants", "add-tenant", "vendors", "add-vendor"].includes(currentPage)
   );
-  
+
   const [vacanciesOpen, setVacanciesOpen] = useState(
     ["vacancy-listing", "manage-vacancies", "create-vacancy", "edit-vacancy", "view-vacancy", 
      "applications", "application-templates", "create-template", "edit-template"].includes(currentPage)
   );
+
+  const [openSections, setOpenSections] = useState({
+    properties: true,
+    tenants: false,
+    leases: false,
+    finances: false,
+    maintenance: false,
+    leasing: false,
+    companies: false,
+  });
 
   return (
     <div className="h-full flex flex-col pt-0 lg:pt-4">
@@ -89,7 +99,7 @@ const Sidebar = () => {
         </div>
         <div className="ml-3 font-semibold text-xl">PropManager</div>
       </div>
-      
+
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-1">
         {/* Dashboard */}
@@ -97,7 +107,7 @@ const Sidebar = () => {
           <Home className="w-5 h-5" />
           <span className="ml-3">Dashboard</span>
         </NavLink>
-        
+
         {/* Properties */}
         <div className="space-y-1">
           <button
@@ -118,7 +128,7 @@ const Sidebar = () => {
               <ChevronRight className="w-4 h-4" />
             )}
           </button>
-          
+
           {propertiesOpen && (
             <div className="pl-10 space-y-1">
               <SubNavLink href="/properties" isActive={currentPage === "properties"}>
@@ -133,25 +143,25 @@ const Sidebar = () => {
             </div>
           )}
         </div>
-        
+
         {/* Leases */}
         <NavLink href="/leases" isActive={currentPage === "leases"}>
           <FileText className="w-5 h-5" />
           <span className="ml-3">Leases</span>
         </NavLink>
-        
+
         {/* Payments */}
         <NavLink href="/payments" isActive={currentPage === "payments"}>
           <DollarSign className="w-5 h-5" />
           <span className="ml-3">Payments</span>
         </NavLink>
-        
+
         {/* Maintenance */}
         <NavLink href="/maintenance" isActive={currentPage === "maintenance"}>
           <Drill className="w-5 h-5" />
           <span className="ml-3">Maintenance</span>
         </NavLink>
-        
+
         {/* Vacancies */}
         <div className="space-y-1">
           <button
@@ -172,7 +182,7 @@ const Sidebar = () => {
               <ChevronRight className="w-4 h-4" />
             )}
           </button>
-          
+
           {vacanciesOpen && (
             <div className="pl-10 space-y-1">
               <SubNavLink href="/vacancy-listing" isActive={currentPage === "vacancy-listing"}>
@@ -196,19 +206,20 @@ const Sidebar = () => {
             </div>
           )}
         </div>
-        
-        {/* Companies */}
-<button
-  onClick={() => navigate("/companies")}
-  className={`w-full flex items-center p-3 rounded-md transition-colors ${
-    currentPage === "companies" ? "bg-primary/10 text-primary" : "hover:bg-secondary"
-  }`}
->
-  <Building2 className="w-5 h-5" />
-  <span className="ml-3">Companies</span>
-</button>
 
-{/* Contacts - Centralized contact management */}
+        {/* Companies */}
+        <button
+          onClick={() => setOpenSections({...openSections, companies: !openSections.companies})}
+          className={`w-full flex items-center p-3 rounded-md transition-colors ${
+            currentPage === "companies" ? "bg-primary/10 text-primary" : "hover:bg-secondary"
+          }`}
+        >
+          <Building2 className="w-5 h-5" />
+          <span className="ml-3">Companies</span>
+        </button>
+
+
+        {/* Contacts - Centralized contact management */}
         <div className="space-y-1">
           <button
             onClick={() => setContactsOpen(!contactsOpen)}
@@ -228,7 +239,7 @@ const Sidebar = () => {
               <ChevronRight className="w-4 h-4" />
             )}
           </button>
-          
+
           {contactsOpen && (
             <div className="pl-10 space-y-1">
               <SubNavLink href="/contacts" isActive={currentPage === "contacts"}>
@@ -246,20 +257,20 @@ const Sidebar = () => {
             </div>
           )}
         </div>
-        
+
         {/* Reports */}
         <NavLink href="/reports" isActive={currentPage === "reports"}>
           <BarChart className="w-5 h-5" />
           <span className="ml-3">Reports</span>
         </NavLink>
-        
+
         {/* Settings */}
         <NavLink href="/settings" isActive={currentPage === "settings"}>
           <Settings className="w-5 h-5" />
           <span className="ml-3">Settings</span>
         </NavLink>
       </nav>
-      
+
       {/* Theme Switcher */}
       <div className="p-4 border-t border-custom mt-auto">
         <ThemeSwitch />

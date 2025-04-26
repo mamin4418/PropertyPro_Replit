@@ -33,6 +33,10 @@ import Vendors from "./pages/Vendors";
 import AddVendor from "./pages/AddVendor";
 import ViewVendor from "./pages/ViewVendor";
 import EditVendor from "./pages/EditVendor";
+import Contacts from "./pages/Contacts";
+import AddContact from "./pages/AddContact";
+import ViewContact from "./pages/ViewContact";
+import EditContact from "./pages/EditContact";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import { Menu, X } from "lucide-react";
@@ -153,6 +157,12 @@ function App() {
                   <Route path="/add-vendor" component={AddVendor} />
                   <Route path="/view-vendor/:id" component={ViewVendor} />
                   <Route path="/edit-vendor/:id" component={EditVendor} />
+                  
+                  {/* Contacts Routes */}
+                  <Route path="/contacts" component={Contacts} />
+                  <Route path="/add-contact" component={AddContact} />
+                  <Route path="/view-contact/:id" component={ViewContact} />
+                  <Route path="/edit-contact/:id" component={EditContact} />
                   
                   {/* Reports and Settings */}
                   <Route path="/reports" component={Reports} />

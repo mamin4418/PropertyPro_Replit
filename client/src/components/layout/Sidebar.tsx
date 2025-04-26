@@ -12,7 +12,9 @@ import {
   ChevronRight,
   ChevronDown,
   Hammer,
-  Store
+  Store,
+  BookUser,
+  Contact
 } from "lucide-react";
 import ThemeSwitch from "./ThemeSwitch";
 
@@ -72,6 +74,10 @@ const Sidebar = () => {
   
   const [vendorsOpen, setVendorsOpen] = useState(
     ["vendors", "add-vendor"].includes(currentPage)
+  );
+  
+  const [contactsOpen, setContactsOpen] = useState(
+    ["contacts", "add-contact"].includes(currentPage)
   );
 
   return (
@@ -204,6 +210,39 @@ const Sidebar = () => {
               </SubNavLink>
               <SubNavLink href="/add-vendor" isActive={currentPage === "add-vendor"}>
                 Add Vendor
+              </SubNavLink>
+            </div>
+          )}
+        </div>
+        
+        {/* Contacts */}
+        <div className="space-y-1">
+          <button
+            onClick={() => setContactsOpen(!contactsOpen)}
+            className={`w-full flex items-center justify-between p-3 rounded-md transition-colors ${
+              ["contacts", "add-contact", "view-contact", "edit-contact"].includes(currentPage) 
+                ? "bg-primary/10 text-primary" 
+                : "hover:bg-secondary"
+            }`}
+          >
+            <div className="flex items-center">
+              <Contact className="w-5 h-5" />
+              <span className="ml-3">Contacts</span>
+            </div>
+            {contactsOpen ? (
+              <ChevronDown className="w-4 h-4" />
+            ) : (
+              <ChevronRight className="w-4 h-4" />
+            )}
+          </button>
+          
+          {contactsOpen && (
+            <div className="pl-10 space-y-1">
+              <SubNavLink href="/contacts" isActive={currentPage === "contacts"}>
+                All Contacts
+              </SubNavLink>
+              <SubNavLink href="/add-contact" isActive={currentPage === "add-contact"}>
+                Add Contact
               </SubNavLink>
             </div>
           )}

@@ -4,7 +4,8 @@ import {
   Card, 
   CardContent, 
   CardHeader, 
-  CardTitle 
+  CardTitle,
+  CardDescription
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -27,6 +28,8 @@ import {
   DollarSign,
   ClipboardList
 } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
+
 
 // Mock data for a tenant
 const tenant = {
@@ -82,10 +85,46 @@ const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString(undefined, options);
 };
 
+const CommunicationForm = ({ recipientEmail, recipientPhone, onSend }) => {
+  const [message, setMessage] = useState("");
+  const [type, setType] = useState("email");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await onSend(type, message);
+    setMessage("");
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <select value={type} onChange={(e) => setType(e.target.value)}>
+        <option value="email">Email</option>
+        <option value="sms">SMS</option>
+        <option value="whatsapp">WhatsApp</option>
+      </select>
+      <textarea value={message} onChange={(e) => setMessage(e.target.value)} />
+      <button type="submit">Send</button>
+    </form>
+  );
+};
+
+
+const CommunicationHistory = ({ communications }) => {
+  return (
+    <ul>
+      {communications.map((comm) => (
+        <li key={comm.id}>
+          {comm.type}: {comm.content} ({comm.timestamp})
+        </li>
+      ))}
+    </ul>
+  );
+};
+
 const ViewTenant = () => {
   const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState("details");
-  
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "active":
@@ -100,7 +139,7 @@ const ViewTenant = () => {
         return <Badge className="bg-blue-500">{status}</Badge>;
     }
   };
-  
+
   const getPaymentStatusBadge = (status: string) => {
     switch (status) {
       case "paid":
@@ -113,7 +152,7 @@ const ViewTenant = () => {
         return <Badge className="bg-blue-500">{status}</Badge>;
     }
   };
-  
+
   const getRequestStatusBadge = (status: string) => {
     switch (status) {
       case "completed":
@@ -128,7 +167,7 @@ const ViewTenant = () => {
         return <Badge className="bg-gray-500">{status}</Badge>;
     }
   };
-  
+
   const getDocumentIcon = (type: string) => {
     switch (type) {
       case "lease":
@@ -145,7 +184,7 @@ const ViewTenant = () => {
         return <FileText className="h-4 w-4 text-gray-500" />;
     }
   };
-  
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
@@ -167,7 +206,7 @@ const ViewTenant = () => {
           </div>
           <p className="text-muted-foreground">Tenant ID: #{tenant.id} • {tenant.property}, {tenant.unit}</p>
         </div>
-        
+
         <div className="flex mt-4 sm:mt-0 gap-2">
           <Link href={`/edit-tenant/${tenant.id}`}>
             <Button variant="outline" className="flex items-center">
@@ -183,15 +222,16 @@ const ViewTenant = () => {
           </Link>
         </div>
       </div>
-      
+
       <Tabs defaultValue="details" value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList>
           <TabsTrigger value="details">Details</TabsTrigger>
           <TabsTrigger value="documents">Documents</TabsTrigger>
           <TabsTrigger value="payments">Payments</TabsTrigger>
           <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
+          <TabsTrigger value="communications">Communications</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="details" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
@@ -207,7 +247,7 @@ const ViewTenant = () => {
                       <div className="text-sm text-muted-foreground">Primary Tenant</div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-start">
                     <Mail className="h-4 w-4 mr-2 mt-1 text-muted-foreground" />
                     <div>
@@ -215,7 +255,7 @@ const ViewTenant = () => {
                       <div className="text-sm text-muted-foreground">Email</div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-start">
                     <Phone className="h-4 w-4 mr-2 mt-1 text-muted-foreground" />
                     <div>
@@ -223,9 +263,9 @@ const ViewTenant = () => {
                       <div className="text-sm text-muted-foreground">Phone</div>
                     </div>
                   </div>
-                  
+
                   <Separator />
-                  
+
                   <div className="flex items-start">
                     <MapPin className="h-4 w-4 mr-2 mt-1 text-muted-foreground" />
                     <div>
@@ -234,17 +274,17 @@ const ViewTenant = () => {
                       <div className="text-sm text-muted-foreground">Address</div>
                     </div>
                   </div>
-                  
+
                   <Separator />
-                  
+
                   <div>
                     <div className="font-medium mb-1">Emergency Contact</div>
                     <div>{tenant.emergencyContact.name} ({tenant.emergencyContact.relationship})</div>
                     <div>{tenant.emergencyContact.phone}</div>
                   </div>
-                  
+
                   <Separator />
-                  
+
                   <div>
                     <div className="font-medium mb-1">Notes</div>
                     <div className="text-sm">{tenant.notes}</div>
@@ -252,7 +292,7 @@ const ViewTenant = () => {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg font-medium">Lease Information</CardTitle>
@@ -267,7 +307,7 @@ const ViewTenant = () => {
                       <div className="text-sm text-muted-foreground">Property & Unit</div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-start">
                     <Calendar className="h-4 w-4 mr-2 mt-1 text-muted-foreground" />
                     <div>
@@ -275,9 +315,9 @@ const ViewTenant = () => {
                       <div className="text-sm text-muted-foreground">Lease Term</div>
                     </div>
                   </div>
-                  
+
                   <Separator />
-                  
+
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <div className="text-sm text-muted-foreground">Monthly Rent</div>
@@ -297,15 +337,15 @@ const ViewTenant = () => {
                       <div className="text-xs text-muted-foreground">{formatDate(tenant.lastPayment.date)}</div>
                     </div>
                   </div>
-                  
+
                   <Separator />
-                  
+
                   <div>
                     <div className="flex items-center mb-2">
                       <div className="font-medium">Lease Documents</div>
                       <span className="text-xs text-muted-foreground ml-2">{tenant.documents.filter(d => d.type === "lease").length} documents</span>
                     </div>
-                    
+
                     {tenant.documents.filter(d => d.type === "lease").map((doc, idx) => (
                       <div key={idx} className="flex items-center justify-between py-1">
                         <div className="flex items-center">
@@ -317,7 +357,7 @@ const ViewTenant = () => {
                         </Button>
                       </div>
                     ))}
-                    
+
                     <Button variant="link" className="p-0 h-8 text-sm" onClick={() => setActiveTab("documents")}>
                       View all documents
                     </Button>
@@ -327,7 +367,7 @@ const ViewTenant = () => {
             </Card>
           </div>
         </TabsContent>
-        
+
         <TabsContent value="documents" className="space-y-4">
           <Card>
             <CardHeader className="pb-2">
@@ -363,7 +403,7 @@ const ViewTenant = () => {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="payments" className="space-y-4">
           <Card>
             <CardHeader className="pb-2">
@@ -409,7 +449,7 @@ const ViewTenant = () => {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="maintenance" className="space-y-4">
           <Card>
             <CardHeader className="pb-2">
@@ -454,6 +494,67 @@ const ViewTenant = () => {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+        <TabsContent value="communications">
+          <div className="grid gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Send Message</CardTitle>
+                <CardDescription>Send an email, SMS, or WhatsApp message to the tenant</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <CommunicationForm
+                  recipientEmail={tenant.email}
+                  recipientPhone={tenant.phone}
+                  onSend={async (type, message) => {
+                    try {
+                      await fetch("/api/communications", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          type,
+                          message,
+                          tenantId: tenant.id,
+                        }),
+                      });
+                      toast({
+                        title: "Message sent successfully",
+                        description: "The message has been sent to the tenant.",
+                      });
+                    } catch (error) {
+                      toast({
+                        title: "Failed to send message",
+                        description: "There was an error sending the message.",
+                        variant: "destructive",
+                      });
+                    }
+                  }}
+                />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Communication History</CardTitle>
+                <CardDescription>View all previous communications with this tenant</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <CommunicationHistory
+                  communications={[
+                    {
+                      id: 1,
+                      type: "email",
+                      content: "Your rent payment is due in 5 days",
+                      timestamp: new Date().toISOString(),
+                      sender: "System",
+                      recipient: tenant.email,
+                    },
+                    // Add more sample communications here
+                  ]}
+                />
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>

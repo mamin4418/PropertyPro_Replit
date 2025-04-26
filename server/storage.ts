@@ -36,6 +36,20 @@ export interface IStorage {
   createAppliance(appliance: InsertAppliance): Promise<Appliance>;
   updateAppliance(id: number, appliance: Partial<InsertAppliance>): Promise<Appliance | undefined>;
   deleteAppliance(id: number): Promise<boolean>;
+  
+  // Application methods
+  getRentalApplication(id: number): Promise<RentalApplication | undefined>;
+  getRentalApplications(): Promise<RentalApplication[]>;
+  createRentalApplication(application: InsertRentalApplication): Promise<RentalApplication>;
+  updateRentalApplication(id: number, application: Partial<InsertRentalApplication>): Promise<RentalApplication | undefined>;
+  deleteRentalApplication(id: number): Promise<boolean>;
+  
+  // Application Template methods
+  getApplicationTemplate(id: number): Promise<ApplicationTemplate | undefined>;
+  getApplicationTemplates(): Promise<ApplicationTemplate[]>;
+  createApplicationTemplate(template: InsertApplicationTemplate): Promise<ApplicationTemplate>;
+  updateApplicationTemplate(id: number, template: Partial<InsertApplicationTemplate>): Promise<ApplicationTemplate | undefined>;
+  deleteApplicationTemplate(id: number): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -327,6 +341,120 @@ export class MemStorage implements IStorage {
   
   async deleteAppliance(id: number): Promise<boolean> {
     return this.appliances.delete(id);
+  }
+  
+  // Application methods
+  private rentalApplications: Map<number, RentalApplication> = new Map();
+  private rentalApplicationIdCounter: number = 1;
+  
+  async getRentalApplication(id: number): Promise<RentalApplication | undefined> {
+    return this.rentalApplications.get(id);
+  }
+  
+  async getRentalApplications(): Promise<RentalApplication[]> {
+    return Array.from(this.rentalApplications.values());
+  }
+  
+  async createRentalApplication(insertApplication: InsertRentalApplication): Promise<RentalApplication> {
+    const id = this.rentalApplicationIdCounter++;
+    const now = new Date();
+    
+    const application: RentalApplication = {
+      id,
+      contactId: insertApplication.contactId,
+      vacancyId: insertApplication.vacancyId || null,
+      leadId: insertApplication.leadId || null,
+      templateId: insertApplication.templateId || null,
+      applicationData: insertApplication.applicationData,
+      desiredMoveInDate: insertApplication.desiredMoveInDate || null,
+      applicationFee: insertApplication.applicationFee || null,
+      applicationFeePaid: insertApplication.applicationFeePaid || false,
+      status: insertApplication.status || 'submitted',
+      submissionDate: now,
+      backgroundCheckAuthorized: insertApplication.backgroundCheckAuthorized || false,
+      backgroundCheckComplete: insertApplication.backgroundCheckComplete || false,
+      creditCheckComplete: insertApplication.creditCheckComplete || false,
+      incomeVerified: insertApplication.incomeVerified || false,
+      rentalHistoryVerified: insertApplication.rentalHistoryVerified || false,
+      approvedOn: insertApplication.approvedOn || null,
+      deniedOn: insertApplication.deniedOn || null,
+      denialReason: insertApplication.denialReason || null,
+      createdAt: now,
+      updatedAt: now
+    };
+    
+    this.rentalApplications.set(id, application);
+    return application;
+  }
+  
+  async updateRentalApplication(id: number, updateData: Partial<InsertRentalApplication>): Promise<RentalApplication | undefined> {
+    const application = this.rentalApplications.get(id);
+    if (!application) {
+      return undefined;
+    }
+    
+    const updatedApplication: RentalApplication = {
+      ...application,
+      ...updateData,
+      updatedAt: new Date()
+    };
+    
+    this.rentalApplications.set(id, updatedApplication);
+    return updatedApplication;
+  }
+  
+  async deleteRentalApplication(id: number): Promise<boolean> {
+    return this.rentalApplications.delete(id);
+  }
+  
+  // Application Template methods
+  private applicationTemplates: Map<number, ApplicationTemplate> = new Map();
+  private applicationTemplateIdCounter: number = 1;
+  
+  async getApplicationTemplate(id: number): Promise<ApplicationTemplate | undefined> {
+    return this.applicationTemplates.get(id);
+  }
+  
+  async getApplicationTemplates(): Promise<ApplicationTemplate[]> {
+    return Array.from(this.applicationTemplates.values());
+  }
+  
+  async createApplicationTemplate(insertTemplate: InsertApplicationTemplate): Promise<ApplicationTemplate> {
+    const id = this.applicationTemplateIdCounter++;
+    const now = new Date();
+    
+    const template: ApplicationTemplate = {
+      id,
+      name: insertTemplate.name,
+      description: insertTemplate.description || null,
+      isDefault: insertTemplate.isDefault || false,
+      schema: insertTemplate.schema,
+      createdAt: now,
+      updatedAt: now
+    };
+    
+    this.applicationTemplates.set(id, template);
+    return template;
+  }
+  
+  async updateApplicationTemplate(id: number, updateData: Partial<InsertApplicationTemplate>): Promise<ApplicationTemplate | undefined> {
+    const template = this.applicationTemplates.get(id);
+    if (!template) {
+      return undefined;
+    }
+    
+    const updatedTemplate: ApplicationTemplate = {
+      ...template,
+      ...updateData,
+      updatedAt: new Date()
+    };
+    
+    this.applicationTemplates.set(id, updatedTemplate);
+    return updatedTemplate;
+  }
+  
+  async deleteApplicationTemplate(id: number): Promise<boolean> {
+    return this.applicationTemplates.delete(id);
   }
 }
 

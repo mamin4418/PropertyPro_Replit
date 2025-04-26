@@ -10,6 +10,9 @@ import Header from "./components/layout/Header";
 import Dashboard from "./pages/Dashboard";
 import Properties from "./pages/Properties";
 import AddProperty from "./pages/AddProperty";
+import ViewProperty from "./pages/ViewProperty";
+import EditProperty from "./pages/EditProperty";
+import ManageUnits from "./pages/ManageUnits";
 import Tenants from "./pages/Tenants";
 import AddTenant from "./pages/AddTenant";
 import ViewTenant from "./pages/ViewTenant";
@@ -117,9 +120,9 @@ function App() {
                   {/* Properties Routes */}
                   <Route path="/properties" component={Properties} />
                   <Route path="/add-property" component={AddProperty} />
-                  <Route path="/view-property/:id" component={NotFound} />
-                  <Route path="/edit-property/:id" component={NotFound} />
-                  <Route path="/manage-units/:id" component={NotFound} />
+                  <Route path="/view-property/:id" component={ViewProperty} />
+                  <Route path="/edit-property/:id" component={EditProperty} />
+                  <Route path="/manage-units/:id" component={ManageUnits} />
                   
                   {/* Tenants Routes */}
                   <Route path="/tenants" component={Tenants} />

@@ -90,8 +90,8 @@ export default function AuthPage() {
                 PM
               </div>
             </div>
-            <h1 className="text-3xl font-bold">Property Manager</h1>
-            <p className="text-muted-foreground mt-2">Manage your properties efficiently</p>
+            <h1 className="text-3xl font-bold">Property Management</h1>
+            <p className="text-muted-foreground mt-2">Login for Property Owners & Managers</p>
           </div>
 
           <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "login" | "register")}>

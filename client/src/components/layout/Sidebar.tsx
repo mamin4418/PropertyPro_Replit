@@ -197,7 +197,18 @@ const Sidebar = () => {
           )}
         </div>
         
-        {/* Contacts - Centralized contact management */}
+        {/* Companies */}
+<button
+  onClick={() => navigate("/companies")}
+  className={`w-full flex items-center p-3 rounded-md transition-colors ${
+    currentPage === "companies" ? "bg-primary/10 text-primary" : "hover:bg-secondary"
+  }`}
+>
+  <Building2 className="w-5 h-5" />
+  <span className="ml-3">Companies</span>
+</button>
+
+{/* Contacts - Centralized contact management */}
         <div className="space-y-1">
           <button
             onClick={() => setContactsOpen(!contactsOpen)}

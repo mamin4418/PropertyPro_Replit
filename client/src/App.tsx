@@ -182,7 +182,13 @@ function AppRoutes() {
               <ProtectedRoute path="/view-vendor/:id" component={ViewVendor} />
               <ProtectedRoute path="/edit-vendor/:id" component={EditVendor} />
 
-              {/* Contacts Routes */}
+              {/* Company Routes */}
+<ProtectedRoute path="/companies" component={Companies} />
+<ProtectedRoute path="/add-company" component={AddCompany} />
+<ProtectedRoute path="/view-company/:id" component={ViewCompany} />
+<ProtectedRoute path="/edit-company/:id" component={EditCompany} />
+
+{/* Contacts Routes */}
               <ProtectedRoute path="/contacts" component={Contacts} />
               <ProtectedRoute path="/add-contact" component={AddContact} />
               <ProtectedRoute path="/view-contact/:id" component={ViewContact} />

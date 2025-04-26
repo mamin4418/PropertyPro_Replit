@@ -2,8 +2,23 @@ import { pgTable, text, serial, integer, boolean, date, timestamp, numeric, json
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// Properties Table
+// Companies Table
+export const companies = pgTable("companies", {
+  id: serial("id").primaryKey(),
+  legalName: text("legal_name").notNull(),
+  companyName: text("company_name").notNull(),
+  ein: text("ein"),
+  email: text("email"),
+  phone: text("phone"),
+  type: text("type").notNull(), // LLC, Corporation, etc.
+  status: text("status").notNull().default("active"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Add company relationship to properties
 export const properties = pgTable("properties", {
+  companyId: integer("company_id").references(() => companies.id),
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   description: text("description"),

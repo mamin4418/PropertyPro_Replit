@@ -68,16 +68,8 @@ const Sidebar = () => {
   const [propertiesOpen, setPropertiesOpen] = useState(
     ["properties", "add-property"].includes(currentPage)
   );
-  const [tenantsOpen, setTenantsOpen] = useState(
-    ["tenants", "add-tenant"].includes(currentPage)
-  );
-  
-  const [vendorsOpen, setVendorsOpen] = useState(
-    ["vendors", "add-vendor"].includes(currentPage)
-  );
-  
   const [contactsOpen, setContactsOpen] = useState(
-    ["contacts", "add-contact"].includes(currentPage)
+    ["contacts", "add-contact", "view-contact", "edit-contact", "tenants", "add-tenant", "vendors", "add-vendor"].includes(currentPage)
   );
 
   return (
@@ -131,39 +123,6 @@ const Sidebar = () => {
           )}
         </div>
         
-        {/* Tenants */}
-        <div className="space-y-1">
-          <button
-            onClick={() => setTenantsOpen(!tenantsOpen)}
-            className={`w-full flex items-center justify-between p-3 rounded-md transition-colors ${
-              ["tenants", "add-tenant"].includes(currentPage) 
-                ? "bg-primary/10 text-primary" 
-                : "hover:bg-secondary"
-            }`}
-          >
-            <div className="flex items-center">
-              <Users className="w-5 h-5" />
-              <span className="ml-3">Tenants</span>
-            </div>
-            {tenantsOpen ? (
-              <ChevronDown className="w-4 h-4" />
-            ) : (
-              <ChevronRight className="w-4 h-4" />
-            )}
-          </button>
-          
-          {tenantsOpen && (
-            <div className="pl-10 space-y-1">
-              <SubNavLink href="/tenants" isActive={currentPage === "tenants"}>
-                All Tenants
-              </SubNavLink>
-              <SubNavLink href="/add-tenant" isActive={currentPage === "add-tenant"}>
-                Add Tenant
-              </SubNavLink>
-            </div>
-          )}
-        </div>
-        
         {/* Leases */}
         <NavLink href="/leases" isActive={currentPage === "leases"}>
           <FileText className="w-5 h-5" />
@@ -182,45 +141,12 @@ const Sidebar = () => {
           <span className="ml-3">Maintenance</span>
         </NavLink>
         
-        {/* Vendors */}
-        <div className="space-y-1">
-          <button
-            onClick={() => setVendorsOpen(!vendorsOpen)}
-            className={`w-full flex items-center justify-between p-3 rounded-md transition-colors ${
-              ["vendors", "add-vendor"].includes(currentPage) 
-                ? "bg-primary/10 text-primary" 
-                : "hover:bg-secondary"
-            }`}
-          >
-            <div className="flex items-center">
-              <Store className="w-5 h-5" />
-              <span className="ml-3">Vendors</span>
-            </div>
-            {vendorsOpen ? (
-              <ChevronDown className="w-4 h-4" />
-            ) : (
-              <ChevronRight className="w-4 h-4" />
-            )}
-          </button>
-          
-          {vendorsOpen && (
-            <div className="pl-10 space-y-1">
-              <SubNavLink href="/vendors" isActive={currentPage === "vendors"}>
-                All Vendors
-              </SubNavLink>
-              <SubNavLink href="/add-vendor" isActive={currentPage === "add-vendor"}>
-                Add Vendor
-              </SubNavLink>
-            </div>
-          )}
-        </div>
-        
-        {/* Contacts */}
+        {/* Contacts - Centralized contact management */}
         <div className="space-y-1">
           <button
             onClick={() => setContactsOpen(!contactsOpen)}
             className={`w-full flex items-center justify-between p-3 rounded-md transition-colors ${
-              ["contacts", "add-contact", "view-contact", "edit-contact"].includes(currentPage) 
+              ["contacts", "add-contact", "view-contact", "edit-contact", "tenants", "add-tenant", "vendors", "add-vendor"].includes(currentPage) 
                 ? "bg-primary/10 text-primary" 
                 : "hover:bg-secondary"
             }`}
@@ -240,6 +166,12 @@ const Sidebar = () => {
             <div className="pl-10 space-y-1">
               <SubNavLink href="/contacts" isActive={currentPage === "contacts"}>
                 All Contacts
+              </SubNavLink>
+              <SubNavLink href="/tenants" isActive={currentPage === "tenants"}>
+                All Tenants
+              </SubNavLink>
+              <SubNavLink href="/vendors" isActive={currentPage === "vendors"}>
+                All Vendors
               </SubNavLink>
               <SubNavLink href="/add-contact" isActive={currentPage === "add-contact"}>
                 Add Contact

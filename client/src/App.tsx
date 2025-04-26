@@ -37,6 +37,10 @@ import Contacts from "./pages/Contacts";
 import AddContact from "./pages/AddContact";
 import ViewContact from "./pages/ViewContact";
 import EditContact from "./pages/EditContact";
+import Leads from "./pages/Leads";
+import Applications from "./pages/Applications";
+import ApplicationTemplates from "./pages/ApplicationTemplates";
+import CreateApplicationTemplate from "./pages/CreateApplicationTemplate";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import { Menu, X } from "lucide-react";
@@ -163,6 +167,15 @@ function App() {
                   <Route path="/add-contact" component={AddContact} />
                   <Route path="/view-contact/:id" component={ViewContact} />
                   <Route path="/edit-contact/:id" component={EditContact} />
+                  
+                  {/* Tenant Acquisition Process Routes */}
+                  <Route path="/leads" component={Leads} />
+                  <Route path="/add-lead" component={AddContact} /> {/* Reusing AddContact with lead type */}
+                  <Route path="/view-lead/:id" component={ViewContact} /> {/* Reusing ViewContact */}
+                  <Route path="/edit-lead/:id" component={EditContact} /> {/* Reusing EditContact */}
+                  <Route path="/applications" component={Applications} />
+                  <Route path="/application-templates" component={ApplicationTemplates} />
+                  <Route path="/create-template" component={CreateApplicationTemplate} />
                   
                   {/* Reports and Settings */}
                   <Route path="/reports" component={Reports} />

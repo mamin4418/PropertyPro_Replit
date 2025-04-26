@@ -173,6 +173,12 @@ const Sidebar = () => {
               <SubNavLink href="/vendors" isActive={currentPage === "vendors"}>
                 All Vendors
               </SubNavLink>
+              <SubNavLink href="/leads" isActive={currentPage === "leads"}>
+                Leads
+              </SubNavLink>
+              <SubNavLink href="/applications" isActive={currentPage === "applications"}>
+                Applications
+              </SubNavLink>
               <SubNavLink href="/add-contact" isActive={currentPage === "add-contact"}>
                 Add Contact
               </SubNavLink>

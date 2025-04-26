@@ -257,10 +257,10 @@ const Tenants = () => {
                   </TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
-                      <Link href={`/tenants/${tenant.id}`}>
+                      <Link href={`/view-tenant/${tenant.id}`}>
                         <Button variant="link" className="h-auto p-0 text-primary">View</Button>
                       </Link>
-                      <Link href={`/tenants/${tenant.id}/edit`}>
+                      <Link href={`/edit-tenant/${tenant.id}`}>
                         <Button variant="link" className="h-auto p-0">Edit</Button>
                       </Link>
                     </div>

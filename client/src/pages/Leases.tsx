@@ -290,13 +290,13 @@ const Leases = () => {
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <Button variant="ghost" size="icon" asChild>
-                        <Link href={`/leases/${lease.id}`}>
+                        <Link href={`/view-lease/${lease.id}`}>
                           <Eye className="h-4 w-4" />
                           <span className="sr-only">View</span>
                         </Link>
                       </Button>
                       <Button variant="ghost" size="icon" asChild>
-                        <Link href={`/leases/${lease.id}/edit`}>
+                        <Link href={`/edit-lease/${lease.id}`}>
                           <Edit className="h-4 w-4" />
                           <span className="sr-only">Edit</span>
                         </Link>

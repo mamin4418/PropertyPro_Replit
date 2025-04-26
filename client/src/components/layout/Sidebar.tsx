@@ -1,266 +1,168 @@
-import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import {
+  LayoutDashboard,
   Home,
-  Building2,
   Users,
-  FileText,
+  ClipboardList,
   DollarSign,
-  Drill,
-  BarChart,
+  Tool,
+  Wrench,
+  User,
   Settings,
-  ChevronRight,
-  ChevronDown,
-  Hammer,
-  Store,
-  BookUser,
+  FileText,
+  BarChart3,
+  Building,
+  Building2,
   Contact,
-  HomeIcon,
-  ListFilter,
-  Wrench
+  UserCheck,
+  FileBox,
+  MenuIcon,
+  LogOut,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import ThemeSwitch from "./ThemeSwitch";
+import { useAuth } from "@/hooks/use-auth";
 
-interface NavLinkProps {
+interface SidebarNavItemProps {
   href: string;
-  isActive: boolean;
+  icon: React.ElementType;
   children: React.ReactNode;
-  className?: string;
+  indented?: boolean;
 }
 
-// Custom navigation link that doesn't use nested <a> tags
-const NavLink = ({ href, isActive, children, className = "" }: NavLinkProps) => {
-  return (
-    <Link href={href}>
-      <div 
-        className={`w-full cursor-pointer flex items-center p-3 rounded-md transition-colors ${
-          isActive ? "bg-primary/10 text-primary" : "hover:bg-secondary"
-        } ${className}`}
-      >
-        {children}
-      </div>
-    </Link>
-  );
-};
-
-interface SubNavLinkProps {
-  href: string;
-  isActive: boolean;
-  children: React.ReactNode;
-}
-
-// Sub-navigation link for dropdowns
-const SubNavLink = ({ href, isActive, children }: SubNavLinkProps) => {
-  return (
-    <Link href={href}>
-      <div 
-        className={`w-full cursor-pointer text-left p-2 rounded-md transition-colors ${
-          isActive ? "bg-primary/5 text-primary" : "hover:bg-secondary"
-        }`}
-      >
-        {children}
-      </div>
-    </Link>
-  );
-};
-
-const Sidebar = () => {
+function SidebarNavItem({ href, icon: Icon, children, indented = false }: SidebarNavItemProps) {
   const [location] = useLocation();
-  const currentPage = location.split("/")[1] || "dashboard";
-  
-  const [propertiesOpen, setPropertiesOpen] = useState(
-    ["properties", "add-property", "appliances", "add-appliance", "edit-appliance", "view-appliance"].includes(currentPage)
-  );
-  const [contactsOpen, setContactsOpen] = useState(
-    ["contacts", "add-contact", "view-contact", "edit-contact", "tenants", "add-tenant", "vendors", "add-vendor"].includes(currentPage)
-  );
-  
-  const [vacanciesOpen, setVacanciesOpen] = useState(
-    ["vacancy-listing", "manage-vacancies", "create-vacancy", "edit-vacancy", "view-vacancy", 
-     "applications", "application-templates", "create-template", "edit-template"].includes(currentPage)
-  );
+  const isActive = location === href || (href !== "/" && location.startsWith(href));
 
   return (
-    <div className="h-full flex flex-col pt-0 lg:pt-4">
-      {/* Logo (desktop only) */}
-      <div className="hidden lg:flex items-center p-4">
-        <div className="w-8 h-8 rounded bg-primary flex items-center justify-center text-primary-foreground font-bold">
-          PM
-        </div>
-        <div className="ml-3 font-semibold text-xl">PropManager</div>
-      </div>
-      
-      {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-1">
-        {/* Dashboard */}
-        <NavLink href="/dashboard" isActive={currentPage === "dashboard"}>
-          <Home className="w-5 h-5" />
-          <span className="ml-3">Dashboard</span>
-        </NavLink>
-        
-        {/* Properties */}
-        <div className="space-y-1">
-          <button
-            onClick={() => setPropertiesOpen(!propertiesOpen)}
-            className={`w-full flex items-center justify-between p-3 rounded-md transition-colors ${
-              ["properties", "add-property", "appliances", "add-appliance", "edit-appliance", "view-appliance"].includes(currentPage) 
-                ? "bg-primary/10 text-primary" 
-                : "hover:bg-secondary"
-            }`}
-          >
-            <div className="flex items-center">
-              <Building2 className="w-5 h-5" />
-              <span className="ml-3">Properties</span>
-            </div>
-            {propertiesOpen ? (
-              <ChevronDown className="w-4 h-4" />
-            ) : (
-              <ChevronRight className="w-4 h-4" />
-            )}
-          </button>
-          
-          {propertiesOpen && (
-            <div className="pl-10 space-y-1">
-              <SubNavLink href="/properties" isActive={currentPage === "properties"}>
-                All Properties
-              </SubNavLink>
-              <SubNavLink href="/add-property" isActive={currentPage === "add-property"}>
-                Add Property
-              </SubNavLink>
-              <SubNavLink href="/appliances" isActive={["appliances", "add-appliance", "edit-appliance", "view-appliance"].includes(currentPage)}>
-                Appliances
-              </SubNavLink>
-            </div>
-          )}
-        </div>
-        
-        {/* Leases */}
-        <NavLink href="/leases" isActive={currentPage === "leases"}>
-          <FileText className="w-5 h-5" />
-          <span className="ml-3">Leases</span>
-        </NavLink>
-        
-        {/* Payments */}
-        <NavLink href="/payments" isActive={currentPage === "payments"}>
-          <DollarSign className="w-5 h-5" />
-          <span className="ml-3">Payments</span>
-        </NavLink>
-        
-        {/* Maintenance */}
-        <NavLink href="/maintenance" isActive={currentPage === "maintenance"}>
-          <Drill className="w-5 h-5" />
-          <span className="ml-3">Maintenance</span>
-        </NavLink>
-        
-        {/* Vacancies */}
-        <div className="space-y-1">
-          <button
-            onClick={() => setVacanciesOpen(!vacanciesOpen)}
-            className={`w-full flex items-center justify-between p-3 rounded-md transition-colors ${
-              ["vacancy-listing", "manage-vacancies", "create-vacancy", "edit-vacancy", "view-vacancy"].includes(currentPage) 
-                ? "bg-primary/10 text-primary" 
-                : "hover:bg-secondary"
-            }`}
-          >
-            <div className="flex items-center">
-              <HomeIcon className="w-5 h-5" />
-              <span className="ml-3">Vacancies</span>
-            </div>
-            {vacanciesOpen ? (
-              <ChevronDown className="w-4 h-4" />
-            ) : (
-              <ChevronRight className="w-4 h-4" />
-            )}
-          </button>
-          
-          {vacanciesOpen && (
-            <div className="pl-10 space-y-1">
-              <SubNavLink href="/vacancy-listing" isActive={currentPage === "vacancy-listing"}>
-                Apartment Listings
-              </SubNavLink>
-              <SubNavLink href="/manage-vacancies" isActive={currentPage === "manage-vacancies"}>
-                Manage Listings
-              </SubNavLink>
-              <SubNavLink href="/create-vacancy" isActive={currentPage === "create-vacancy"}>
-                Create Listing
-              </SubNavLink>
-              <SubNavLink href="/leads" isActive={currentPage === "leads"}>
-                Leads
-              </SubNavLink>
-              <SubNavLink href="/applications" isActive={currentPage === "applications"}>
-                Applications
-              </SubNavLink>
-              <SubNavLink href="/application-templates" isActive={currentPage === "application-templates"}>
-                Application Templates
-              </SubNavLink>
-            </div>
-          )}
-        </div>
-        
-        {/* Companies */}
-<NavLink href="/companies" isActive={["companies", "add-company", "view-company", "edit-company"].includes(currentPage)}>
-  <Building2 className="w-5 h-5" />
-  <span className="ml-3">Companies</span>
-</NavLink>
+    <Link href={href}>
+      <a
+        className={cn(
+          "flex items-center py-2 px-3 rounded-md hover:bg-secondary",
+          isActive && "bg-secondary text-primary font-medium",
+          indented && "ml-4 text-sm"
+        )}
+      >
+        <Icon className="h-5 w-5 mr-3" />
+        <span>{children}</span>
+      </a>
+    </Link>
+  );
+}
 
-{/* Contacts - Centralized contact management */}
-        <div className="space-y-1">
-          <button
-            onClick={() => setContactsOpen(!contactsOpen)}
-            className={`w-full flex items-center justify-between p-3 rounded-md transition-colors ${
-              ["contacts", "add-contact", "view-contact", "edit-contact", "tenants", "add-tenant", "vendors", "add-vendor"].includes(currentPage) 
-                ? "bg-primary/10 text-primary" 
-                : "hover:bg-secondary"
-            }`}
-          >
-            <div className="flex items-center">
-              <Contact className="w-5 h-5" />
-              <span className="ml-3">Contacts</span>
-            </div>
-            {contactsOpen ? (
-              <ChevronDown className="w-4 h-4" />
-            ) : (
-              <ChevronRight className="w-4 h-4" />
-            )}
-          </button>
-          
-          {contactsOpen && (
-            <div className="pl-10 space-y-1">
-              <SubNavLink href="/contacts" isActive={currentPage === "contacts"}>
-                All Contacts
-              </SubNavLink>
-              <SubNavLink href="/tenants" isActive={currentPage === "tenants"}>
-                All Tenants
-              </SubNavLink>
-              <SubNavLink href="/vendors" isActive={currentPage === "vendors"}>
-                All Vendors
-              </SubNavLink>
-              <SubNavLink href="/add-contact" isActive={currentPage === "add-contact"}>
-                Add Contact
-              </SubNavLink>
-            </div>
-          )}
+export default function Sidebar() {
+  const { user, logout } = useAuth();
+
+  return (
+    <div className="sidebar-container flex flex-col h-full">
+      <div className="p-3 flex items-center justify-center lg:justify-start">
+        <Building2 className="h-6 w-6 mr-2" />
+        <span className="text-xl font-semibold hidden lg:inline-block">PropManager</span>
+      </div>
+
+      <nav className="mt-6 space-y-1 px-2 flex-1 overflow-auto">
+        <div className="py-2">
+          <SidebarNavItem href="/" icon={LayoutDashboard}>
+            Dashboard
+          </SidebarNavItem>
         </div>
-        
-        {/* Reports */}
-        <NavLink href="/reports" isActive={currentPage === "reports"}>
-          <BarChart className="w-5 h-5" />
-          <span className="ml-3">Reports</span>
-        </NavLink>
-        
-        {/* Settings */}
-        <NavLink href="/settings" isActive={currentPage === "settings"}>
-          <Settings className="w-5 h-5" />
-          <span className="ml-3">Settings</span>
-        </NavLink>
+
+        <div className="pt-4 pb-2">
+          <h3 className="px-3 text-xs font-semibold text-muted-foreground">PROPERTY MANAGEMENT</h3>
+        </div>
+
+        <SidebarNavItem href="/properties" icon={Home}>
+          Properties
+        </SidebarNavItem>
+
+        <SidebarNavItem href="/companies" icon={Building}>
+          Companies
+        </SidebarNavItem>
+
+        <SidebarNavItem href="/tenants" icon={Users}>
+          Tenants
+        </SidebarNavItem>
+
+        <SidebarNavItem href="/leases" icon={ClipboardList}>
+          Leases
+        </SidebarNavItem>
+
+        <SidebarNavItem href="/payments" icon={DollarSign}>
+          Payments
+        </SidebarNavItem>
+
+        <SidebarNavItem href="/maintenance" icon={Tool}>
+          Maintenance
+        </SidebarNavItem>
+
+        <SidebarNavItem href="/appliances" icon={Wrench}>
+          Appliances
+        </SidebarNavItem>
+
+        <div className="pt-4 pb-2">
+          <h3 className="px-3 text-xs font-semibold text-muted-foreground">CONTACTS</h3>
+        </div>
+
+        <SidebarNavItem href="/contacts" icon={Contact}>
+          Contacts
+        </SidebarNavItem>
+
+        <SidebarNavItem href="/vendors" icon={User}>
+          Vendors
+        </SidebarNavItem>
+
+        <div className="pt-4 pb-2">
+          <h3 className="px-3 text-xs font-semibold text-muted-foreground">LEASING</h3>
+        </div>
+
+        <SidebarNavItem href="/leads" icon={UserCheck}>
+          Leads
+        </SidebarNavItem>
+
+        <SidebarNavItem href="/applications" icon={FileText}>
+          Applications
+        </SidebarNavItem>
+
+        <SidebarNavItem href="/vacancy-listing" icon={Home}>
+          Vacancies
+        </SidebarNavItem>
+
+        <div className="pt-4 pb-2">
+          <h3 className="px-3 text-xs font-semibold text-muted-foreground">REPORTS</h3>
+        </div>
+
+        <SidebarNavItem href="/reports" icon={BarChart3}>
+          Reports
+        </SidebarNavItem>
+
+        <div className="pt-4 pb-2">
+          <h3 className="px-3 text-xs font-semibold text-muted-foreground">SYSTEM</h3>
+        </div>
+
+        <SidebarNavItem href="/settings" icon={Settings}>
+          Settings
+        </SidebarNavItem>
       </nav>
-      
-      {/* Theme Switcher */}
-      <div className="p-4 border-t border-custom mt-auto">
+
+      <div className="p-4 border-t flex flex-col gap-4">
         <ThemeSwitch />
+        {user ? (
+          <button
+            onClick={() => logout()}
+            className="flex items-center py-2 px-3 rounded-md hover:bg-secondary"
+          >
+            <LogOut className="h-5 w-5 mr-3" />
+            <span>Logout</span>
+          </button>
+        ) : (
+          <Link href="/auth">
+            <a className="flex items-center py-2 px-3 rounded-md hover:bg-secondary">
+              <LogOut className="h-5 w-5 mr-3" />
+              <span>Login</span>
+            </a>
+          </Link>
+        )}
       </div>
     </div>
   );
-};
-
-export default Sidebar;
+}

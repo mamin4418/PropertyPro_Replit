@@ -1,129 +1,235 @@
 
 import { useState } from "react";
-import { useLocation } from "wouter";
-import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown, Plus, Filter, MoreHorizontal, FileEdit, Trash2, Eye } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Building2, Plus, Search } from "lucide-react";
 
-const Companies = () => {
-  const [, navigate] = useLocation();
-  const [search, setSearch] = useState("");
+// Sample company data
+const sampleCompanies = [
+  {
+    id: 1,
+    legalName: "ABC Property Management LLC",
+    companyName: "ABC Properties",
+    ein: "12-3456789",
+    email: "info@abcproperties.com",
+    phone: "(555) 123-4567",
+    type: "LLC",
+    status: "active"
+  },
+  {
+    id: 2,
+    legalName: "XYZ Real Estate Holdings Inc",
+    companyName: "XYZ Realty",
+    ein: "98-7654321",
+    email: "contact@xyzrealty.com",
+    phone: "(555) 987-6543",
+    type: "Corporation",
+    status: "active"
+  },
+  {
+    id: 3,
+    legalName: "Sunset Apartments Group LLC",
+    companyName: "Sunset Living",
+    ein: "45-6789123",
+    email: "leasing@sunsetliving.com",
+    phone: "(555) 456-7890",
+    type: "LLC",
+    status: "inactive"
+  },
+  {
+    id: 4,
+    legalName: "Metro Property Investments Ltd",
+    companyName: "Metro Properties",
+    ein: "78-9123456",
+    email: "info@metroproperties.com",
+    phone: "(555) 789-0123",
+    type: "Limited Company",
+    status: "active"
+  },
+  {
+    id: 5,
+    legalName: "Urban Home Rentals Inc",
+    companyName: "Urban Homes",
+    ein: "23-4567891",
+    email: "rentals@urbanhomes.com",
+    phone: "(555) 234-5678",
+    type: "Corporation",
+    status: "active"
+  }
+];
 
-  const { data: companies, isLoading } = useQuery({
-    queryKey: ['/api/companies'],
-    queryFn: async () => {
-      try {
-        const response = await fetch('/api/companies');
-        if (!response.ok) throw new Error("Failed to fetch companies");
-        return response.json();
-      } catch (error) {
-        console.error("Failed to fetch companies:", error);
-        // Return sample data for now
-        return [
-          { 
-            id: 1, 
-            companyName: "ABC Properties", 
-            legalName: "ABC Properties LLC", 
-            ein: "12-3456789", 
-            email: "info@abcproperties.com",
-            phone: "(555) 123-4567",
-            type: "LLC"
-          },
-          { 
-            id: 2, 
-            companyName: "XYZ Real Estate", 
-            legalName: "XYZ Real Estate Group, Inc.", 
-            ein: "98-7654321", 
-            email: "contact@xyzrealestate.com",
-            phone: "(555) 987-6543",
-            type: "Corporation"
-          },
-          { 
-            id: 3, 
-            companyName: "Sunshine Properties", 
-            legalName: "Sunshine Properties Management LLC", 
-            ein: "45-6789123", 
-            email: "hello@sunshineproperties.com",
-            phone: "(555) 456-7890",
-            type: "LLC"
-          }
-        ];
-      }
-    }
+export default function Companies() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+
+  // Filter companies based on search term and status
+  const filteredCompanies = sampleCompanies.filter(company => {
+    const matchesSearch = 
+      company.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      company.legalName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      company.email.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = statusFilter === "all" || company.status === statusFilter;
+    
+    return matchesSearch && matchesStatus;
   });
 
-  const filteredCompanies = companies?.filter(company => 
-    company.companyName.toLowerCase().includes(search.toLowerCase()) ||
-    company.legalName.toLowerCase().includes(search.toLowerCase())
-  ) || [];
-
   return (
-    <div className="p-6">
+    <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Companies</h1>
-        <Button onClick={() => navigate("/add-company")}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Company
-        </Button>
+        <Link href="/add-company">
+          <Button>
+            <Plus className="mr-2 h-4 w-4" /> Add Company
+          </Button>
+        </Link>
       </div>
 
-      <div className="relative mb-6">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-        <Input
-          placeholder="Search companies..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="pl-10"
-        />
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Company Management</CardTitle>
+          <CardDescription>
+            Manage all your property management companies in one place.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-4">
+            <div className="flex flex-1 items-center gap-2">
+              <Input
+                placeholder="Search companies..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="max-w-sm"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Filter className="mr-2 h-4 w-4" />
+                    Status: {statusFilter === "all" ? "All" : statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1)}
+                    <ChevronDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => setStatusFilter("all")}>
+                    All
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setStatusFilter("active")}>
+                    Active
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setStatusFilter("inactive")}>
+                    Inactive
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
 
-      {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3].map(index => (
-            <Card key={index} className="animate-pulse">
-              <CardHeader>
-                <div className="h-6 bg-muted rounded w-2/3"></div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="h-4 bg-muted rounded w-full"></div>
-                  <div className="h-4 bg-muted rounded w-2/3"></div>
-                  <div className="h-4 bg-muted rounded w-1/2"></div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCompanies.map((company) => (
-            <Card 
-              key={company.id}
-              className="cursor-pointer hover:bg-accent/50 transition-colors"
-              onClick={() => navigate(`/view-company/${company.id}`)}
-            >
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Building2 className="h-5 w-5" />
-                  {company.companyName}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 text-sm">
-                  <p className="text-muted-foreground">Legal Name: {company.legalName}</p>
-                  {company.email && <p className="text-muted-foreground">Email: {company.email}</p>}
-                  {company.phone && <p className="text-muted-foreground">Phone: {company.phone}</p>}
-                  <p className="text-muted-foreground">Type: {company.type}</p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+          <Table>
+            <TableCaption>A list of all companies.</TableCaption>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Company Name</TableHead>
+                <TableHead>Legal Name</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Contact</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredCompanies.map((company) => (
+                <TableRow key={company.id}>
+                  <TableCell className="font-medium">{company.companyName}</TableCell>
+                  <TableCell>{company.legalName}</TableCell>
+                  <TableCell>{company.type}</TableCell>
+                  <TableCell>
+                    {company.email}<br />
+                    {company.phone}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={company.status === "active" ? "success" : "destructive"}>
+                      {company.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm">
+                          <MoreHorizontal className="h-4 w-4" />
+                          <span className="sr-only">Open menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>
+                          <Link href={`/view-company/${company.id}`} className="flex items-center w-full">
+                            <Eye className="mr-2 h-4 w-4" />
+                            View
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <Link href={`/edit-company/${company.id}`} className="flex items-center w-full">
+                            <FileEdit className="mr-2 h-4 w-4" />
+                            Edit
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-destructive">
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {filteredCompanies.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-4">
+                    No companies found. Try adjusting your search or filters.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+        <CardFooter className="flex justify-between">
+          <div className="text-sm text-muted-foreground">
+            Showing {filteredCompanies.length} of {sampleCompanies.length} companies
+          </div>
+        </CardFooter>
+      </Card>
     </div>
   );
-};
-
-export default Companies;
+}

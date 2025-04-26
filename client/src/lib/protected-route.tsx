@@ -1,3 +1,4 @@
+
 import { Route } from "wouter";
 
 export function ProtectedRoute({
@@ -9,6 +10,8 @@ export function ProtectedRoute({
   component: () => React.JSX.Element;
   allowedRoles?: string[];
 }) {
-  // Temporarily allowing all access
+  // Allow all access by directly rendering the component without any protection
   return <Route path={path} component={Component} />;
 }
+
+export default ProtectedRoute;

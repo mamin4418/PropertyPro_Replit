@@ -1,6 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { setupAuth } from "./auth";
 import { 
   insertContactSchema, 
   insertAddressSchema, 
@@ -10,6 +11,8 @@ import {
 } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Setup authentication
+  setupAuth(app);
   // Contacts API endpoints
   app.get('/api/contacts', async (req: Request, res: Response) => {
     try {

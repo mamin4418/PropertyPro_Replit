@@ -71,6 +71,98 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Leads API endpoints
+  app.get('/api/leads', async (req: Request, res: Response) => {
+    try {
+      // For now, use contacts with lead type as leads
+      const leads = await storage.getContactsByType("lead");
+      // Transform to match Lead interface
+      const enhancedLeads = leads.map(lead => ({
+        id: lead.id,
+        contactId: lead.id,
+        source: "Website", // Default source
+        status: "new",
+        interestLevel: "medium",
+        desiredMoveInDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        hasApplied: false,
+        preQualified: false,
+        assignedTo: null,
+        lastContactDate: new Date().toISOString(),
+        nextFollowUpDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+      }));
+      res.json(enhancedLeads);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to retrieve leads' });
+    }
+  });
+
+  app.post('/api/leads', async (req: Request, res: Response) => {
+    try {
+      // Create a contact with lead type
+      const contactData = {
+        ...req.body,
+        contactType: "lead" 
+      };
+      const validatedData = insertContactSchema.parse(contactData);
+      const contact = await storage.createContact(validatedData);
+      
+      // Return lead format
+      const lead = {
+        id: contact.id,
+        contactId: contact.id,
+        source: req.body.source || "Website",
+        status: "new",
+        interestLevel: req.body.interestLevel || "medium",
+        desiredMoveInDate: req.body.desiredMoveInDate,
+        hasApplied: false,
+        preQualified: false,
+        assignedTo: null,
+        lastContactDate: new Date().toISOString(),
+        nextFollowUpDate: null
+      };
+      
+      res.status(201).json(lead);
+    } catch (error) {
+      res.status(400).json({ error: 'Invalid lead data' });
+    }
+  });
+
+  // Applications API endpoints
+  app.get('/api/applications', async (req: Request, res: Response) => {
+    try {
+      // For now, return an empty array since we don't have full implementation
+      res.json([]);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to retrieve applications' });
+    }
+  });
+
+  // Application Templates API endpoints
+  app.get('/api/application-templates', async (req: Request, res: Response) => {
+    try {
+      // For now, return an empty array since we don't have full implementation
+      res.json([]);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to retrieve application templates' });
+    }
+  });
+
+  app.post('/api/application-templates', async (req: Request, res: Response) => {
+    try {
+      // Mock response for now
+      const template = {
+        id: Date.now(),
+        ...req.body,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      
+      res.status(201).json(template);
+    } catch (error) {
+      res.status(400).json({ error: 'Invalid template data' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

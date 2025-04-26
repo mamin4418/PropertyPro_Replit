@@ -40,6 +40,33 @@ export const units = pgTable("units", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Addresses Table (centralized for all address needs)
+export const addresses = pgTable("addresses", {
+  id: serial("id").primaryKey(),
+  streetAddress: text("street_address").notNull(),
+  unit: text("unit"),
+  city: text("city").notNull(),
+  state: text("state").notNull(),
+  zipcode: text("zipcode").notNull(),
+  country: text("country").notNull().default("USA"),
+  latitude: numeric("latitude"),
+  longitude: numeric("longitude"),
+  addressType: text("address_type"), // home, work, mailing, property, etc.
+  isDefault: boolean("is_default").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Contact-Address join table
+export const contactAddresses = pgTable("contact_addresses", {
+  id: serial("id").primaryKey(),
+  contactId: integer("contact_id").notNull(),
+  addressId: integer("address_id").notNull(),
+  isPrimary: boolean("is_primary").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Contacts Table (centralized for Tenants, Vendors, Owners, etc.)
 export const contacts = pgTable("contacts", {
   id: serial("id").primaryKey(),
@@ -48,11 +75,6 @@ export const contacts = pgTable("contacts", {
   email: text("email"),
   phone: text("phone"),
   alternatePhone: text("alternate_phone"),
-  address: text("address"),
-  city: text("city"),
-  state: text("state"),
-  zipcode: text("zipcode"),
-  country: text("country"),
   companyName: text("company_name"),
   title: text("title"),
   website: text("website"),
@@ -312,6 +334,18 @@ export const insertUnitSchema = createInsertSchema(units).omit({
   updatedAt: true,
 });
 
+export const insertAddressSchema = createInsertSchema(addresses).omit({
+  id: true,
+  createdAt: true, 
+  updatedAt: true,
+});
+
+export const insertContactAddressSchema = createInsertSchema(contactAddresses).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const insertContactSchema = createInsertSchema(contacts).omit({
   id: true,
   createdAt: true,
@@ -402,6 +436,12 @@ export type InsertProperty = z.infer<typeof insertPropertySchema>;
 
 export type Unit = typeof units.$inferSelect;
 export type InsertUnit = z.infer<typeof insertUnitSchema>;
+
+export type Address = typeof addresses.$inferSelect;
+export type InsertAddress = z.infer<typeof insertAddressSchema>;
+
+export type ContactAddress = typeof contactAddresses.$inferSelect;
+export type InsertContactAddress = z.infer<typeof insertContactAddressSchema>;
 
 export type Contact = typeof contacts.$inferSelect;
 export type InsertContact = z.infer<typeof insertContactSchema>;

@@ -58,10 +58,6 @@ import AddAppliance from "./pages/AddAppliance";
 import ViewAppliance from "./pages/ViewAppliance";
 import EditAppliance from "./pages/EditAppliance";
 import GenerateLeaseTemplate from "./pages/GenerateLeaseTemplate";
-import Companies from "./pages/Companies";
-import AddCompany from "./pages/AddCompany";
-import ViewCompany from "./pages/ViewCompany";
-import EditCompany from "./pages/EditCompany";
 import { Menu, X } from "lucide-react";
 
 function AppRoutes() {

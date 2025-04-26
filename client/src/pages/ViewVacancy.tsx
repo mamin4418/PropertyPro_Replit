@@ -432,7 +432,7 @@ const ViewVacancy = () => {
               
               <div className="flex flex-wrap gap-2 mt-4">
                 {vacancy.amenities &&
-                  vacancy.amenities.slice(0, 6).map((amenity, index) => (
+                  vacancy.amenities.slice(0, 6).map((amenity: string, index: number) => (
                     <Badge key={index} variant="secondary">
                       {amenity}
                     </Badge>
@@ -463,7 +463,7 @@ const ViewVacancy = () => {
                 <h3 className="font-medium mb-2">Utilities Included</h3>
                 {vacancy.includedUtilities && vacancy.includedUtilities.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
-                    {vacancy.includedUtilities.map((utility, index) => (
+                    {vacancy.includedUtilities.map((utility: string, index: number) => (
                       <Badge key={index} variant="outline">
                         {utility}
                       </Badge>

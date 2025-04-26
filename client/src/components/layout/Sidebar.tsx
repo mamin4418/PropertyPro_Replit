@@ -14,7 +14,9 @@ import {
   Hammer,
   Store,
   BookUser,
-  Contact
+  Contact,
+  HomeIcon,
+  ListFilter
 } from "lucide-react";
 import ThemeSwitch from "./ThemeSwitch";
 
@@ -70,6 +72,10 @@ const Sidebar = () => {
   );
   const [contactsOpen, setContactsOpen] = useState(
     ["contacts", "add-contact", "view-contact", "edit-contact", "tenants", "add-tenant", "vendors", "add-vendor"].includes(currentPage)
+  );
+  
+  const [vacanciesOpen, setVacanciesOpen] = useState(
+    ["vacancy-listing", "manage-vacancies", "create-vacancy", "edit-vacancy", "view-vacancy"].includes(currentPage)
   );
 
   return (
@@ -140,6 +146,42 @@ const Sidebar = () => {
           <Drill className="w-5 h-5" />
           <span className="ml-3">Maintenance</span>
         </NavLink>
+        
+        {/* Vacancies */}
+        <div className="space-y-1">
+          <button
+            onClick={() => setVacanciesOpen(!vacanciesOpen)}
+            className={`w-full flex items-center justify-between p-3 rounded-md transition-colors ${
+              ["vacancy-listing", "manage-vacancies", "create-vacancy", "edit-vacancy", "view-vacancy"].includes(currentPage) 
+                ? "bg-primary/10 text-primary" 
+                : "hover:bg-secondary"
+            }`}
+          >
+            <div className="flex items-center">
+              <HomeIcon className="w-5 h-5" />
+              <span className="ml-3">Vacancies</span>
+            </div>
+            {vacanciesOpen ? (
+              <ChevronDown className="w-4 h-4" />
+            ) : (
+              <ChevronRight className="w-4 h-4" />
+            )}
+          </button>
+          
+          {vacanciesOpen && (
+            <div className="pl-10 space-y-1">
+              <SubNavLink href="/vacancy-listing" isActive={currentPage === "vacancy-listing"}>
+                Apartment Listings
+              </SubNavLink>
+              <SubNavLink href="/manage-vacancies" isActive={currentPage === "manage-vacancies"}>
+                Manage Listings
+              </SubNavLink>
+              <SubNavLink href="/create-vacancy" isActive={currentPage === "create-vacancy"}>
+                Create Listing
+              </SubNavLink>
+            </div>
+          )}
+        </div>
         
         {/* Contacts - Centralized contact management */}
         <div className="space-y-1">

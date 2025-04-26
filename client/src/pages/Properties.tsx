@@ -130,6 +130,7 @@ const Properties = () => {
           {properties.map((property) => (
             <PropertyCard
               key={property.id}
+              id={property.id}
               name={property.name}
               address={property.address}
               status={property.status}

@@ -18,6 +18,7 @@ interface PropertyCardProps {
   };
   occupancy: number;
   onViewDetails: () => void;
+  id?: string | number;
 }
 
 const PropertyCard = ({
@@ -28,6 +29,7 @@ const PropertyCard = ({
   units,
   occupancy,
   onViewDetails,
+  id = 0,
 }: PropertyCardProps) => {
   const statusColors = {
     active: "bg-green-500",
@@ -77,9 +79,15 @@ const PropertyCard = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>Edit Property</DropdownMenuItem>
-              <DropdownMenuItem>Manage Units</DropdownMenuItem>
-              <DropdownMenuItem>View Tenants</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => window.location.href = `/edit-property/${id}`}>
+                Edit Property
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => window.location.href = `/manage-units/${id}`}>
+                Manage Units
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => window.location.href = `/tenants?property=${id}`}>
+                View Tenants
+              </DropdownMenuItem>
               <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

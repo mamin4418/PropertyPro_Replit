@@ -1,5 +1,6 @@
 import { CalendarCheck, AlertCircle, BanknoteIcon } from "lucide-react";
 import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
 
 interface Task {
   id: string | number;
@@ -34,7 +35,12 @@ const UpcomingTasks = ({ tasks }: UpcomingTasksProps) => {
   
   return (
     <div className="card p-6 rounded-lg shadow-sm border border-custom">
-      <h3 className="text-xl font-semibold mb-4">Upcoming Tasks</h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-xl font-semibold">Upcoming Tasks</h3>
+        <Link href="/dashboard">
+          <Button variant="link" className="text-primary h-auto p-0">View All</Button>
+        </Link>
+      </div>
       <div className="space-y-4">
         {tasks.map((task) => {
           // Determine the link based on task type

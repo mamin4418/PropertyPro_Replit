@@ -36,7 +36,12 @@ const PropertiesOverview = ({ properties }: PropertiesOverviewProps) => {
   return (
     <div className="card p-6 rounded-lg shadow-sm border border-custom mb-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xl font-semibold">Properties Overview</h3>
+        <div className="flex items-center gap-2">
+          <h3 className="text-xl font-semibold">Properties Overview</h3>
+          <Link href="/properties">
+            <Button variant="link" className="text-primary h-auto p-0">View All</Button>
+          </Link>
+        </div>
         <Link href="/add-property">
           <Button>Add Property</Button>
         </Link>

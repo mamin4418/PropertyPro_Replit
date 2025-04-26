@@ -1,4 +1,5 @@
 import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
 
 interface MaintenanceCount {
   urgent: number;
@@ -39,7 +40,12 @@ const MaintenanceRequests = ({ counts, recentRequests }: MaintenanceRequestsProp
   
   return (
     <div className="card p-6 rounded-lg shadow-sm border border-custom">
-      <h3 className="text-xl font-semibold mb-4">Maintenance Requests</h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-xl font-semibold">Maintenance Requests</h3>
+        <Link href="/maintenance">
+          <Button variant="link" className="text-primary h-auto p-0">View All</Button>
+        </Link>
+      </div>
       <div className="flex mb-4">
         <div className="flex-1 text-center p-2 bg-red-100 text-red-800 rounded-l-md">
           <p className="text-xl font-bold">{counts.urgent}</p>

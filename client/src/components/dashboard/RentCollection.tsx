@@ -1,6 +1,8 @@
 import { Progress } from "@/components/ui/progress";
 import { User } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
 
 interface Payment {
   tenantName: string;
@@ -20,7 +22,12 @@ const RentCollection = ({ collected, total, recentPayments }: RentCollectionProp
   
   return (
     <div className="card p-6 rounded-lg shadow-sm border border-custom">
-      <h3 className="text-xl font-semibold mb-4">Rent Collection</h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-xl font-semibold">Rent Collection</h3>
+        <Link href="/payments">
+          <Button variant="link" className="text-primary h-auto p-0">View All</Button>
+        </Link>
+      </div>
       <div className="relative pt-1">
         <div className="flex mb-2 items-center justify-between">
           <div>
@@ -41,23 +48,25 @@ const RentCollection = ({ collected, total, recentPayments }: RentCollectionProp
         <h4 className="font-semibold mb-2">Recent Payments</h4>
         <div className="space-y-3">
           {recentPayments.map((payment, index) => (
-            <div key={index} className="flex items-center justify-between">
-              <div className="flex items-center">
-                <Avatar className="w-8 h-8">
-                  <AvatarFallback className="bg-secondary text-xs">
-                    <User size={14} />
-                  </AvatarFallback>
-                </Avatar>
-                <div className="ml-3">
-                  <p className="font-medium">{payment.tenantName}</p>
-                  <p className="text-xs text-muted-foreground">{payment.unitInfo}</p>
+            <Link href="/payments" key={index}>
+              <div className="flex items-center justify-between p-2 rounded-md hover:bg-secondary cursor-pointer transition-colors">
+                <div className="flex items-center">
+                  <Avatar className="w-8 h-8">
+                    <AvatarFallback className="bg-secondary text-xs">
+                      <User size={14} />
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="ml-3">
+                    <p className="font-medium">{payment.tenantName}</p>
+                    <p className="text-xs text-muted-foreground">{payment.unitInfo}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="font-medium text-green-600">+${payment.amount.toLocaleString()}</p>
+                  <p className="text-xs text-muted-foreground">{payment.date}</p>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="font-medium">${payment.amount.toLocaleString()}</p>
-                <p className="text-xs text-muted-foreground">{payment.date}</p>
-              </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

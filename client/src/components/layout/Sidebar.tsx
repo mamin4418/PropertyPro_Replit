@@ -70,31 +70,31 @@ export default function Sidebar() {
           <h3 className="px-3 text-xs font-semibold text-muted-foreground">PROPERTY MANAGEMENT</h3>
         </div>
 
-        <SidebarNavItem href="/properties" icon={Home}>
-          Properties
-        </SidebarNavItem>
-
         <SidebarNavItem href="/companies" icon={Building}>
           Companies
         </SidebarNavItem>
 
-        <SidebarNavItem href="/tenants" icon={Users}>
+        <SidebarNavItem href="/properties" icon={Home}>
+          Properties
+        </SidebarNavItem>
+
+        <SidebarNavItem href="/tenants" icon={Users} indented>
           Tenants
         </SidebarNavItem>
 
-        <SidebarNavItem href="/leases" icon={ClipboardList}>
+        <SidebarNavItem href="/leases" icon={ClipboardList} indented>
           Leases
         </SidebarNavItem>
 
-        <SidebarNavItem href="/payments" icon={DollarSign}>
+        <SidebarNavItem href="/payments" icon={DollarSign} indented>
           Payments
         </SidebarNavItem>
 
-        <SidebarNavItem href="/maintenance" icon={Wrench}>
+        <SidebarNavItem href="/maintenance" icon={Wrench} indented>
           Maintenance
         </SidebarNavItem>
 
-        <SidebarNavItem href="/appliances" icon={Wrench}>
+        <SidebarNavItem href="/appliances" icon={Wrench} indented>
           Appliances
         </SidebarNavItem>
 

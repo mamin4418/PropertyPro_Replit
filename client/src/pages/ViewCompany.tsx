@@ -31,135 +31,6 @@ const ViewCompany = () => {
   const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState("overview");
 
-  // Sample company data
-  const sampleCompanies = {
-    1: {
-      id: 1,
-      companyName: "ABC Properties",
-      legalName: "ABC Properties LLC",
-      type: "LLC",
-      ein: "12-3456789",
-      email: "info@abcproperties.com",
-      phone: "(555) 123-4567",
-      streetAddress: "123 Main Street",
-      unit: "Suite 200",
-      city: "New York",
-      state: "NY",
-      zipcode: "10001",
-      country: "United States",
-      businessLicense: "BL-12345",
-      notes: "This is a sample company for property management.",
-      // Associated data
-      properties: [
-        { id: 1, name: "Parkside Apartments", units: 24, city: "New York", state: "NY" },
-        { id: 2, name: "Riverside Condos", units: 12, city: "Brooklyn", state: "NY" }
-      ],
-      contacts: [
-        { id: 1, name: "John Smith", role: "Owner", email: "john@abcproperties.com" },
-        { id: 2, name: "Jane Doe", role: "Manager", email: "jane@abcproperties.com" }
-      ]
-    },
-    2: {
-      id: 2,
-      companyName: "XYZ Real Estate",
-      legalName: "XYZ Real Estate Group, Inc.",
-      type: "Corporation",
-      ein: "98-7654321",
-      email: "contact@xyzrealestate.com",
-      phone: "(555) 987-6543",
-      streetAddress: "456 Park Avenue",
-      unit: "Floor 10",
-      city: "New York",
-      state: "NY",
-      zipcode: "10022",
-      country: "United States",
-      businessLicense: "BL-67890",
-      notes: "Premier real estate management company specializing in luxury properties.",
-      properties: [
-        { id: 3, name: "Luxury Towers", units: 50, city: "New York", state: "NY" },
-        { id: 4, name: "Park View Residences", units: 30, city: "Manhattan", state: "NY" }
-      ],
-      contacts: [
-        { id: 3, name: "Robert Johnson", role: "CEO", email: "robert@xyzrealestate.com" },
-        { id: 4, name: "Sarah Williams", role: "Operations Manager", email: "sarah@xyzrealestate.com" }
-      ]
-    },
-    3: {
-      id: 3,
-      companyName: "Sunshine Properties",
-      legalName: "Sunshine Properties Management LLC",
-      type: "LLC",
-      ein: "45-6789123",
-      email: "hello@sunshineproperties.com",
-      phone: "(555) 456-7890",
-      streetAddress: "789 Beach Road",
-      unit: "Unit 5",
-      city: "Miami",
-      state: "FL",
-      zipcode: "33139",
-      country: "United States",
-      businessLicense: "BL-45678",
-      notes: "Specializing in beach-front and vacation rental properties.",
-      properties: [
-        { id: 5, name: "Ocean View Condos", units: 18, city: "Miami", state: "FL" },
-        { id: 6, name: "Palm Beach Villas", units: 10, city: "Palm Beach", state: "FL" }
-      ],
-      contacts: [
-        { id: 5, name: "Michael Brown", role: "Owner", email: "michael@sunshineproperties.com" }
-      ]
-    },
-    4: {
-      id: 4,
-      companyName: "Urban Living",
-      legalName: "Urban Living Apartments Inc.",
-      type: "Corporation",
-      ein: "56-7891234",
-      email: "support@urbanliving.com",
-      phone: "(555) 789-0123",
-      streetAddress: "101 Downtown Avenue",
-      unit: "",
-      city: "Chicago",
-      state: "IL",
-      zipcode: "60601",
-      country: "United States",
-      businessLicense: "BL-89012",
-      notes: "Modern apartment management focused on downtown areas.",
-      properties: [
-        { id: 7, name: "Downtown Lofts", units: 40, city: "Chicago", state: "IL" },
-        { id: 8, name: "City Center Apartments", units: 60, city: "Chicago", state: "IL" }
-      ],
-      contacts: [
-        { id: 6, name: "David Wilson", role: "President", email: "david@urbanliving.com" },
-        { id: 7, name: "Emma Garcia", role: "Property Manager", email: "emma@urbanliving.com" }
-      ]
-    },
-    5: {
-      id: 5,
-      companyName: "Coastal Rentals",
-      legalName: "Coastal Rentals & Management Co.",
-      type: "Partnership",
-      ein: "67-8912345",
-      email: "info@coastalrentals.com",
-      phone: "(555) 234-5678",
-      streetAddress: "500 Coastal Highway",
-      unit: "Suite 300",
-      city: "San Diego",
-      state: "CA",
-      zipcode: "92101",
-      country: "United States",
-      businessLicense: "BL-34567",
-      notes: "Family-owned business managing coastal properties for over 20 years.",
-      properties: [
-        { id: 9, name: "Harbor View Apartments", units: 15, city: "San Diego", state: "CA" },
-        { id: 10, name: "Sunset Beach Houses", units: 8, city: "La Jolla", state: "CA" }
-      ],
-      contacts: [
-        { id: 8, name: "Thomas Clark", role: "Partner", email: "thomas@coastalrentals.com" },
-        { id: 9, name: "Linda Martinez", role: "Partner", email: "linda@coastalrentals.com" }
-      ]
-    }
-  };
-
   // Fetch company data
   const { data: company, isLoading, isError } = useQuery({
     queryKey: [`/api/companies/${id}`],
@@ -170,8 +41,33 @@ const ViewCompany = () => {
         return response.json();
       } catch (error) {
         console.error("Error fetching company:", error);
-        // Return sample company data based on id
-        return sampleCompanies[parseInt(id as string) as keyof typeof sampleCompanies] || sampleCompanies[1];
+        // Mock data for development
+        return {
+          id: parseInt(id as string),
+          companyName: "ABC Properties",
+          legalName: "ABC Properties LLC",
+          type: "LLC",
+          ein: "12-3456789",
+          email: "info@abcproperties.com",
+          phone: "(555) 123-4567",
+          streetAddress: "123 Main Street",
+          unit: "Suite 200",
+          city: "New York",
+          state: "NY",
+          zipcode: "10001",
+          country: "United States",
+          businessLicense: "BL-12345",
+          notes: "This is a sample company for property management.",
+          // Associated data
+          properties: [
+            { id: 1, name: "Parkside Apartments", units: 24, city: "New York", state: "NY" },
+            { id: 2, name: "Riverside Condos", units: 12, city: "Brooklyn", state: "NY" }
+          ],
+          contacts: [
+            { id: 1, name: "John Smith", role: "Owner", email: "john@abcproperties.com" },
+            { id: 2, name: "Jane Doe", role: "Manager", email: "jane@abcproperties.com" }
+          ]
+        };
       }
     },
   });

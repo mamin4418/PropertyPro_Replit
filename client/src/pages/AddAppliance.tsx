@@ -188,7 +188,7 @@ export default function AddAppliance() {
                       <SelectValue placeholder="All Properties" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Properties</SelectItem>
+                      <SelectItem value="all">All Properties</SelectItem>
                       {isLoadingProperties ? (
                         <SelectItem value="loading" disabled>Loading properties...</SelectItem>
                       ) : !properties || properties.length === 0 ? (

@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from "react";
 
-type Theme = "default" | "dark-theme" | "forest-theme" | "ocean-theme" | "sunset-theme";
+type Theme = "default" | "dark-theme" | "forest-theme" | "ocean-theme" | "sunset-theme" | 
+  "lavender-theme" | "honey-theme" | "sky-theme" | "mint-theme" | "atom-theme";
 
 interface ThemeContextType {
   currentTheme: Theme;
@@ -18,7 +19,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     // Check for localStorage support
     if (typeof window !== "undefined") {
       const savedTheme = localStorage.getItem("pms-theme") as Theme | null;
-      if (savedTheme && ["default", "dark-theme", "forest-theme", "ocean-theme", "sunset-theme"].includes(savedTheme)) {
+      if (savedTheme && [
+        "default", "dark-theme", "forest-theme", "ocean-theme", "sunset-theme",
+        "lavender-theme", "honey-theme", "sky-theme", "mint-theme", "atom-theme"
+      ].includes(savedTheme)) {
         return savedTheme;
       }
     }
@@ -43,7 +47,12 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         "dark-theme", 
         "forest-theme", 
         "ocean-theme", 
-        "sunset-theme"
+        "sunset-theme",
+        "lavender-theme",
+        "honey-theme",
+        "sky-theme",
+        "mint-theme",
+        "atom-theme"
       );
       
       // Then add the current theme if it's not default
@@ -56,7 +65,12 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         "dark-theme", 
         "forest-theme", 
         "ocean-theme", 
-        "sunset-theme"
+        "sunset-theme",
+        "lavender-theme",
+        "honey-theme",
+        "sky-theme",
+        "mint-theme",
+        "atom-theme"
       );
       
       if (theme !== "default") {

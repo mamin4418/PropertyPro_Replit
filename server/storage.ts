@@ -663,33 +663,31 @@ export class MemStorage implements IStorage {
 
   // Additional methods needed for API endpoints
   async getAllInsurances(): Promise<Insurance[]> {
+    return this.getInsurances();
+  }
+  
+  async getInsurances(): Promise<Insurance[]> {
     return Array.from(this.insurances.values());
   }
 
   async getInsurancesByPropertyId(propertyId: number): Promise<Insurance[]> {
-    return Array.from(this.insurances.values()).filter(
-      insurance => insurance.propertyId === propertyId
-    );
+    return this.getInsurancesByProperty(propertyId);
   }
 
   async getAllMortgages(): Promise<Mortgage[]> {
+    return this.getMortgages();
+  }
+  
+  async getMortgages(): Promise<Mortgage[]> {
     return Array.from(this.mortgages.values());
   }
 
   async getMortgagesByPropertyId(propertyId: number): Promise<Mortgage[]> {
-    return Array.from(this.mortgages.values()).filter(
-      mortgage => mortgage.propertyId === propertyId
-    );
+    return this.getMortgagesByProperty(propertyId);
   }
 
   async getAllAppliances(): Promise<Appliance[]> {
-    return Array.from(this.appliances.values());
-  }
-
-  async getAppliancesByPropertyId(propertyId: number): Promise<Appliance[]> {
-    return Array.from(this.appliances.values()).filter(
-      appliance => appliance.propertyId === propertyId
-    );
+    return this.getAppliances();
   }
 }
 

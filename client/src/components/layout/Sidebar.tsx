@@ -1,4 +1,3 @@
-
 import { Link, useLocation } from "wouter";
 import {
   LayoutDashboard,
@@ -144,7 +143,7 @@ export default function Sidebar() {
       </nav>
 
       <div className="p-4 border-t flex flex-col gap-4">
-        <ThemeSwitch />
+        {/* Theme section moved to Settings page */}
         {user ? (
           <button
             onClick={() => logout()}

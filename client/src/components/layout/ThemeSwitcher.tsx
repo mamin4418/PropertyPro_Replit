@@ -1,5 +1,6 @@
-import { useTheme } from "@/hooks/use-theme";
-import { useState, useEffect } from "react";
+
+import { useState, useEffect } from 'react';
+import { useTheme } from '@/hooks/use-theme';
 
 const ThemeSwitcher = () => {
   const { currentTheme, changeTheme } = useTheme();
@@ -30,15 +31,14 @@ const ThemeSwitcher = () => {
   
   return (
     <div>
-      <div className="mb-2 text-sm font-medium">Theme</div>
       <div className="grid grid-cols-5 gap-2">
         {themes.map((theme) => (
           <button
             key={theme.id}
             onClick={() => handleThemeChange(theme.id)}
-            className={`h-8 rounded-md border-2 transition-all ${
+            className={`h-14 rounded-md border-2 transition-all ${
               activeTheme === theme.id 
-                ? "border-primary scale-110" 
+                ? "border-primary scale-105" 
                 : "border-border hover:border-primary/50"
             } ${theme.gradient}`}
             title={theme.name}

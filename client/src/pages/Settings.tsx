@@ -20,6 +20,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useTheme } from "@/hooks/use-theme";
+import ThemeSwitcher from "@/components/layout/ThemeSwitcher";
 
 const Settings = () => {
   return (
@@ -278,22 +280,79 @@ const Settings = () => {
               <CardTitle>Theme Settings</CardTitle>
               <CardDescription>Customize the application appearance</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Dark Mode</Label>
-                  <p className="text-sm text-muted-foreground">Toggle between light and dark themes</p>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Dark Mode</Label>
+                    <p className="text-sm text-muted-foreground">Toggle between light and dark themes</p>
+                  </div>
+                  <Switch />
                 </div>
-                <Switch />
-              </div>
-              <div className="space-y-2">
-                <Label>Accent Color</Label>
-                <div className="grid grid-cols-5 gap-2">
-                  <Button variant="outline" className="h-8 w-8 rounded-full bg-blue-500" />
-                  <Button variant="outline" className="h-8 w-8 rounded-full bg-green-500" />
-                  <Button variant="outline" className="h-8 w-8 rounded-full bg-purple-500" />
-                  <Button variant="outline" className="h-8 w-8 rounded-full bg-orange-500" />
-                  <Button variant="outline" className="h-8 w-8 rounded-full bg-pink-500" />
+                
+                <div className="space-y-2">
+                  <Label htmlFor="themeSelection">Theme Selection</Label>
+                  <p className="text-sm text-muted-foreground mb-3">Choose from our curated themes</p>
+                  
+                  {/* Integrate ThemeSwitcher component */}
+                  <ThemeSwitcher />
+                  
+                  {/* Additional themes section */}
+                  <div className="mt-6">
+                    <Label>Additional Themes</Label>
+                    <div className="grid grid-cols-3 md:grid-cols-5 gap-3 mt-2">
+                      <div className="theme-option">
+                        <button 
+                          className="w-full h-16 rounded-md border-2 border-muted bg-gradient-to-br from-[#fbf1ff] to-[#f5e0ff] hover:opacity-90 transition-all"
+                          title="Lavender"
+                        />
+                        <p className="text-xs text-center mt-1">Lavender</p>
+                      </div>
+                      
+                      <div className="theme-option">
+                        <button 
+                          className="w-full h-16 rounded-md border-2 border-muted bg-gradient-to-br from-[#fffbeb] to-[#fef3c7] hover:opacity-90 transition-all"
+                          title="Honey"
+                        />
+                        <p className="text-xs text-center mt-1">Honey</p>
+                      </div>
+                      
+                      <div className="theme-option">
+                        <button 
+                          className="w-full h-16 rounded-md border-2 border-muted bg-gradient-to-br from-[#e8fbff] to-[#c4f5ff] hover:opacity-90 transition-all"
+                          title="Sky"
+                        />
+                        <p className="text-xs text-center mt-1">Sky</p>
+                      </div>
+                      
+                      <div className="theme-option">
+                        <button 
+                          className="w-full h-16 rounded-md border-2 border-muted bg-gradient-to-br from-[#fbffe8] to-[#e9ffc4] hover:opacity-90 transition-all"
+                          title="Mint"
+                        />
+                        <p className="text-xs text-center mt-1">Mint</p>
+                      </div>
+                      
+                      <div className="theme-option">
+                        <button 
+                          className="w-full h-16 rounded-md border-2 border-muted bg-gradient-to-br from-[#282c34] to-[#21252b] hover:opacity-90 transition-all"
+                          title="Atom One"
+                        />
+                        <p className="text-xs text-center mt-1">Atom One</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-2 mt-4">
+                  <Label>Accent Color</Label>
+                  <div className="grid grid-cols-5 gap-2">
+                    <Button variant="outline" className="h-8 w-8 rounded-full bg-blue-500" />
+                    <Button variant="outline" className="h-8 w-8 rounded-full bg-green-500" />
+                    <Button variant="outline" className="h-8 w-8 rounded-full bg-purple-500" />
+                    <Button variant="outline" className="h-8 w-8 rounded-full bg-orange-500" />
+                    <Button variant="outline" className="h-8 w-8 rounded-full bg-pink-500" />
+                  </div>
                 </div>
               </div>
             </CardContent>

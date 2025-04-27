@@ -7,7 +7,9 @@ import {
   insertAddressSchema, 
   insertApplianceSchema,
   insertRentalApplicationSchema, 
-  insertApplicationTemplateSchema
+  insertApplicationTemplateSchema,
+  insertInsuranceSchema,
+  insertMortgageSchema
 } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {

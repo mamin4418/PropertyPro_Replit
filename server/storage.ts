@@ -1,4 +1,4 @@
-import { users, type User, type InsertUser, type Contact, type InsertContact, type Address, type InsertAddress, type ContactAddress, type Appliance, type InsertAppliance, type RentalApplication, type InsertRentalApplication, type ApplicationTemplate, type InsertApplicationTemplate } from "@shared/schema";
+import { users, type User, type InsertUser, type Contact, type InsertContact, type Address, type InsertAddress, type ContactAddress, type Appliance, type InsertAppliance, type RentalApplication, type InsertRentalApplication, type ApplicationTemplate, type InsertApplicationTemplate, type Insurance, type InsertInsurance, type Mortgage, type InsertMortgage } from "@shared/schema";
 
 // modify the interface with any CRUD methods
 // you might need
@@ -10,7 +10,7 @@ const MemoryStore = createMemoryStore(session);
 
 export interface IStorage {
   // Session store
-  sessionStore: session.SessionStore;
+  sessionStore: session.Store;
   
   // User methods
   getUser(id: number): Promise<User | undefined>;
@@ -76,7 +76,7 @@ export interface IStorage {
 
 export class MemStorage implements IStorage {
   // Session store for auth
-  public sessionStore: session.SessionStore;
+  public sessionStore: session.Store;
   
   private users: Map<number, User>;
   private contacts: Map<number, Contact>;
@@ -88,6 +88,11 @@ export class MemStorage implements IStorage {
   private addressIdCounter: number;
   private contactAddressIdCounter: number;
   private applianceIdCounter: number;
+
+  private insurances: Map<number, Insurance> = new Map();
+  private mortgages: Map<number, Mortgage> = new Map();
+  private insuranceIdCounter: number = 1;
+  private mortgageIdCounter: number = 1;
 
   constructor() {
     this.sessionStore = new MemoryStore({
@@ -503,6 +508,130 @@ export class MemStorage implements IStorage {
   
   async deleteApplicationTemplate(id: number): Promise<boolean> {
     return this.applicationTemplates.delete(id);
+  }
+
+  // Insurance methods
+  async getInsurance(id: number): Promise<Insurance | undefined> {
+    return this.insurances.get(id);
+  }
+
+  async getInsurancesByProperty(propertyId: number): Promise<Insurance[]> {
+    return Array.from(this.insurances.values()).filter(
+      (insurance) => insurance.propertyId === propertyId
+    );
+  }
+
+  async createInsurance(insertInsurance: InsertInsurance): Promise<Insurance> {
+    const id = this.insuranceIdCounter++;
+    const now = new Date();
+    
+    const insurance: Insurance = {
+      id,
+      propertyId: insertInsurance.propertyId,
+      insuranceProvider: insertInsurance.insuranceProvider,
+      policyNumber: insertInsurance.policyNumber,
+      policyType: insertInsurance.policyType,
+      coverageAmount: insertInsurance.coverageAmount,
+      premium: insertInsurance.premium,
+      deductible: insertInsurance.deductible || null,
+      startDate: insertInsurance.startDate,
+      endDate: insertInsurance.endDate || null,
+      contactName: insertInsurance.contactName || null,
+      contactPhone: insertInsurance.contactPhone || null,
+      contactEmail: insertInsurance.contactEmail || null,
+      coverageDetails: insertInsurance.coverageDetails || null,
+      documents: insertInsurance.documents || [],
+      isActive: insertInsurance.isActive !== undefined ? insertInsurance.isActive : true,
+      notes: insertInsurance.notes || null,
+      createdAt: now,
+      updatedAt: now
+    };
+    
+    this.insurances.set(id, insurance);
+    return insurance;
+  }
+
+  async updateInsurance(id: number, updateData: Partial<InsertInsurance>): Promise<Insurance | undefined> {
+    const insurance = this.insurances.get(id);
+    if (!insurance) {
+      return undefined;
+    }
+    
+    const updatedInsurance: Insurance = {
+      ...insurance,
+      ...updateData,
+      updatedAt: new Date()
+    };
+    
+    this.insurances.set(id, updatedInsurance);
+    return updatedInsurance;
+  }
+
+  async deleteInsurance(id: number): Promise<boolean> {
+    return this.insurances.delete(id);
+  }
+
+  // Mortgage methods
+  async getMortgage(id: number): Promise<Mortgage | undefined> {
+    return this.mortgages.get(id);
+  }
+
+  async getMortgagesByProperty(propertyId: number): Promise<Mortgage[]> {
+    return Array.from(this.mortgages.values()).filter(
+      (mortgage) => mortgage.propertyId === propertyId
+    );
+  }
+
+  async createMortgage(insertMortgage: InsertMortgage): Promise<Mortgage> {
+    const id = this.mortgageIdCounter++;
+    const now = new Date();
+    
+    const mortgage: Mortgage = {
+      id,
+      propertyId: insertMortgage.propertyId,
+      lender: insertMortgage.lender,
+      loanNumber: insertMortgage.loanNumber,
+      loanType: insertMortgage.loanType,
+      originalAmount: insertMortgage.originalAmount,
+      currentBalance: insertMortgage.currentBalance,
+      interestRate: insertMortgage.interestRate,
+      monthlyPayment: insertMortgage.monthlyPayment,
+      startDate: insertMortgage.startDate,
+      maturityDate: insertMortgage.maturityDate || null,
+      escrowIncluded: insertMortgage.escrowIncluded !== undefined ? insertMortgage.escrowIncluded : false,
+      escrowAmount: insertMortgage.escrowAmount || null,
+      contactName: insertMortgage.contactName || null,
+      contactPhone: insertMortgage.contactPhone || null,
+      contactEmail: insertMortgage.contactEmail || null,
+      documents: insertMortgage.documents || [],
+      isActive: insertMortgage.isActive !== undefined ? insertMortgage.isActive : true,
+      notes: insertMortgage.notes || null,
+      createdAt: now,
+      updatedAt: now
+    };
+    
+    this.mortgages.set(id, mortgage);
+    return mortgage;
+  }
+
+  async updateMortgage(id: number, updateData: Partial<InsertMortgage>): Promise<Mortgage | undefined> {
+    const mortgage = this.mortgages.get(id);
+    if (!mortgage) {
+      return undefined;
+    }
+    
+    const updatedMortgage: Mortgage = {
+      ...mortgage,
+      ...updateData,
+      updatedAt: new Date()
+    };
+    
+    this.mortgages.set(id, updatedMortgage);
+    return updatedMortgage;
+  }
+
+  async deleteMortgage(id: number): Promise<boolean> {
+    return this.mortgages.delete(id);
   }
 }
 

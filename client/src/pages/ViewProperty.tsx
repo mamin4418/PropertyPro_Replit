@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useParams, useLocation } from "wouter";
 import { 
   Tabs, 
@@ -7,7 +7,7 @@ import {
   TabsTrigger 
 } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -15,12 +15,43 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Edit, Building2, MapPin, User, Home, Clock, Calendar, FileText, Upload, Download } from "lucide-react";
+import { ArrowLeft, Edit, Building2, MapPin, User, Home, Clock, Calendar, FileText, Upload, Download, Plus, Shield, DollarSign } from "lucide-react";
 
 const ViewProperty = () => {
   const { id } = useParams();
   const [, navigate] = useLocation();
+  
+  // Fetch property insurances (would be replaced with real API call)
+  const [insurances, setInsurances] = useState([]);
+  
+  // Fetch property mortgages (would be replaced with real API call)
+  const [mortgages, setMortgages] = useState([]);
+  
+  // Fetch data when component mounts
+  useEffect(() => {
+    // Fetch insurance and mortgage data
+    if (id) {
+      // These would be actual API calls in a real implementation
+      fetch(`/api/insurances/property/${id}`)
+        .then(res => res.json())
+        .then(data => setInsurances(data))
+        .catch(err => console.error("Error fetching insurances:", err));
+      
+      fetch(`/api/mortgages/property/${id}`)
+        .then(res => res.json())
+        .then(data => setMortgages(data))
+        .catch(err => console.error("Error fetching mortgages:", err));
+    }
+  }, [id]);
   
   // Mock data for a single property
   const property = {
@@ -275,7 +306,7 @@ const ViewProperty = () => {
         
         {/* Financials Tab */}
         <TabsContent value="financials">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <Card>
               <CardHeader>
                 <CardTitle>Financial Overview</CardTitle>
@@ -304,28 +335,304 @@ const ViewProperty = () => {
             </Card>
             
             <Card>
-              <CardHeader>
-                <CardTitle>Insurance Information</CardTitle>
-                <CardDescription>Insurance policy details</CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>Property Documents</CardTitle>
+                  <CardDescription>Financial statements and records</CardDescription>
+                </div>
+                <Button variant="outline" size="sm">
+                  <Upload className="h-4 w-4 mr-2" />
+                  Upload
+                </Button>
               </CardHeader>
-              <CardContent className="grid gap-4">
-                <div>
-                  <h4 className="font-medium mb-1">Policy Number</h4>
-                  <p className="text-muted-foreground">{property.insurancePolicy}</p>
-                </div>
-                <div>
-                  <h4 className="font-medium mb-1">Annual Premium</h4>
-                  <p className="text-muted-foreground">${property.insuranceCost.toLocaleString()}</p>
-                </div>
-                <div>
-                  <Button variant="outline" className="w-full">
-                    <Download className="h-4 w-4 mr-2" />
-                    Download Policy Documents
-                  </Button>
+              <CardContent>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between p-2 bg-muted rounded-md">
+                    <div className="flex items-center">
+                      <FileText className="h-4 w-4 mr-2 text-muted-foreground" />
+                      <span>Financial Statement 2023.pdf</span>
+                    </div>
+                    <Button variant="ghost" size="icon">
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="flex items-center justify-between p-2 bg-muted rounded-md">
+                    <div className="flex items-center">
+                      <FileText className="h-4 w-4 mr-2 text-muted-foreground" />
+                      <span>Tax Records 2023.pdf</span>
+                    </div>
+                    <Button variant="ghost" size="icon">
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
           </div>
+          
+          {/* Insurance Section */}
+          <Card className="mb-6">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Insurance Policies</CardTitle>
+                <CardDescription>Active and historical insurance information</CardDescription>
+              </div>
+              <Button onClick={() => navigate(`/add-insurance/${id}`)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Insurance
+              </Button>
+            </CardHeader>
+            <CardContent>
+              {/* Insurance Display - This will be replaced with real data from API */}
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold mb-3">Active Policies</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <Card className="border-primary">
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-start">
+                          <CardTitle className="text-base flex items-center">
+                            <Shield className="h-4 w-4 mr-2 text-primary" />
+                            AllState Insurance
+                          </CardTitle>
+                          <Badge>Landlord</Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="pb-3">
+                        <div className="space-y-2 text-sm">
+                          <div className="flex items-center">
+                            <FileText className="h-4 w-4 mr-2 text-muted-foreground" />
+                            <span className="text-muted-foreground">Policy:</span>
+                            <span className="ml-1 font-medium">INS-12345-A</span>
+                          </div>
+                          <div className="flex items-center">
+                            <DollarSign className="h-4 w-4 mr-2 text-muted-foreground" />
+                            <span className="text-muted-foreground">Coverage:</span>
+                            <span className="ml-1 font-medium">$250,000</span>
+                          </div>
+                          <div className="flex items-center">
+                            <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                            <span className="text-muted-foreground">Expires:</span>
+                            <span className="ml-1 font-medium">Jan 15, 2024</span>
+                          </div>
+                          <div className="bg-muted p-2 rounded-sm text-sm mt-2">
+                            <p className="text-muted-foreground text-xs mt-1">
+                              Premium: $1,250/year
+                            </p>
+                            <p className="text-muted-foreground text-xs">
+                              Deductible: $500
+                            </p>
+                          </div>
+                        </div>
+                      </CardContent>
+                      <CardFooter className="pt-0">
+                        <Button variant="outline" size="sm" className="w-full" asChild>
+                          <Link to={`/view-insurance/1`}>View Details</Link>
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                    
+                    <Card className="border-primary">
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-start">
+                          <CardTitle className="text-base flex items-center">
+                            <Shield className="h-4 w-4 mr-2 text-primary" />
+                            Liberty Mutual
+                          </CardTitle>
+                          <Badge>Flood</Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="pb-3">
+                        <div className="space-y-2 text-sm">
+                          <div className="flex items-center">
+                            <FileText className="h-4 w-4 mr-2 text-muted-foreground" />
+                            <span className="text-muted-foreground">Policy:</span>
+                            <span className="ml-1 font-medium">LM-78901-B</span>
+                          </div>
+                          <div className="flex items-center">
+                            <DollarSign className="h-4 w-4 mr-2 text-muted-foreground" />
+                            <span className="text-muted-foreground">Coverage:</span>
+                            <span className="ml-1 font-medium">$100,000</span>
+                          </div>
+                          <div className="flex items-center">
+                            <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                            <span className="text-muted-foreground">Expires:</span>
+                            <span className="ml-1 font-medium">Mar 10, 2024</span>
+                          </div>
+                          <div className="bg-muted p-2 rounded-sm text-sm mt-2">
+                            <p className="text-muted-foreground text-xs mt-1">
+                              Premium: $850/year
+                            </p>
+                            <p className="text-muted-foreground text-xs">
+                              Deductible: $1,000
+                            </p>
+                          </div>
+                        </div>
+                      </CardContent>
+                      <CardFooter className="pt-0">
+                        <Button variant="outline" size="sm" className="w-full" asChild>
+                          <Link to={`/view-insurance/2`}>View Details</Link>
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="text-lg font-semibold mb-3">Historical Policies</h3>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Policy #</TableHead>
+                          <TableHead>Provider</TableHead>
+                          <TableHead>Type</TableHead>
+                          <TableHead>Coverage</TableHead>
+                          <TableHead>Premium</TableHead>
+                          <TableHead>Period</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        <TableRow className="text-sm">
+                          <TableCell className="font-medium">INS-11111-X</TableCell>
+                          <TableCell>AllState Insurance</TableCell>
+                          <TableCell>Landlord</TableCell>
+                          <TableCell>$230,000</TableCell>
+                          <TableCell>$1,150/year</TableCell>
+                          <TableCell>Jan 2022 - Jan 2023</TableCell>
+                          <TableCell>
+                            <Button variant="ghost" size="sm">View</Button>
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="text-sm">
+                          <TableCell className="font-medium">LM-77777-Y</TableCell>
+                          <TableCell>Liberty Mutual</TableCell>
+                          <TableCell>Flood</TableCell>
+                          <TableCell>$95,000</TableCell>
+                          <TableCell>$825/year</TableCell>
+                          <TableCell>Mar 2022 - Mar 2023</TableCell>
+                          <TableCell>
+                            <Button variant="ghost" size="sm">View</Button>
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          {/* Mortgage Section */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Mortgages</CardTitle>
+                <CardDescription>Active and historical mortgage information</CardDescription>
+              </div>
+              <Button onClick={() => navigate(`/add-mortgage/${id}`)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Mortgage
+              </Button>
+            </CardHeader>
+            <CardContent>
+              {/* Mortgage Display - This will be replaced with real data from API */}
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold mb-3">Active Mortgages</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <Card className="border-primary">
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-start">
+                          <CardTitle className="text-base flex items-center">
+                            <Building2 className="h-4 w-4 mr-2 text-primary" />
+                            Bank of America
+                          </CardTitle>
+                          <Badge>Fixed</Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="pb-3">
+                        <div className="space-y-2 text-sm">
+                          <div className="flex items-center">
+                            <FileText className="h-4 w-4 mr-2 text-muted-foreground" />
+                            <span className="text-muted-foreground">Loan:</span>
+                            <span className="ml-1 font-medium">BOA-123456</span>
+                          </div>
+                          <div className="flex items-center">
+                            <DollarSign className="h-4 w-4 mr-2 text-muted-foreground" />
+                            <span className="text-muted-foreground">Balance:</span>
+                            <span className="ml-1 font-medium">$175,000</span>
+                          </div>
+                          <div className="flex items-center">
+                            <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                            <span className="text-muted-foreground">Maturity:</span>
+                            <span className="ml-1 font-medium">Jun 15, 2050</span>
+                          </div>
+                          <div className="bg-muted p-2 rounded-sm text-sm mt-2">
+                            <p className="text-muted-foreground text-xs mt-1">
+                              Monthly Payment: $926.23
+                            </p>
+                            <p className="text-muted-foreground text-xs">
+                              Interest Rate: 3.75%
+                            </p>
+                          </div>
+                        </div>
+                      </CardContent>
+                      <CardFooter className="pt-0">
+                        <Button variant="outline" size="sm" className="w-full" asChild>
+                          <Link to={`/view-mortgage/1`}>View Details</Link>
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="text-lg font-semibold mb-3">Historical Mortgages</h3>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Loan #</TableHead>
+                          <TableHead>Lender</TableHead>
+                          <TableHead>Type</TableHead>
+                          <TableHead>Original Amount</TableHead>
+                          <TableHead>Interest Rate</TableHead>
+                          <TableHead>Period</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        <TableRow className="text-sm">
+                          <TableCell className="font-medium">BOA-111222</TableCell>
+                          <TableCell>Bank of America</TableCell>
+                          <TableCell>Fixed</TableCell>
+                          <TableCell>$220,000</TableCell>
+                          <TableCell>4.25%</TableCell>
+                          <TableCell>Jun 2015 - Jun 2020</TableCell>
+                          <TableCell>
+                            <Button variant="ghost" size="sm">View</Button>
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="text-sm">
+                          <TableCell className="font-medium">CZ-345678</TableCell>
+                          <TableCell>Citizens Bank</TableCell>
+                          <TableCell>Adjustable</TableCell>
+                          <TableCell>$210,000</TableCell>
+                          <TableCell>3.25-5.00%</TableCell>
+                          <TableCell>Jun 2010 - Jun 2015</TableCell>
+                          <TableCell>
+                            <Button variant="ghost" size="sm">View</Button>
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
         
         {/* Documents Tab */}

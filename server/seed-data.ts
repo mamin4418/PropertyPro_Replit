@@ -499,8 +499,61 @@ async function seedDatabase() {
 
   // Add appliance records
   for (const appliance of appliances) {
-    await storage.createAppliance(appliance);
-    console.log(`Created appliance: ${appliance.type} ${appliance.make} ${appliance.model} for unit ${appliance.unitId}`);
+    try {
+      await storage.createAppliance(appliance);
+      console.log(`Created appliance: ${appliance.type} ${appliance.make} ${appliance.model} for unit ${appliance.unitId}`);
+    } catch (error) {
+      console.log(`Error creating appliance, may already exist: ${error}`);
+    }
+  }
+  
+  // Add some additional test appliances with explicit IDs for testing
+  const testAppliances = [
+    {
+      id: 9999,
+      unitId: 101,
+      propertyId: 1,
+      type: "Refrigerator",
+      make: "Samsung",
+      model: "RS8000",
+      serialNumber: "SN123456789",
+      purchaseDate: new Date("2022-05-15"),
+      installDate: new Date("2022-05-20"),
+      lastServiceDate: new Date("2023-06-15"),
+      warranty: "5 year limited",
+      notes: "Energy Star certified. Works perfectly.",
+      status: "active",
+      images: ["https://images.unsplash.com/photo-1584568499811-37a6a6be272b?auto=format&w=400"],
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: 9998,
+      unitId: 202,
+      propertyId: 2,
+      type: "Dishwasher",
+      make: "Bosch",
+      model: "SHX88PZ55N",
+      serialNumber: "BDW987654321",
+      purchaseDate: new Date("2022-01-10"),
+      installDate: new Date("2022-01-15"),
+      lastServiceDate: new Date("2023-02-20"),
+      warranty: "2 years parts and labor",
+      notes: "Ultra quiet operation. 3rd rack for utensils.",
+      status: "active",
+      images: ["https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?auto=format&w=400"],
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+  ];
+  
+  for (const appliance of testAppliances) {
+    try {
+      await storage.createAppliance(appliance);
+      console.log(`Created test appliance ID ${appliance.id}: ${appliance.make} ${appliance.model}`);
+    } catch (error) {
+      console.log(`Error creating test appliance, may already exist: ${error}`);
+    }
   }
 
   // Add maintenance request records

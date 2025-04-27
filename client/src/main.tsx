@@ -73,11 +73,9 @@ import TenantDashboard from './pages/tenant-dashboard';
 import NotFound from './pages/not-found';
 import App from './App';
 
-// Define the routes
-const routes = [
-  { path: "/view-appliance/:id", component: ViewAppliance },
-  { path: "/edit-appliance/:id", component: EditAppliance },
-];
+// Import appliance pages
+import ViewAppliance from './pages/ViewAppliance';
+import EditAppliance from './pages/EditAppliance';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

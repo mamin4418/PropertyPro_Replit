@@ -80,9 +80,14 @@ export default function EditAppliance() {
     error 
   } = useQuery({
     queryKey: ['/api/appliances', applianceId],
-    queryFn: () => apiRequest<Appliance>(`/api/appliances/${applianceId}`),
+    queryFn: async () => {
+      console.log(`Fetching appliance ID: ${applianceId}`);
+      const data = await apiRequest<Appliance>(`/api/appliances/${applianceId}`);
+      console.log(`Appliance data received:`, data);
+      return data;
+    },
     enabled: !!applianceId,
-    retry: 1,
+    retry: 2,
   });
 
   // Fetch units for selection

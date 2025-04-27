@@ -130,6 +130,10 @@ export class MemStorage implements IStorage {
     this.createInsurance({propertyId: 1, insuranceProvider: "Sample Insurer", policyNumber: "12345", policyType: "Homeowners", coverageAmount: 250000, premium: 1000, startDate: new Date()});
     this.createMortgage({propertyId: 1, lender: "Sample Lender", loanNumber: "67890", loanType: "Fixed", originalAmount: 300000, currentBalance: 200000, interestRate: 0.04, monthlyPayment: 1500, startDate: new Date()});
     this.createAppliance({unitId: 1, type: "Refrigerator", make: "Whirlpool", model: "WRT511CZDM", serialNumber: "1234567890"});
+    this.createAppliance({unitId: 1, type: "Oven", make: "LG", model: "LFXS28968S", serialNumber: "9876543210"});
+    this.createAppliance({unitId: 2, type: "Washer", make: "Samsung", model: "WF45R6300AW", serialNumber: "1357913579"});
+    this.createAppliance({unitId: 2, type: "Dryer", make: "Samsung", model: "DV45R6300AW", serialNumber: "2468024680"});
+
   }
 
   // User methods
@@ -698,6 +702,13 @@ export class MemStorage implements IStorage {
   async getAllAppliances(): Promise<Appliance[]> {
     return this.getAppliances();
   }
+  // Get a specific appliance by ID
+  async getAppliance(id: number): Promise<Appliance | null> {
+    const appliances = await this.getAppliances();
+    const appliance = appliances.find(a => a.id === id);
+    console.log(`Fetching appliance with ID ${id}:`, appliance);
+    return appliance || null;
+  },
 }
 
 export const storage = new MemStorage();

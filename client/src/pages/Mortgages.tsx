@@ -25,6 +25,7 @@ export default function Mortgages() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [loanTypeFilter, setLoanTypeFilter] = useState('all');
+  const [propertyFilter, setPropertyFilter] = useState('all');
   const [sortBy, setSortBy] = useState('lender');
   
   const propertyIdNum = propertyId ? parseInt(propertyId) : undefined;

@@ -1,19 +1,11 @@
-import { Link } from "wouter";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
+
+import { useState } from "react";
+import { useLocation } from "wouter";
+import { Building, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -21,251 +13,259 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { ArrowLeft, Plus } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-// Form schema
-const companyFormSchema = z.object({
-  legalName: z.string().min(2, {
-    message: "Legal name must be at least 2 characters.",
-  }),
-  companyName: z.string().min(2, {
-    message: "Company name must be at least 2 characters.",
-  }),
-  ein: z.string().optional(),
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  phone: z.string().optional(),
-  type: z.string({
-    required_error: "Please select a company type.",
-  }),
-  status: z.string().default("active"),
-  notes: z.string().optional(),
-});
-
-type CompanyFormValues = z.infer<typeof companyFormSchema>;
-
-export default function AddCompany() {
-  const { toast } = useToast();
-
-  // Initialize form
-  const form = useForm<CompanyFormValues>({
-    resolver: zodResolver(companyFormSchema),
-    defaultValues: {
-      legalName: "",
-      companyName: "",
-      ein: "",
-      email: "",
-      phone: "",
-      type: "",
-      status: "active",
-      notes: "",
-    },
+const AddCompany = () => {
+  const [, navigate] = useLocation();
+  const [formData, setFormData] = useState({
+    companyName: "",
+    legalName: "",
+    type: "",
+    email: "",
+    phone: "",
+    ein: "",
+    address: "",
+    city: "",
+    state: "",
+    zipcode: "",
+    country: "USA",
+    notes: "",
   });
 
-  function onSubmit(data: CompanyFormValues) {
-    // In a real app, we would save the company here
-    console.log(data);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-    toast({
-      title: "Company Created",
-      description: `${data.companyName} has been created successfully.`,
-    });
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-    // Redirect to companies list
-    window.location.href = "/companies";
-  }
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Submitting company data:", formData);
+    // Here you would typically make an API call to save the data
+    // For now we'll just navigate back to the companies list
+    navigate("/companies");
+  };
 
   return (
-    <div className="container mx-auto p-6">
-      <Breadcrumb className="mb-6">
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/companies">Companies</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink>Add New Company</BreadcrumbLink>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Add New Company</h1>
-        <Link href="/companies">
-          <Button variant="outline">
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Companies
-          </Button>
-        </Link>
+    <div className="container py-6">
+      <div className="flex items-center mb-6">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="mr-2"
+          onClick={() => navigate("/companies")}
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Add Company</h1>
+          <p className="text-muted-foreground">
+            Create a new property management company
+          </p>
+        </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Company Information</CardTitle>
-          <CardDescription>Enter the details of the new company.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Company Information</CardTitle>
+            <CardDescription>
+              Enter the basic details about the company
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="companyName">Company Name *</Label>
+                <Input
+                  id="companyName"
                   name="companyName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Company Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter company name" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        The name your company is known by.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  value={formData.companyName}
+                  onChange={handleChange}
+                  placeholder="Skyline Properties"
+                  required
                 />
-
-                <FormField
-                  control={form.control}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="legalName">Legal Name *</Label>
+                <Input
+                  id="legalName"
                   name="legalName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Legal Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter legal name" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        The registered legal name of the company.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  value={formData.legalName}
+                  onChange={handleChange}
+                  placeholder="Skyline Properties LLC"
+                  required
                 />
-
-                <FormField
-                  control={form.control}
-                  name="type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Company Type</FormLabel>
-                      <Select 
-                        onValueChange={field.onChange} 
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a company type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="LLC">LLC</SelectItem>
-                          <SelectItem value="Corporation">Corporation</SelectItem>
-                          <SelectItem value="Partnership">Partnership</SelectItem>
-                          <SelectItem value="Sole Proprietorship">Sole Proprietorship</SelectItem>
-                          <SelectItem value="Limited Company">Limited Company</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormDescription>
-                        The legal structure of the company.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="type">Company Type *</Label>
+                <Select
+                  value={formData.type}
+                  onValueChange={(value) => handleSelectChange("type", value)}
+                  required
+                >
+                  <SelectTrigger id="type">
+                    <SelectValue placeholder="Select company type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="LLC">LLC</SelectItem>
+                    <SelectItem value="Corporation">Corporation</SelectItem>
+                    <SelectItem value="Partnership">Partnership</SelectItem>
+                    <SelectItem value="Sole Proprietorship">Sole Proprietorship</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="ein">EIN / Tax ID</Label>
+                <Input
+                  id="ein"
                   name="ein"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>EIN</FormLabel>
-                      <FormControl>
-                        <Input placeholder="XX-XXXXXXX" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Employer Identification Number (optional).
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  value={formData.ein}
+                  onChange={handleChange}
+                  placeholder="XX-XXXXXXX"
                 />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-                <FormField
-                  control={form.control}
+        <Card>
+          <CardHeader>
+            <CardTitle>Contact Information</CardTitle>
+            <CardDescription>
+              How to reach this company
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
                   name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input type="email" placeholder="company@example.com" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="info@company.com"
                 />
-
-                <FormField
-                  control={form.control}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone</Label>
+                <Input
+                  id="phone"
                   name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phone</FormLabel>
-                      <FormControl>
-                        <Input placeholder="(XXX) XXX-XXXX" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="(555) 123-4567"
                 />
               </div>
+            </div>
+          </CardContent>
+        </Card>
 
-              <FormField
-                control={form.control}
-                name="notes"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Notes</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Additional information about the company" 
-                        className="min-h-[120px]" 
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="flex justify-end">
-                <Button type="submit">
-                  <Plus className="mr-2 h-4 w-4" /> Create Company
-                </Button>
+        <Card>
+          <CardHeader>
+            <CardTitle>Address</CardTitle>
+            <CardDescription>
+              The company's physical location
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="address">Street Address</Label>
+                <Input
+                  id="address"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  placeholder="123 Business St, Suite 100"
+                />
               </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+              <div className="space-y-2">
+                <Label htmlFor="city">City</Label>
+                <Input
+                  id="city"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleChange}
+                  placeholder="New York"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="state">State</Label>
+                <Input
+                  id="state"
+                  name="state"
+                  value={formData.state}
+                  onChange={handleChange}
+                  placeholder="NY"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="zipcode">Zipcode</Label>
+                <Input
+                  id="zipcode"
+                  name="zipcode"
+                  value={formData.zipcode}
+                  onChange={handleChange}
+                  placeholder="10001"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="country">Country</Label>
+                <Select
+                  value={formData.country}
+                  onValueChange={(value) => handleSelectChange("country", value)}
+                >
+                  <SelectTrigger id="country">
+                    <SelectValue placeholder="Select country" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="USA">United States</SelectItem>
+                    <SelectItem value="CAN">Canada</SelectItem>
+                    <SelectItem value="MEX">Mexico</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Additional Information</CardTitle>
+            <CardDescription>
+              Any other relevant details
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <Label htmlFor="notes">Notes</Label>
+              <Textarea
+                id="notes"
+                name="notes"
+                value={formData.notes}
+                onChange={handleChange}
+                placeholder="Additional notes or information about this company"
+                rows={4}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="flex justify-end gap-4">
+          <Button variant="outline" type="button" onClick={() => navigate("/companies")}>
+            Cancel
+          </Button>
+          <Button type="submit">Create Company</Button>
+        </div>
+      </form>
     </div>
   );
-}
+};
+
+export default AddCompany;

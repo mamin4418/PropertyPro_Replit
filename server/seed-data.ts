@@ -77,6 +77,7 @@ async function seedDatabase() {
       contactPhone: "555-123-4567",
       contactEmail: "jsmith@allstate.example.com",
       coverageDetails: "Full coverage including liability, property damage, and natural disasters",
+      documents: ["https://images.unsplash.com/photo-1611937864996-52b13c9d8fdf?auto=format&w=400"],
       isActive: true
     },
     {
@@ -93,6 +94,7 @@ async function seedDatabase() {
       contactPhone: "555-987-6543",
       contactEmail: "sjohnson@libertymutual.example.com",
       coverageDetails: "Flood insurance coverage",
+      documents: ["https://images.unsplash.com/photo-1547473078-cbffc59a1c28?auto=format&w=400"],
       isActive: true
     },
     {
@@ -109,6 +111,41 @@ async function seedDatabase() {
       contactPhone: "555-456-7890",
       contactEmail: "mwilliams@statefarm.example.com",
       coverageDetails: "Comprehensive homeowner's insurance with additional coverage for high-value items",
+      documents: ["https://images.unsplash.com/photo-1630927239596-9b7ebd94a8ba?auto=format&w=400"],
+      isActive: true
+    },
+    {
+      propertyId: 3,
+      insuranceProvider: "Progressive",
+      policyNumber: "PRO-98765-D",
+      policyType: "liability",
+      coverageAmount: 500000,
+      premium: 950.00,
+      deductible: 1000,
+      startDate: new Date("2023-04-01"),
+      endDate: new Date("2024-04-01"),
+      contactName: "Laura Chen",
+      contactPhone: "555-789-0123",
+      contactEmail: "lchen@progressive.example.com",
+      coverageDetails: "Umbrella liability policy for additional protection beyond standard coverage",
+      documents: ["https://images.unsplash.com/photo-1622560480654-d96214fdc887?auto=format&w=400"],
+      isActive: true
+    },
+    {
+      propertyId: 2,
+      insuranceProvider: "Nationwide",
+      policyNumber: "NW-23456-E",
+      policyType: "earthquake",
+      coverageAmount: 200000,
+      premium: 1500.00,
+      deductible: 2500,
+      startDate: new Date("2023-02-15"),
+      endDate: new Date("2024-02-15"),
+      contactName: "Tom Anderson",
+      contactPhone: "555-345-6789",
+      contactEmail: "tanderson@nationwide.example.com",
+      coverageDetails: "Specialized earthquake insurance for high-risk areas",
+      documents: ["https://images.unsplash.com/photo-1558403194-611308249627?auto=format&w=400"],
       isActive: true
     }
   ];
@@ -131,6 +168,8 @@ async function seedDatabase() {
       contactName: "Robert Johnson",
       contactPhone: "555-222-3333",
       contactEmail: "rjohnson@bofa.example.com",
+      documents: ["https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&w=400"],
+      notes: "30-year fixed-rate mortgage with favorable terms. Annual review scheduled for June each year.",
       isActive: true
     },
     {
@@ -149,6 +188,8 @@ async function seedDatabase() {
       contactName: "Lisa Brown",
       contactPhone: "555-444-5555",
       contactEmail: "lbrown@wellsfargo.example.com",
+      documents: ["https://images.unsplash.com/photo-1618044733300-9472054094ee?auto=format&w=400"],
+      notes: "5/1 ARM with initial fixed period ending March 2027. Rate caps at 2% per adjustment, 6% lifetime.",
       isActive: true
     },
     {
@@ -166,6 +207,48 @@ async function seedDatabase() {
       contactName: "David Wilson",
       contactPhone: "555-666-7777",
       contactEmail: "dwilson@chase.example.com",
+      documents: ["https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&w=400"],
+      notes: "No escrow account; owner responsible for paying property taxes and insurance separately.",
+      isActive: true
+    },
+    {
+      propertyId: 1,
+      lender: "Quicken Loans",
+      loanNumber: "QL-567890",
+      loanType: "fixed",
+      originalAmount: 150000,
+      currentBalance: 0,
+      interestRate: 4.5,
+      monthlyPayment: 760.03,
+      startDate: new Date("2015-04-20"),
+      maturityDate: new Date("2030-04-20"),
+      escrowIncluded: true,
+      escrowAmount: 300.00,
+      contactName: "Maria Garcia",
+      contactPhone: "555-888-9999",
+      contactEmail: "mgarcia@quicken.example.com",
+      documents: ["https://images.unsplash.com/photo-1601597111158-2fceff292cdc?auto=format&w=400"],
+      notes: "Mortgage refinanced with Bank of America in 2020. This record is for historical tracking.",
+      isActive: false
+    },
+    {
+      propertyId: 3,
+      lender: "Citibank",
+      loanNumber: "CITI-901234",
+      loanType: "balloon",
+      originalAmount: 180000,
+      currentBalance: 160000,
+      interestRate: 3.5,
+      monthlyPayment: 808.56,
+      startDate: new Date("2021-09-15"),
+      maturityDate: new Date("2031-09-15"),
+      escrowIncluded: true,
+      escrowAmount: 375.00,
+      contactName: "Alex Thompson",
+      contactPhone: "555-111-2222",
+      contactEmail: "athompson@citi.example.com",
+      documents: ["https://images.unsplash.com/photo-1434626881859-194d67b2b86f?auto=format&w=400"],
+      notes: "10-year balloon mortgage with balloon payment due at maturity. Consider refinancing options by 2029.",
       isActive: true
     }
   ];
@@ -217,6 +300,38 @@ async function seedDatabase() {
       images: ["https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?auto=format&w=400"]
     },
     {
+      unitId: 101,
+      propertyId: 1,
+      type: "Stove",
+      make: "GE",
+      model: "JB750SJSS",
+      serialNumber: "GE20217654321",
+      purchaseDate: new Date("2021-04-15"),
+      installationDate: new Date("2021-05-20"),
+      lastServiceDate: new Date("2023-03-18"),
+      warranty: "1 year full warranty",
+      warrantyExpiration: new Date("2022-04-15"),
+      notes: "Electric range with convection oven. One small burner needs replacement.",
+      status: "repair-needed",
+      images: ["https://images.unsplash.com/photo-1574269923091-14b401d9c92b?auto=format&w=400"]
+    },
+    {
+      unitId: 101,
+      propertyId: 1,
+      type: "Microwave",
+      make: "Whirlpool",
+      model: "WMH31017HS",
+      serialNumber: "WP20210987654",
+      purchaseDate: new Date("2021-04-10"),
+      installationDate: new Date("2021-05-20"),
+      lastServiceDate: null,
+      warranty: "1 year full warranty",
+      warrantyExpiration: new Date("2022-04-10"),
+      notes: "Over-the-range microwave. No issues reported.",
+      status: "active",
+      images: ["https://images.unsplash.com/photo-1585659722983-3a681d8fde89?auto=format&w=400"]
+    },
+    {
       unitId: 202,
       propertyId: 2,
       type: "HVAC System",
@@ -231,6 +346,22 @@ async function seedDatabase() {
       notes: "Annual maintenance required to maintain warranty.",
       status: "repair-needed",
       images: ["https://images.unsplash.com/photo-1627131590668-07bb784f89ab?auto=format&w=400"]
+    },
+    {
+      unitId: 202,
+      propertyId: 2,
+      type: "Water Heater",
+      make: "Rheem",
+      model: "XE40M06ST45U1",
+      serialNumber: "RH20190123456",
+      purchaseDate: new Date("2019-08-22"),
+      installationDate: new Date("2019-08-25"),
+      lastServiceDate: new Date("2022-09-10"),
+      warranty: "6 years limited",
+      warrantyExpiration: new Date("2025-08-22"),
+      notes: "40-gallon electric water heater. Anode rod replaced during last service.",
+      status: "active",
+      images: ["https://images.unsplash.com/photo-1585814240392-2a6e46f0f5ac?auto=format&w=400"]
     },
     {
       unitId: 301,
@@ -261,6 +392,38 @@ async function seedDatabase() {
       notes: "Electric. Matching washer unit.",
       status: "inactive",
       images: ["https://images.unsplash.com/photo-1626806787467-19b796d8b650?auto=format&w=400"]
+    },
+    {
+      unitId: 301,
+      propertyId: 3,
+      type: "Refrigerator",
+      make: "Whirlpool",
+      model: "WRF535SWHZ",
+      serialNumber: "WP2021RF789012",
+      purchaseDate: new Date("2021-10-05"),
+      installationDate: new Date("2021-10-10"),
+      lastServiceDate: null,
+      warranty: "1 year full warranty",
+      warrantyExpiration: new Date("2022-10-05"),
+      notes: "French door refrigerator with bottom freezer. Energy Star rated.",
+      status: "active",
+      images: ["https://images.unsplash.com/photo-1584568499811-37a6a6be272b?auto=format&w=400"]
+    },
+    {
+      unitId: 202,
+      propertyId: 2,
+      type: "Garbage Disposal",
+      make: "InSinkErator",
+      model: "Evolution Compact",
+      serialNumber: "ISE2020GD345678",
+      purchaseDate: new Date("2020-11-15"),
+      installationDate: new Date("2020-11-20"),
+      lastServiceDate: new Date("2022-12-05"),
+      warranty: "4 years in-home service",
+      warrantyExpiration: new Date("2024-11-15"),
+      notes: "3/4 HP compact garbage disposal. Had jam cleared during last service.",
+      status: "active",
+      images: ["https://images.unsplash.com/photo-1585845328561-dbaec8956b60?auto=format&w=400"]
     }
   ];
 

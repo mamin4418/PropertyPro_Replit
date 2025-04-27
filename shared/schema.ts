@@ -612,3 +612,41 @@ export const insertUserSchema = createInsertSchema(users).pick({
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+
+export interface Mortgage {
+  id: number;
+  propertyId: number;
+  lender: string;
+  loanNumber: string;
+  loanType: string;
+  originalAmount: number;
+  currentBalance: number;
+  interestRate: number;
+  monthlyPayment: number;
+  startDate: Date;
+  maturityDate: Date;
+  escrowIncluded: boolean;
+  escrowAmount?: number;
+  contactName?: string;
+  contactPhone?: string;
+  contactEmail?: string;
+  isActive: boolean;
+}
+
+export interface MaintenanceRequest {
+  id: number;
+  propertyId: number;
+  unitId: number;
+  title: string;
+  description: string;
+  priority: 'low' | 'normal' | 'urgent';
+  status: 'open' | 'in-progress' | 'completed';
+  reportedDate: Date;
+  completedDate?: Date;
+  reportedBy: string;
+  assignedTo?: string | null;
+  notes?: string;
+  images?: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}

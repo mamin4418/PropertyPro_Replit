@@ -1,4 +1,4 @@
-import { users, type User, type InsertUser, type Contact, type InsertContact, type Address, type InsertAddress, type ContactAddress, type Appliance, type InsertAppliance, type RentalApplication, type InsertRentalApplication, type ApplicationTemplate, type InsertApplicationTemplate, type Insurance, type InsertInsurance, type Mortgage, type InsertMortgage } from "@shared/schema";
+import { users, type User, type InsertUser, type Contact, type InsertContact, type Address, type InsertAddress, type ContactAddress, type Appliance, type InsertAppliance, type RentalApplication, type InsertRentalApplication, type ApplicationTemplate, type InsertApplicationTemplate, type Insurance, type InsertInsurance, type Mortgage, type InsertMortgage, type MaintenanceRequest, type InsertMaintenanceRequest } from "@shared/schema";
 
 // modify the interface with any CRUD methods
 // you might need
@@ -11,24 +11,24 @@ const MemoryStore = createMemoryStore(session);
 export interface IStorage {
   // Session store
   sessionStore: session.Store;
-  
+
   // User methods
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  
+
   // Address methods
   getAddress(id: number): Promise<Address | undefined>;
   getAddresses(): Promise<Address[]>;
   createAddress(address: InsertAddress): Promise<Address>;
   updateAddress(id: number, address: Partial<InsertAddress>): Promise<Address | undefined>;
   deleteAddress(id: number): Promise<boolean>;
-  
+
   // Contact-Address methods
   getContactAddresses(contactId: number): Promise<(ContactAddress & { address: Address })[]>;
   addAddressToContact(contactId: number, addressId: number, isPrimary?: boolean): Promise<ContactAddress>;
   removeAddressFromContact(contactId: number, addressId: number): Promise<boolean>;
-  
+
   // Contact methods
   getContact(id: number): Promise<Contact | undefined>;
   getContacts(): Promise<Contact[]>;
@@ -36,7 +36,7 @@ export interface IStorage {
   createContact(contact: InsertContact): Promise<Contact>;
   updateContact(id: number, contact: Partial<InsertContact>): Promise<Contact | undefined>;
   deleteContact(id: number): Promise<boolean>;
-  
+
   // Appliance methods
   getAppliance(id: number): Promise<Appliance | undefined>;
   getAppliances(): Promise<Appliance[]>;
@@ -44,76 +44,75 @@ export interface IStorage {
   createAppliance(appliance: InsertAppliance): Promise<Appliance>;
   updateAppliance(id: number, appliance: Partial<InsertAppliance>): Promise<Appliance | undefined>;
   deleteAppliance(id: number): Promise<boolean>;
-  
+
   // Application methods
   getRentalApplication(id: number): Promise<RentalApplication | undefined>;
   getRentalApplications(): Promise<RentalApplication[]>;
   createRentalApplication(application: InsertRentalApplication): Promise<RentalApplication>;
   updateRentalApplication(id: number, application: Partial<InsertRentalApplication>): Promise<RentalApplication | undefined>;
   deleteRentalApplication(id: number): Promise<boolean>;
-  
+
   // Application Template methods
   getApplicationTemplate(id: number): Promise<ApplicationTemplate | undefined>;
   getApplicationTemplates(): Promise<ApplicationTemplate[]>;
   createApplicationTemplate(template: InsertApplicationTemplate): Promise<ApplicationTemplate>;
   updateApplicationTemplate(id: number, template: Partial<InsertApplicationTemplate>): Promise<ApplicationTemplate | undefined>;
   deleteApplicationTemplate(id: number): Promise<boolean>;
-  
+
   // Insurance methods
   getInsurance(id: number): Promise<Insurance | undefined>;
   getInsurancesByProperty(propertyId: number): Promise<Insurance[]>;
   createInsurance(insurance: InsertInsurance): Promise<Insurance>;
   updateInsurance(id: number, insurance: Partial<InsertInsurance>): Promise<Insurance | undefined>;
   deleteInsurance(id: number): Promise<boolean>;
-  
+
   // Mortgage methods
   getMortgage(id: number): Promise<Mortgage | undefined>;
   getMortgagesByProperty(propertyId: number): Promise<Mortgage[]>;
   createMortgage(mortgage: InsertMortgage): Promise<Mortgage>;
   updateMortgage(id: number, mortgage: Partial<InsertMortgage>): Promise<Mortgage | undefined>;
   deleteMortgage(id: number): Promise<boolean>;
+
+  // Maintenance Request methods
+  getAllMaintenanceRequests(): Promise<MaintenanceRequest[]>;
+  getMaintenanceRequest(id: number): Promise<MaintenanceRequest | null>;
+  getMaintenanceRequestsByProperty(propertyId: number): Promise<MaintenanceRequest[]>;
+  createMaintenanceRequest(data: InsertMaintenanceRequest): Promise<MaintenanceRequest>;
+  updateMaintenanceRequest(id: number, data: Partial<InsertMaintenanceRequest>): Promise<MaintenanceRequest | null>;
+  deleteMaintenanceRequest(id: number): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
   // Session store for auth
   public sessionStore: session.Store;
-  
-  private users: Map<number, User>;
-  private contacts: Map<number, Contact>;
-  private addresses: Map<number, Address>;
-  private contactAddresses: Map<string, ContactAddress>; // key is contactId-addressId
-  private appliances: Map<number, Appliance>;
-  private userIdCounter: number;
-  private contactIdCounter: number;
-  private addressIdCounter: number;
-  private contactAddressIdCounter: number;
-  private applianceIdCounter: number;
 
+  private users: Map<number, User> = new Map();
+  private contacts: Map<number, Contact> = new Map();
+  private addresses: Map<number, Address> = new Map();
+  private contactAddresses: Map<string, ContactAddress> = new Map(); // key is contactId-addressId
+  private appliances: Map<number, Appliance> = new Map();
+  private rentalApplications: Map<number, RentalApplication> = new Map();
+  private applicationTemplates: Map<number, ApplicationTemplate> = new Map();
   private insurances: Map<number, Insurance> = new Map();
   private mortgages: Map<number, Mortgage> = new Map();
+  private maintenanceRequests: Map<number, MaintenanceRequest> = new Map();
+
+  private userIdCounter: number = 1;
+  private contactIdCounter: number = 1;
+  private addressIdCounter: number = 1;
+  private contactAddressIdCounter: number = 1;
+  private applianceIdCounter: number = 1;
+  private rentalApplicationIdCounter: number = 1;
+  private applicationTemplateIdCounter: number = 1;
   private insuranceIdCounter: number = 1;
   private mortgageIdCounter: number = 1;
+  private maintenanceRequestIdCounter: number = 1;
+
 
   constructor() {
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000, // prune expired entries every 24h
     });
-    
-    this.users = new Map();
-    this.contacts = new Map();
-    this.addresses = new Map();
-    this.contactAddresses = new Map();
-    this.appliances = new Map();
-    this.userIdCounter = 1;
-    this.contactIdCounter = 1;
-    this.addressIdCounter = 1;
-    this.contactAddressIdCounter = 1;
-    this.applianceIdCounter = 1;
-    
-    this.rentalApplications = new Map();
-    this.applicationTemplates = new Map();
-    this.rentalApplicationIdCounter = 1;
-    this.applicationTemplateIdCounter = 1;
   }
 
   // User methods
@@ -122,9 +121,10 @@ export class MemStorage implements IStorage {
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    for (const user of this.users.values()) {
+      if (user.username === username) return user;
+    }
+    return undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
@@ -133,7 +133,7 @@ export class MemStorage implements IStorage {
       id,
       username: insertUser.username,
       password: insertUser.password,
-      role: insertUser.role || 'manager', // Default to manager if not specified
+      role: insertUser.role || 'manager', 
       contactId: insertUser.contactId || null
     };
     this.users.set(id, user);
@@ -158,8 +158,6 @@ export class MemStorage implements IStorage {
   async createContact(insertContact: InsertContact): Promise<Contact> {
     const id = this.contactIdCounter++;
     const now = new Date();
-    
-    // Create a contact with all fields explicitly set to ensure type safety
     const contact: Contact = {
       id,
       firstName: insertContact.firstName,
@@ -176,7 +174,6 @@ export class MemStorage implements IStorage {
       createdAt: now,
       updatedAt: now
     };
-    
     this.contacts.set(id, contact);
     return contact;
   }
@@ -186,13 +183,11 @@ export class MemStorage implements IStorage {
     if (!contact) {
       return undefined;
     }
-    
     const updatedContact: Contact = {
       ...contact,
       ...updateData,
       updatedAt: new Date()
     };
-    
     this.contacts.set(id, updatedContact);
     return updatedContact;
   }
@@ -200,20 +195,19 @@ export class MemStorage implements IStorage {
   async deleteContact(id: number): Promise<boolean> {
     return this.contacts.delete(id);
   }
-  
+
   // Address methods
   async getAddress(id: number): Promise<Address | undefined> {
     return this.addresses.get(id);
   }
-  
+
   async getAddresses(): Promise<Address[]> {
     return Array.from(this.addresses.values());
   }
-  
+
   async createAddress(insertAddress: InsertAddress): Promise<Address> {
     const id = this.addressIdCounter++;
     const now = new Date();
-    
     const address: Address = {
       id,
       streetAddress: insertAddress.streetAddress,
@@ -229,45 +223,39 @@ export class MemStorage implements IStorage {
       createdAt: now,
       updatedAt: now
     };
-    
     this.addresses.set(id, address);
     return address;
   }
-  
+
   async updateAddress(id: number, updateData: Partial<InsertAddress>): Promise<Address | undefined> {
     const address = this.addresses.get(id);
     if (!address) {
       return undefined;
     }
-    
     const updatedAddress: Address = {
       ...address,
       ...updateData,
       updatedAt: new Date()
     };
-    
     this.addresses.set(id, updatedAddress);
     return updatedAddress;
   }
-  
+
   async deleteAddress(id: number): Promise<boolean> {
     // First, remove any contact-address relationships
-    const entries = Array.from(this.contactAddresses.entries());
-    for (const [key, contactAddress] of entries) {
+    for (const [key, contactAddress] of this.contactAddresses.entries()) {
       if (contactAddress.addressId === id) {
         this.contactAddresses.delete(key);
       }
     }
     return this.addresses.delete(id);
   }
-  
+
   // Contact-Address methods
   async getContactAddresses(contactId: number): Promise<(ContactAddress & { address: Address })[]> {
     const relationships = Array.from(this.contactAddresses.values())
       .filter(rel => rel.contactId === contactId);
-    
     const result: (ContactAddress & { address: Address })[] = [];
-    
     for (const relationship of relationships) {
       const address = this.addresses.get(relationship.addressId);
       if (address) {
@@ -277,38 +265,28 @@ export class MemStorage implements IStorage {
         });
       }
     }
-    
     return result;
   }
-  
+
   async addAddressToContact(contactId: number, addressId: number, isPrimary: boolean = false): Promise<ContactAddress> {
-    // Check if contact and address exist
     const contact = this.contacts.get(contactId);
     const address = this.addresses.get(addressId);
-    
     if (!contact || !address) {
       throw new Error('Contact or address does not exist');
     }
-    
     const key = `${contactId}-${addressId}`;
     const now = new Date();
-    
-    // If this is the primary address, make all other addresses for this contact non-primary
     if (isPrimary) {
-      const entries = Array.from(this.contactAddresses.entries());
-      for (const [existingKey, existingRel] of entries) {
+      for (const [existingKey, existingRel] of this.contactAddresses.entries()) {
         if (existingRel.contactId === contactId && existingRel.isPrimary) {
           const updated = { ...existingRel, isPrimary: false, updatedAt: now };
           this.contactAddresses.set(existingKey, updated);
         }
       }
     }
-    
-    // Create new relationship or update existing one
     const id = this.contactAddresses.has(key) 
       ? this.contactAddresses.get(key)!.id
       : this.contactAddressIdCounter++;
-      
     const contactAddress: ContactAddress = {
       id,
       contactId,
@@ -317,35 +295,33 @@ export class MemStorage implements IStorage {
       createdAt: now,
       updatedAt: now
     };
-    
     this.contactAddresses.set(key, contactAddress);
     return contactAddress;
   }
-  
+
   async removeAddressFromContact(contactId: number, addressId: number): Promise<boolean> {
     const key = `${contactId}-${addressId}`;
     return this.contactAddresses.delete(key);
   }
-  
+
   // Appliance methods
   async getAppliance(id: number): Promise<Appliance | undefined> {
     return this.appliances.get(id);
   }
-  
+
   async getAppliances(): Promise<Appliance[]> {
     return Array.from(this.appliances.values());
   }
-  
+
   async getAppliancesByUnit(unitId: number): Promise<Appliance[]> {
     return Array.from(this.appliances.values()).filter(
       (appliance) => appliance.unitId === unitId
     );
   }
-  
+
   async createAppliance(insertAppliance: InsertAppliance): Promise<Appliance> {
     const id = this.applianceIdCounter++;
     const now = new Date();
-    
     const appliance: Appliance = {
       id,
       unitId: insertAppliance.unitId,
@@ -363,47 +339,40 @@ export class MemStorage implements IStorage {
       createdAt: now,
       updatedAt: now
     };
-    
     this.appliances.set(id, appliance);
     return appliance;
   }
-  
+
   async updateAppliance(id: number, updateData: Partial<InsertAppliance>): Promise<Appliance | undefined> {
     const appliance = this.appliances.get(id);
     if (!appliance) {
       return undefined;
     }
-    
     const updatedAppliance: Appliance = {
       ...appliance,
       ...updateData,
       updatedAt: new Date()
     };
-    
     this.appliances.set(id, updatedAppliance);
     return updatedAppliance;
   }
-  
+
   async deleteAppliance(id: number): Promise<boolean> {
     return this.appliances.delete(id);
   }
-  
+
   // Application methods
-  private rentalApplications: Map<number, RentalApplication> = new Map();
-  private rentalApplicationIdCounter: number = 1;
-  
   async getRentalApplication(id: number): Promise<RentalApplication | undefined> {
     return this.rentalApplications.get(id);
   }
-  
+
   async getRentalApplications(): Promise<RentalApplication[]> {
     return Array.from(this.rentalApplications.values());
   }
-  
+
   async createRentalApplication(insertApplication: InsertRentalApplication): Promise<RentalApplication> {
     const id = this.rentalApplicationIdCounter++;
     const now = new Date();
-    
     const application: RentalApplication = {
       id,
       contactId: insertApplication.contactId,
@@ -433,47 +402,40 @@ export class MemStorage implements IStorage {
       createdAt: now,
       updatedAt: now
     };
-    
     this.rentalApplications.set(id, application);
     return application;
   }
-  
+
   async updateRentalApplication(id: number, updateData: Partial<InsertRentalApplication>): Promise<RentalApplication | undefined> {
     const application = this.rentalApplications.get(id);
     if (!application) {
       return undefined;
     }
-    
     const updatedApplication: RentalApplication = {
       ...application,
       ...updateData,
       updatedAt: new Date()
     };
-    
     this.rentalApplications.set(id, updatedApplication);
     return updatedApplication;
   }
-  
+
   async deleteRentalApplication(id: number): Promise<boolean> {
     return this.rentalApplications.delete(id);
   }
-  
+
   // Application Template methods
-  private applicationTemplates: Map<number, ApplicationTemplate> = new Map();
-  private applicationTemplateIdCounter: number = 1;
-  
   async getApplicationTemplate(id: number): Promise<ApplicationTemplate | undefined> {
     return this.applicationTemplates.get(id);
   }
-  
+
   async getApplicationTemplates(): Promise<ApplicationTemplate[]> {
     return Array.from(this.applicationTemplates.values());
   }
-  
+
   async createApplicationTemplate(insertTemplate: InsertApplicationTemplate): Promise<ApplicationTemplate> {
     const id = this.applicationTemplateIdCounter++;
     const now = new Date();
-    
     const template: ApplicationTemplate = {
       id,
       name: insertTemplate.name,
@@ -485,27 +447,24 @@ export class MemStorage implements IStorage {
       createdAt: now,
       updatedAt: now
     };
-    
     this.applicationTemplates.set(id, template);
     return template;
   }
-  
+
   async updateApplicationTemplate(id: number, updateData: Partial<InsertApplicationTemplate>): Promise<ApplicationTemplate | undefined> {
     const template = this.applicationTemplates.get(id);
     if (!template) {
       return undefined;
     }
-    
     const updatedTemplate: ApplicationTemplate = {
       ...template,
       ...updateData,
       updatedAt: new Date()
     };
-    
     this.applicationTemplates.set(id, updatedTemplate);
     return updatedTemplate;
   }
-  
+
   async deleteApplicationTemplate(id: number): Promise<boolean> {
     return this.applicationTemplates.delete(id);
   }
@@ -524,7 +483,6 @@ export class MemStorage implements IStorage {
   async createInsurance(insertInsurance: InsertInsurance): Promise<Insurance> {
     const id = this.insuranceIdCounter++;
     const now = new Date();
-    
     const insurance: Insurance = {
       id,
       propertyId: insertInsurance.propertyId,
@@ -546,7 +504,6 @@ export class MemStorage implements IStorage {
       createdAt: now,
       updatedAt: now
     };
-    
     this.insurances.set(id, insurance);
     return insurance;
   }
@@ -556,13 +513,11 @@ export class MemStorage implements IStorage {
     if (!insurance) {
       return undefined;
     }
-    
     const updatedInsurance: Insurance = {
       ...insurance,
       ...updateData,
       updatedAt: new Date()
     };
-    
     this.insurances.set(id, updatedInsurance);
     return updatedInsurance;
   }
@@ -585,7 +540,6 @@ export class MemStorage implements IStorage {
   async createMortgage(insertMortgage: InsertMortgage): Promise<Mortgage> {
     const id = this.mortgageIdCounter++;
     const now = new Date();
-    
     const mortgage: Mortgage = {
       id,
       propertyId: insertMortgage.propertyId,
@@ -609,7 +563,6 @@ export class MemStorage implements IStorage {
       createdAt: now,
       updatedAt: now
     };
-    
     this.mortgages.set(id, mortgage);
     return mortgage;
   }
@@ -619,19 +572,59 @@ export class MemStorage implements IStorage {
     if (!mortgage) {
       return undefined;
     }
-    
     const updatedMortgage: Mortgage = {
       ...mortgage,
       ...updateData,
       updatedAt: new Date()
     };
-    
     this.mortgages.set(id, updatedMortgage);
     return updatedMortgage;
   }
 
   async deleteMortgage(id: number): Promise<boolean> {
     return this.mortgages.delete(id);
+  }
+
+  // Maintenance Request methods
+  async getAllMaintenanceRequests(): Promise<MaintenanceRequest[]> {
+    return Array.from(this.maintenanceRequests.values());
+  }
+
+  async getMaintenanceRequest(id: number): Promise<MaintenanceRequest | null> {
+    return this.maintenanceRequests.get(id) || null;
+  }
+
+  async getMaintenanceRequestsByProperty(propertyId: number): Promise<MaintenanceRequest[]> {
+    return Array.from(this.maintenanceRequests.values()).filter(m => m.propertyId === propertyId);
+  }
+
+  async createMaintenanceRequest(data: InsertMaintenanceRequest): Promise<MaintenanceRequest> {
+    const id = this.maintenanceRequestIdCounter++;
+    const now = new Date();
+    const newRequest: MaintenanceRequest = {
+      id,
+      ...data,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.maintenanceRequests.set(id, newRequest);
+    return newRequest;
+  }
+
+  async updateMaintenanceRequest(id: number, data: Partial<InsertMaintenanceRequest>): Promise<MaintenanceRequest | null> {
+    const request = this.maintenanceRequests.get(id);
+    if (!request) return null;
+    const updatedRequest: MaintenanceRequest = {
+      ...request,
+      ...data,
+      updatedAt: new Date()
+    };
+    this.maintenanceRequests.set(id, updatedRequest);
+    return updatedRequest;
+  }
+
+  async deleteMaintenanceRequest(id: number): Promise<boolean> {
+    return this.maintenanceRequests.delete(id);
   }
 }
 

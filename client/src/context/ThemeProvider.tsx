@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useEffect } from "react";
 
 type Theme = "default" | "dark-theme" | "forest-theme" | "ocean-theme" | "sunset-theme" | 
@@ -28,51 +27,34 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
     return "default";
   };
-  
+
   const [currentTheme, setCurrentTheme] = useState<Theme>(getInitialTheme);
 
+  // Apply theme whenever it changes
   useEffect(() => {
-    // Apply theme to the document body and html element
-    const applyTheme = (theme: Theme) => {
-      const themeClasses = [
-        "dark-theme", 
-        "forest-theme", 
-        "ocean-theme", 
-        "sunset-theme",
-        "lavender-theme",
-        "honey-theme",
-        "sky-theme",
-        "mint-theme",
-        "atom-theme"
-      ];
-      
-      // Remove all theme classes
-      document.documentElement.classList.remove(...themeClasses);
-      document.body.classList.remove(...themeClasses);
-      
-      // Apply the theme class if it's not default
-      if (theme !== "default") {
-        document.documentElement.classList.add(theme);
-        document.body.classList.add(theme);
-      }
-      
-      // Apply to app root if it exists
-      const appRoot = document.querySelector('#root');
-      if (appRoot) {
-        appRoot.classList.remove(...themeClasses);
-        if (theme !== "default") {
-          appRoot.classList.add(theme);
-        }
-      }
+    const themeClasses = [
+      "default",
+      "dark-theme", 
+      "forest-theme", 
+      "ocean-theme", 
+      "sunset-theme",
+      "lavender-theme",
+      "honey-theme",
+      "sky-theme",
+      "mint-theme",
+      "atom-theme"
+    ];
 
-      // Store in localStorage
-      localStorage.setItem("pms-theme", theme);
-      
-      console.log("Theme applied:", theme);
-    };
-    
-    // Apply theme immediately and save preference
-    applyTheme(currentTheme);
+    // Remove all theme classes first
+    document.documentElement.classList.remove(...themeClasses);
+
+    // Apply the new theme
+    document.documentElement.classList.add(currentTheme);
+
+    // Store in localStorage
+    localStorage.setItem("pms-theme", currentTheme);
+
+    console.log("Applied theme:", currentTheme);
   }, [currentTheme]);
 
   const changeTheme = (theme: Theme) => {

@@ -1,3 +1,4 @@
+
 import { useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +11,7 @@ import { Users, Building2, Mail, Globe, Shield, Bell, Palette } from "lucide-rea
 export default function Settings() {
   const { currentTheme, changeTheme } = useContext(ThemeContext);
   const { toast } = useToast();
-
+  
   const handleThemeChange = (themeName: string) => {
     changeTheme(themeName as any);
     toast({
@@ -347,7 +348,7 @@ export default function Settings() {
                   <Button>Update Password</Button>
                 </div>
               </div>
-
+              
               <div className="border-t pt-4 mt-6">
                 <h3 className="font-medium mb-2">Two-Factor Authentication</h3>
                 <p className="text-sm text-muted-foreground mb-4">
@@ -357,7 +358,7 @@ export default function Settings() {
                   Enable Two-Factor Authentication
                 </Button>
               </div>
-
+              
               <div className="border-t pt-4 mt-6">
                 <h3 className="font-medium mb-2">Login Sessions</h3>
                 <p className="text-sm text-muted-foreground mb-4">

@@ -1,72 +1,88 @@
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Building2, 
-  User, 
-  Languages, 
-  Bell, 
-  Shield, 
-  Settings as SettingsIcon,
-  Mail,
-  Calendar,
-  Palette,
-  ArrowUpDown,
-  DollarSign,
-  Globe,
-} from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { useContext } from "react";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useTheme } from "@/hooks/use-theme";
-import ThemeSwitcher from "@/components/layout/ThemeSwitcher";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ThemeContext } from "@/context/ThemeProvider";
+import { useToast } from "@/hooks/use-toast";
+import { Users, Building2, Mail, Globe, Shield, Bell, Palette } from "lucide-react";
 
-const Settings = () => {
+export default function Settings() {
+  const { currentTheme, changeTheme } = useContext(ThemeContext);
+  const { toast } = useToast();
+  
+  const handleThemeChange = (themeName: string) => {
+    changeTheme(themeName as any);
+    toast({
+      title: "Theme Updated",
+      description: `Application theme has been changed to ${themeName.replace('-theme', '')}.`,
+    });
+  };
+
   return (
-    <div className="container py-6">
-      <div className="flex items-center gap-4 mb-8">
-        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-0">
-          <SettingsIcon className="h-6 w-6 text-primary" />
-        </div>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-          <p className="text-muted-foreground">Manage your account and system preferences</p>
-        </div>
-      </div>
+    <div className="container mx-auto py-6">
+      <h1 className="text-3xl font-bold mb-2">Settings</h1>
+      <p className="text-muted-foreground mb-6">Manage your account and system preferences</p>
 
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="mb-6 w-full max-w-lg grid grid-cols-4">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="company">Company</TabsTrigger>
-          <TabsTrigger value="preferences">Preferences</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
+        <TabsList className="mb-6 flex flex-wrap">
+          <TabsTrigger value="profile" className="flex items-center">
+            <Users className="mr-2 h-4 w-4" />
+            Profile
+          </TabsTrigger>
+          <TabsTrigger value="company" className="flex items-center">
+            <Building2 className="mr-2 h-4 w-4" />
+            Company
+          </TabsTrigger>
+          <TabsTrigger value="notifications" className="flex items-center">
+            <Bell className="mr-2 h-4 w-4" />
+            Notifications
+          </TabsTrigger>
+          <TabsTrigger value="theme" className="flex items-center">
+            <Palette className="mr-2 h-4 w-4" />
+            Theme
+          </TabsTrigger>
+          <TabsTrigger value="security" className="flex items-center">
+            <Shield className="mr-2 h-4 w-4" />
+            Security
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="profile" className="space-y-6">
+        {/* Profile Settings */}
+        <TabsContent value="profile">
           <Card>
             <CardHeader>
-              <CardTitle>Profile Information</CardTitle>
-              <CardDescription>Update your personal profile details</CardDescription>
+              <CardTitle>Profile Settings</CardTitle>
+              <CardDescription>
+                Manage your personal information
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input id="firstName" placeholder="John" />
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    First Name
+                  </label>
+                  <Input placeholder="John" />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input id="lastName" placeholder="Doe" />
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Last Name
+                  </label>
+                  <Input placeholder="Doe" />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" placeholder="john.doe@example.com" />
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Email
+                  </label>
+                  <Input placeholder="john.doe@example.com" type="email" />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input id="phone" placeholder="(555) 123-4567" />
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Phone
+                  </label>
+                  <Input placeholder="(555) 123-4567" type="tel" />
                 </div>
               </div>
               <div className="flex justify-end">
@@ -74,125 +90,42 @@ const Settings = () => {
               </div>
             </CardContent>
           </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Notification Settings</CardTitle>
-              <CardDescription>Configure how you receive notifications</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Email Notifications</Label>
-                  <p className="text-sm text-muted-foreground">Receive email alerts for important updates</p>
-                </div>
-                <Switch />
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>SMS Notifications</Label>
-                  <p className="text-sm text-muted-foreground">Receive text messages for urgent matters</p>
-                </div>
-                <Switch />
-              </div>
-            </CardContent>
-          </Card>
         </TabsContent>
 
-        <TabsContent value="company" className="space-y-6">
+        {/* Company Settings */}
+        <TabsContent value="company">
           <Card>
             <CardHeader>
               <CardTitle>Company Information</CardTitle>
-              <CardDescription>Update your company details</CardDescription>
+              <CardDescription>
+                Configure company and application settings
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="companyName">Company Name</Label>
-                  <Input id="companyName" placeholder="Acme Property Management" />
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Company Name
+                  </label>
+                  <Input placeholder="Acme Property Management" />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="legalName">Legal Name</Label>
-                  <Input id="legalName" placeholder="Acme Properties LLC" />
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Company Phone
+                  </label>
+                  <Input placeholder="(555) 987-6543" />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="ein">EIN/Tax ID</Label>
-                  <Input id="ein" placeholder="XX-XXXXXXX" />
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Business Email
+                  </label>
+                  <Input placeholder="info@acmeproperties.com" type="email" />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="companyPhone">Company Phone</Label>
-                  <Input id="companyPhone" placeholder="(555) 987-6543" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="companyEmail">Company Email</Label>
-                  <Input id="companyEmail" type="email" placeholder="info@acmeproperties.com" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="companyType">Company Type</Label>
-                  <Select>
-                    <SelectTrigger id="companyType">
-                      <SelectValue placeholder="Select company type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="llc">LLC</SelectItem>
-                      <SelectItem value="corporation">Corporation</SelectItem>
-                      <SelectItem value="partnership">Partnership</SelectItem>
-                      <SelectItem value="soleProprietor">Sole Proprietorship</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="flex justify-end">
-                <Button>Save Changes</Button>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Business Address</CardTitle>
-              <CardDescription>Update your company's physical address</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="streetAddress">Street Address</Label>
-                  <Input id="streetAddress" placeholder="123 Business Ave, Suite 100" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="city">City</Label>
-                  <Input id="city" placeholder="New York" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="state">State</Label>
-                  <Select>
-                    <SelectTrigger id="state">
-                      <SelectValue placeholder="Select state" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ny">New York</SelectItem>
-                      <SelectItem value="ca">California</SelectItem>
-                      <SelectItem value="tx">Texas</SelectItem>
-                      <SelectItem value="fl">Florida</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="zipCode">Zip Code</Label>
-                  <Input id="zipCode" placeholder="10001" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="country">Country</Label>
-                  <Select defaultValue="us">
-                    <SelectTrigger id="country">
-                      <SelectValue placeholder="Select country" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="us">United States</SelectItem>
-                      <SelectItem value="ca">Canada</SelectItem>
-                      <SelectItem value="uk">United Kingdom</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Website
+                  </label>
+                  <Input placeholder="https://acmeproperties.com" type="url" />
                 </div>
               </div>
               <div className="flex justify-end">
@@ -202,163 +135,251 @@ const Settings = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="preferences" className="space-y-6">
+        {/* Notifications Settings */}
+        <TabsContent value="notifications">
           <Card>
             <CardHeader>
-              <CardTitle>System Preferences</CardTitle>
-              <CardDescription>Configure application settings</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="language">Language</Label>
-                  <Select defaultValue="en">
-                    <SelectTrigger id="language">
-                      <SelectValue placeholder="Select language" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="en">English</SelectItem>
-                      <SelectItem value="es">Spanish</SelectItem>
-                      <SelectItem value="fr">French</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="dateFormat">Date Format</Label>
-                  <Select defaultValue="mdy">
-                    <SelectTrigger id="dateFormat">
-                      <SelectValue placeholder="Select date format" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="mdy">MM/DD/YYYY</SelectItem>
-                      <SelectItem value="dmy">DD/MM/YYYY</SelectItem>
-                      <SelectItem value="ymd">YYYY-MM-DD</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="currency">Currency</Label>
-                  <Select defaultValue="usd">
-                    <SelectTrigger id="currency">
-                      <SelectValue placeholder="Select currency" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="usd">USD ($)</SelectItem>
-                      <SelectItem value="eur">EUR (€)</SelectItem>
-                      <SelectItem value="gbp">GBP (£)</SelectItem>
-                      <SelectItem value="cad">CAD ($)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="timezone">Timezone</Label>
-                  <Select defaultValue="est">
-                    <SelectTrigger id="timezone">
-                      <SelectValue placeholder="Select timezone" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="est">Eastern Time (ET)</SelectItem>
-                      <SelectItem value="cst">Central Time (CT)</SelectItem>
-                      <SelectItem value="mst">Mountain Time (MT)</SelectItem>
-                      <SelectItem value="pst">Pacific Time (PT)</SelectItem>
-                      <SelectItem value="utc">UTC</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="flex justify-end">
-                <Button>Save Changes</Button>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Theme Settings</CardTitle>
-              <CardDescription>Customize the application appearance</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="themeSelection">Theme Selection</Label>
-                  <p className="text-sm text-muted-foreground mb-3">Choose from our curated themes</p>
-                  
-                  {/* Theme Switcher component */}
-                  <ThemeSwitcher />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="security" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Password Settings</CardTitle>
-              <CardDescription>Update your account password</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="currentPassword">Current Password</Label>
-                <Input id="currentPassword" type="password" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="newPassword">New Password</Label>
-                <Input id="newPassword" type="password" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                <Input id="confirmPassword" type="password" />
-              </div>
-              <div className="flex justify-end">
-                <Button>Update Password</Button>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Two-Factor Authentication</CardTitle>
-              <CardDescription>Increase your account security</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Enable 2FA</Label>
-                  <p className="text-sm text-muted-foreground">Add an extra layer of security to your account</p>
-                </div>
-                <Switch />
-              </div>
-              <div className="flex justify-end">
-                <Button variant="outline">Configure 2FA</Button>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Login Sessions</CardTitle>
-              <CardDescription>Manage your active sessions</CardDescription>
+              <CardTitle>Notification Preferences</CardTitle>
+              <CardDescription>
+                Configure how you receive notifications
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-2 border rounded-md">
+                <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium">Chrome on Windows</p>
-                    <p className="text-sm text-muted-foreground">Active now • New York, USA</p>
+                    <h3 className="font-medium">Email Notifications</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Receive email notifications for important updates
+                    </p>
                   </div>
-                  <Button variant="outline" size="sm">Current</Button>
+                  <div className="flex items-center h-8">
+                    <input
+                      type="checkbox"
+                      id="email-notifications"
+                      className="mr-2 h-4 w-4"
+                      defaultChecked
+                    />
+                  </div>
                 </div>
-                <div className="flex items-center justify-between p-2 border rounded-md">
+                <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium">Safari on MacOS</p>
-                    <p className="text-sm text-muted-foreground">Last active: May 15, 2023 • Boston, USA</p>
+                    <h3 className="font-medium">Payment Reminders</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Get notified about upcoming and late payments
+                    </p>
                   </div>
-                  <Button variant="outline" size="sm" className="text-destructive">Logout</Button>
+                  <div className="flex items-center h-8">
+                    <input
+                      type="checkbox"
+                      id="payment-reminders"
+                      className="mr-2 h-4 w-4"
+                      defaultChecked
+                    />
+                  </div>
                 </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-medium">Maintenance Alerts</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Notifications for new and updated maintenance requests
+                    </p>
+                  </div>
+                  <div className="flex items-center h-8">
+                    <input
+                      type="checkbox"
+                      id="maintenance-alerts"
+                      className="mr-2 h-4 w-4"
+                      defaultChecked
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-medium">Lease Notifications</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Get notified about lease renewals and expirations
+                    </p>
+                  </div>
+                  <div className="flex items-center h-8">
+                    <input
+                      type="checkbox"
+                      id="lease-notifications"
+                      className="mr-2 h-4 w-4"
+                      defaultChecked
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-end mt-6">
+                <Button>Save Preferences</Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Theme Settings */}
+        <TabsContent value="theme">
+          <Card>
+            <CardHeader>
+              <CardTitle>Theme Settings</CardTitle>
+              <CardDescription>
+                Customize the application appearance
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-medium mb-4">Theme Selection</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Choose from our curated themes
+                  </p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                    <button
+                      onClick={() => handleThemeChange("default")}
+                      className={`h-16 rounded-md border-2 ${
+                        currentTheme === "default" ? "border-primary" : "border-muted"
+                      } bg-background transition-all`}
+                      aria-label="Default Theme"
+                    />
+                    <button
+                      onClick={() => handleThemeChange("dark-theme")}
+                      className={`h-16 rounded-md border-2 ${
+                        currentTheme === "dark-theme" ? "border-primary" : "border-muted"
+                      } bg-neutral-900 transition-all`}
+                      aria-label="Dark Theme"
+                    />
+                    <button
+                      onClick={() => handleThemeChange("forest-theme")}
+                      className={`h-16 rounded-md border-2 ${
+                        currentTheme === "forest-theme" ? "border-primary" : "border-muted"
+                      } bg-green-50 transition-all`}
+                      aria-label="Forest Theme"
+                    />
+                    <button
+                      onClick={() => handleThemeChange("ocean-theme")}
+                      className={`h-16 rounded-md border-2 ${
+                        currentTheme === "ocean-theme" ? "border-primary" : "border-muted"
+                      } bg-blue-50 transition-all`}
+                      aria-label="Ocean Theme"
+                    />
+                    <button
+                      onClick={() => handleThemeChange("sunset-theme")}
+                      className={`h-16 rounded-md border-2 ${
+                        currentTheme === "sunset-theme" ? "border-primary" : "border-muted"
+                      } bg-amber-50 transition-all`}
+                      aria-label="Sunset Theme"
+                    />
+                    <button
+                      onClick={() => handleThemeChange("lavender-theme")}
+                      className={`h-16 rounded-md border-2 ${
+                        currentTheme === "lavender-theme" ? "border-primary" : "border-muted"
+                      } bg-purple-50 transition-all`}
+                      aria-label="Lavender Theme"
+                    />
+                    <button
+                      onClick={() => handleThemeChange("honey-theme")}
+                      className={`h-16 rounded-md border-2 ${
+                        currentTheme === "honey-theme" ? "border-primary" : "border-muted"
+                      } bg-yellow-50 transition-all`}
+                      aria-label="Honey Theme"
+                    />
+                    <button
+                      onClick={() => handleThemeChange("sky-theme")}
+                      className={`h-16 rounded-md border-2 ${
+                        currentTheme === "sky-theme" ? "border-primary" : "border-muted"
+                      } bg-sky-100 transition-all`}
+                      aria-label="Sky Theme"
+                    />
+                    <button
+                      onClick={() => handleThemeChange("mint-theme")}
+                      className={`h-16 rounded-md border-2 ${
+                        currentTheme === "mint-theme" ? "border-primary" : "border-muted"
+                      } bg-emerald-50 transition-all`}
+                      aria-label="Mint Theme"
+                    />
+                    <button
+                      onClick={() => handleThemeChange("atom-theme")}
+                      className={`h-16 rounded-md border-2 ${
+                        currentTheme === "atom-theme" ? "border-primary" : "border-muted"
+                      } bg-neutral-800 transition-all`}
+                      aria-label="Atom Theme"
+                    />
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Security Settings */}
+        <TabsContent value="security">
+          <Card>
+            <CardHeader>
+              <CardTitle>Security Settings</CardTitle>
+              <CardDescription>
+                Manage your account security
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <h3 className="font-medium mb-2">Change Password</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Current Password
+                    </label>
+                    <Input type="password" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      New Password
+                    </label>
+                    <Input type="password" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Confirm New Password
+                    </label>
+                    <Input type="password" />
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <Button>Update Password</Button>
+                </div>
+              </div>
+              
+              <div className="border-t pt-4 mt-6">
+                <h3 className="font-medium mb-2">Two-Factor Authentication</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Add an extra layer of security to your account
+                </p>
+                <Button variant="outline">
+                  Enable Two-Factor Authentication
+                </Button>
+              </div>
+              
+              <div className="border-t pt-4 mt-6">
+                <h3 className="font-medium mb-2">Login Sessions</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Manage your active sessions
+                </p>
+                <div className="rounded-md border p-4 mb-2">
+                  <div className="flex justify-between">
+                    <div>
+                      <p className="font-medium">Current Session</p>
+                      <p className="text-sm text-muted-foreground">
+                        Chrome on Windows • IP: 192.168.1.1
+                      </p>
+                    </div>
+                    <div className="text-sm text-green-600 font-medium">
+                      Active Now
+                    </div>
+                  </div>
+                </div>
+                <Button variant="outline" className="w-full sm:w-auto">
+                  Log Out All Other Sessions
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -366,6 +387,4 @@ const Settings = () => {
       </Tabs>
     </div>
   );
-};
-
-export default Settings;
+}

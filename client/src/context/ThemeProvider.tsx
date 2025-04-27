@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useEffect } from "react";
 
 type Theme = "default" | "dark-theme" | "forest-theme" | "ocean-theme" | "sunset-theme" | 
@@ -32,53 +33,43 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [currentTheme, setCurrentTheme] = useState<Theme>(getInitialTheme);
 
   useEffect(() => {
-    // Apply theme to the app root element
+    // Apply theme globally to document and all potential root elements
     const applyTheme = (theme: Theme) => {
-      // Get the root element
+      const themeClasses = [
+        "dark-theme", 
+        "forest-theme", 
+        "ocean-theme", 
+        "sunset-theme",
+        "lavender-theme",
+        "honey-theme",
+        "sky-theme",
+        "mint-theme",
+        "atom-theme"
+      ];
+      
+      // Remove all theme classes from document element (html)
+      document.documentElement.classList.remove(...themeClasses);
+      
+      // Remove all theme classes from body
+      document.body.classList.remove(...themeClasses);
+      
+      // Apply to app root if it exists
       const rootElement = document.querySelector('.app-root');
-      
-      if (!rootElement) {
-        console.error("Root element not found for theme application");
-        return;
+      if (rootElement) {
+        rootElement.classList.remove(...themeClasses);
+        if (theme !== "default") {
+          rootElement.classList.add(theme);
+        }
       }
       
-      // First remove all theme classes
-      rootElement.classList.remove(
-        "dark-theme", 
-        "forest-theme", 
-        "ocean-theme", 
-        "sunset-theme",
-        "lavender-theme",
-        "honey-theme",
-        "sky-theme",
-        "mint-theme",
-        "atom-theme"
-      );
-      
-      // Then add the current theme if it's not default
+      // Apply to document and body for maximum coverage
       if (theme !== "default") {
-        rootElement.classList.add(theme);
-      }
-      
-      // For backwards compatibility, also apply to body
-      document.body.classList.remove(
-        "dark-theme", 
-        "forest-theme", 
-        "ocean-theme", 
-        "sunset-theme",
-        "lavender-theme",
-        "honey-theme",
-        "sky-theme",
-        "mint-theme",
-        "atom-theme"
-      );
-      
-      if (theme !== "default") {
+        document.documentElement.classList.add(theme);
         document.body.classList.add(theme);
       }
       
       console.log("Applied theme:", theme);
-      console.log("Root element classes:", rootElement.className);
+      console.log("Applied to elements:", document.querySelectorAll(`.${theme}`).length);
     };
     
     // Apply theme immediately

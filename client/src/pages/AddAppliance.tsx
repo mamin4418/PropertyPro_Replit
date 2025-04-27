@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { useForm } from 'react-hook-form';
@@ -43,89 +44,56 @@ import {
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 
-// Extend the insertApplianceSchema with validations
-const formSchema = insertApplianceSchema.extend({
+// Extend the schema with validations
+const formSchema = z.object({
   unitId: z.number({
     required_error: "Unit ID is required",
-    invalid_type_error: "Unit ID must be a number",
   }),
-  type: z.string().min(2, {
-    message: "Type must be at least 2 characters.",
-  }),
+  type: z.string().min(1, { message: "Type is required" }),
+  make: z.string().optional(),
+  model: z.string().optional(),
+  serialNumber: z.string().optional(),
+  purchaseDate: z.date().optional(),
+  installDate: z.date().optional(),
+  lastServiceDate: z.date().optional(),
+  warranty: z.string().optional(),
+  notes: z.string().optional(),
+  images: z.array(z.string()).optional(),
+  status: z.enum(["active", "repair-needed", "inactive"]).default("active"),
 });
 
 type FormValues = z.infer<typeof formSchema>;
-
-// Predefined lists
-const applianceTypes = [
-  "Refrigerator",
-  "Dishwasher",
-  "Oven",
-  "Stove",
-  "Washer",
-  "Dryer",
-  "Water Heater",
-  "HVAC System",
-  "Microwave",
-  "Garbage Disposal",
-  "Range Hood",
-  "Other"
-];
-
-const statusOptions = [
-  { value: "active", label: "Active" },
-  { value: "repair-needed", label: "Needs Repair" },
-  { value: "inactive", label: "Inactive" }
-];
 
 export default function AddAppliance() {
   const [location, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  
-  // Form definition
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      unitId: undefined,
-      type: '',
-      make: '',
-      model: '',
-      serialNumber: '',
-      purchaseDate: undefined,
-      installDate: undefined,
-      lastServiceDate: undefined,
-      warranty: '',
-      notes: '',
-      images: undefined,
-      status: 'active',
-    },
-  });
 
-  // Fetch properties data
-  const { data: properties, isLoading: isLoadingProperties } = useQuery({
-    queryKey: ['/api/properties'],
-    retry: 1,
-  });
-
-  // State for property filter
-  const [selectedPropertyId, setSelectedPropertyId] = useState<number | null>(null);
-
-  // Fetch units data
+  // Fetch units for selection
   const { data: units, isLoading: isLoadingUnits } = useQuery({
     queryKey: ['/api/units'],
     retry: 1,
   });
 
-  // Filter units by property
-  const filteredUnits = units?.filter(unit => 
-    !selectedPropertyId || unit.propertyId === selectedPropertyId
-  );
+  // Form definition
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      type: '',
+      make: '',
+      model: '',
+      serialNumber: '',
+      warranty: '',
+      notes: '',
+      images: [],
+      status: 'active',
+    },
+  });
 
   // Handle form submission
   const mutation = useMutation({
     mutationFn: (values: FormValues) => {
-      return apiRequest<FormValues>('/api/appliances', {
+      return apiRequest('/api/appliances', {
         method: 'POST',
         data: values,
       });
@@ -140,13 +108,37 @@ export default function AddAppliance() {
     },
     onError: (error) => {
       toast({
-        variant: "destructive",
         title: "Error",
-        description: "There was a problem adding the appliance. Please try again.",
+        description: "Failed to add appliance. Please try again.",
+        variant: "destructive",
       });
-      console.error('Error adding appliance:', error);
-    }
+    },
   });
+
+  // Appliance type options
+  const applianceTypes = [
+    "Refrigerator",
+    "Stove",
+    "Oven",
+    "Microwave",
+    "Dishwasher",
+    "Washer",
+    "Dryer",
+    "Water Heater",
+    "HVAC System",
+    "Garbage Disposal",
+    "Range Hood",
+    "Air Conditioner",
+    "Furnace",
+    "Other"
+  ];
+
+  // Status options
+  const statusOptions = [
+    { value: "active", label: "Active" },
+    { value: "repair-needed", label: "Needs Repair" },
+    { value: "inactive", label: "Inactive" }
+  ];
 
   function onSubmit(values: FormValues) {
     mutation.mutate(values);
@@ -154,72 +146,29 @@ export default function AddAppliance() {
 
   return (
     <div className="container mx-auto py-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">Add New Appliance</h1>
-        <p className="text-muted-foreground">
-          Add a new appliance to your property inventory
-        </p>
-      </div>
-
+      <h1 className="text-3xl font-bold mb-6">Add Appliance</h1>
+      
       <Card>
         <CardHeader>
-          <CardTitle>Appliance Details</CardTitle>
+          <CardTitle>Appliance Information</CardTitle>
           <CardDescription>
-            Enter the details for the new appliance
+            Enter the details of the appliance you want to add to the inventory
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Property Selection Filter */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <FormLabel>Filter by Property</FormLabel>
-                  <Select
-                    disabled={isLoadingProperties}
-                    value={selectedPropertyId?.toString() || ''}
-                    onValueChange={(value) => {
-                      setSelectedPropertyId(value ? parseInt(value) : null);
-                      // Reset unitId field when property changes
-                      form.setValue('unitId', undefined as any);
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="All Properties" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Properties</SelectItem>
-                      {isLoadingProperties ? (
-                        <SelectItem value="loading" disabled>Loading properties...</SelectItem>
-                      ) : !properties || properties.length === 0 ? (
-                        <SelectItem value="none" disabled>No properties available</SelectItem>
-                      ) : (
-                        properties.map((property) => (
-                          <SelectItem key={property.id} value={property.id.toString()}>
-                            {property.name}
-                          </SelectItem>
-                        ))
-                      )}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Select a property to filter units
-                  </p>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Unit Selection */}
+                {/* Unit ID */}
                 <FormField
                   control={form.control}
                   name="unitId"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Unit</FormLabel>
-                      <Select
-                        disabled={isLoadingUnits}
+                      <Select 
+                        disabled={isLoadingUnits} 
                         onValueChange={(value) => field.onChange(parseInt(value))}
-                        value={field.value?.toString() || ''}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -227,41 +176,32 @@ export default function AddAppliance() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {isLoadingUnits ? (
-                            <SelectItem value="loading" disabled>Loading units...</SelectItem>
-                          ) : !filteredUnits || filteredUnits.length === 0 ? (
-                            <SelectItem value="none" disabled>No units available</SelectItem>
-                          ) : (
-                            filteredUnits.map((unit) => (
-                              <SelectItem key={unit.id} value={unit.id.toString()}>
-                                Unit #{unit.unitNumber} - {unit.propertyName || 'Property'}
-                              </SelectItem>
-                            ))
-                          )}
+                          {units?.map((unit: any) => (
+                            <SelectItem key={unit.id} value={unit.id.toString()}>
+                              Unit {unit.unitNumber} ({unit.propertyId ? `Property #${unit.propertyId}` : 'Unassigned'})
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                       <FormDescription>
-                        Select the unit where this appliance is installed
+                        The unit where this appliance is installed
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                {/* Appliance Type */}
+                {/* Type */}
                 <FormField
                   control={form.control}
                   name="type"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Appliance Type</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value || ''}
-                      >
+                      <FormLabel>Type</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select a type" />
+                            <SelectValue placeholder="Select appliance type" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -273,13 +213,13 @@ export default function AddAppliance() {
                         </SelectContent>
                       </Select>
                       <FormDescription>
-                        The type of appliance
+                        The category of the appliance
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-
+                
                 {/* Make */}
                 <FormField
                   control={form.control}
@@ -288,16 +228,16 @@ export default function AddAppliance() {
                     <FormItem>
                       <FormLabel>Make</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g. Whirlpool, GE, Samsung" {...field} value={field.value || ''} />
+                        <Input placeholder="e.g. GE, Whirlpool, Samsung" {...field} value={field.value || ''} />
                       </FormControl>
                       <FormDescription>
-                        The brand or manufacturer of the appliance
+                        The manufacturer of the appliance
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-
+                
                 {/* Model */}
                 <FormField
                   control={form.control}
@@ -306,7 +246,7 @@ export default function AddAppliance() {
                     <FormItem>
                       <FormLabel>Model</FormLabel>
                       <FormControl>
-                        <Input placeholder="Model number" {...field} value={field.value || ''} />
+                        <Input placeholder="e.g. XYZ-1234" {...field} value={field.value || ''} />
                       </FormControl>
                       <FormDescription>
                         The model number or name
@@ -315,7 +255,7 @@ export default function AddAppliance() {
                     </FormItem>
                   )}
                 />
-
+                
                 {/* Serial Number */}
                 <FormField
                   control={form.control}
@@ -324,42 +264,10 @@ export default function AddAppliance() {
                     <FormItem>
                       <FormLabel>Serial Number</FormLabel>
                       <FormControl>
-                        <Input placeholder="Serial number" {...field} value={field.value || ''} />
+                        <Input placeholder="e.g. SN123456789" {...field} value={field.value || ''} />
                       </FormControl>
                       <FormDescription>
                         The unique serial number of the appliance
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Status */}
-                <FormField
-                  control={form.control}
-                  name="status"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Status</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value || ''}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select status" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {statusOptions.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormDescription>
-                        Current operational status
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -378,12 +286,12 @@ export default function AddAppliance() {
                           <FormControl>
                             <Button
                               variant={"outline"}
-                              className={`pl-3 text-left font-normal ${!field.value && "text-muted-foreground"}`}
+                              className="w-full pl-3 text-left font-normal"
                             >
                               {field.value ? (
-                                format(new Date(field.value), "PPP")
+                                format(field.value, "PPP")
                               ) : (
-                                <span>Pick a date</span>
+                                <span className="text-muted-foreground">Select date</span>
                               )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
@@ -392,8 +300,11 @@ export default function AddAppliance() {
                         <PopoverContent className="w-auto p-0" align="start">
                           <Calendar
                             mode="single"
-                            selected={field.value ? new Date(field.value) : undefined}
-                            onSelect={(date) => field.onChange(date?.toISOString().split('T')[0])}
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) =>
+                              date > new Date() || date < new Date("1900-01-01")
+                            }
                             initialFocus
                           />
                         </PopoverContent>
@@ -405,8 +316,8 @@ export default function AddAppliance() {
                     </FormItem>
                   )}
                 />
-
-                {/* Install Date */}
+                
+                {/* Installation Date */}
                 <FormField
                   control={form.control}
                   name="installDate"
@@ -418,12 +329,12 @@ export default function AddAppliance() {
                           <FormControl>
                             <Button
                               variant={"outline"}
-                              className={`pl-3 text-left font-normal ${!field.value && "text-muted-foreground"}`}
+                              className="w-full pl-3 text-left font-normal"
                             >
                               {field.value ? (
-                                format(new Date(field.value), "PPP")
+                                format(field.value, "PPP")
                               ) : (
-                                <span>Pick a date</span>
+                                <span className="text-muted-foreground">Select date</span>
                               )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
@@ -432,20 +343,23 @@ export default function AddAppliance() {
                         <PopoverContent className="w-auto p-0" align="start">
                           <Calendar
                             mode="single"
-                            selected={field.value ? new Date(field.value) : undefined}
-                            onSelect={(date) => field.onChange(date?.toISOString().split('T')[0])}
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) =>
+                              date > new Date() || date < new Date("1900-01-01")
+                            }
                             initialFocus
                           />
                         </PopoverContent>
                       </Popover>
                       <FormDescription>
-                        When the appliance was installed
+                        When the appliance was installed in the unit
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-
+                
                 {/* Last Service Date */}
                 <FormField
                   control={form.control}
@@ -458,12 +372,12 @@ export default function AddAppliance() {
                           <FormControl>
                             <Button
                               variant={"outline"}
-                              className={`pl-3 text-left font-normal ${!field.value && "text-muted-foreground"}`}
+                              className="w-full pl-3 text-left font-normal"
                             >
                               {field.value ? (
-                                format(new Date(field.value), "PPP")
+                                format(field.value, "PPP")
                               ) : (
-                                <span>Pick a date</span>
+                                <span className="text-muted-foreground">Select date</span>
                               )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
@@ -472,20 +386,23 @@ export default function AddAppliance() {
                         <PopoverContent className="w-auto p-0" align="start">
                           <Calendar
                             mode="single"
-                            selected={field.value ? new Date(field.value) : undefined}
-                            onSelect={(date) => field.onChange(date?.toISOString().split('T')[0])}
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) =>
+                              date > new Date() || date < new Date("1900-01-01")
+                            }
                             initialFocus
                           />
                         </PopoverContent>
                       </Popover>
                       <FormDescription>
-                        Last time the appliance was serviced
+                        When the appliance was last serviced
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-
+                
                 {/* Warranty */}
                 <FormField
                   control={form.control}
@@ -494,10 +411,39 @@ export default function AddAppliance() {
                     <FormItem>
                       <FormLabel>Warranty</FormLabel>
                       <FormControl>
-                        <Input placeholder="Warranty information" {...field} value={field.value || ''} />
+                        <Input placeholder="e.g. 2 years parts and labor" {...field} value={field.value || ''} />
                       </FormControl>
                       <FormDescription>
-                        Warranty details and expiration
+                        Warranty details for the appliance
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                {/* Status */}
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Status</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {statusOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>
+                        Current operational status of the appliance
                       </FormDescription>
                       <FormMessage />
                     </FormItem>

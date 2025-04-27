@@ -114,7 +114,7 @@ export default function Appliances() {
 
   return (
     <div className="container mx-auto py-6">
-      
+      <h1 className="text-2xl font-bold mb-6">Appliances</h1>
       <div className="flex justify-between items-center mb-6">
         <div>
           <p className="text-muted-foreground">Manage appliances for all rental units</p>

@@ -4,11 +4,6 @@ import { useTheme } from '@/hooks/use-theme';
 
 const ThemeSwitcher = () => {
   const { currentTheme, changeTheme } = useTheme();
-  const [activeTheme, setActiveTheme] = useState(currentTheme);
-  
-  useEffect(() => {
-    setActiveTheme(currentTheme);
-  }, [currentTheme]);
   
   const themes = [
     { id: "default", name: "Default", gradient: "bg-gradient-to-br from-[#F9FAFB] to-[#F3F4F6]" },
@@ -25,8 +20,8 @@ const ThemeSwitcher = () => {
   ];
   
   const handleThemeChange = (themeId) => {
+    console.log('ThemeSwitcher: Changing theme to:', themeId);
     changeTheme(themeId);
-    setActiveTheme(themeId);
   };
   
   return (
@@ -37,7 +32,7 @@ const ThemeSwitcher = () => {
             key={theme.id}
             onClick={() => handleThemeChange(theme.id)}
             className={`h-14 rounded-md border-2 transition-all ${
-              activeTheme === theme.id 
+              currentTheme === theme.id 
                 ? "border-primary scale-105" 
                 : "border-border hover:border-primary/50"
             } ${theme.gradient}`}
@@ -46,14 +41,14 @@ const ThemeSwitcher = () => {
           />
         ))}
       </div>
-
+      
       <div className="grid grid-cols-5 gap-2">
         {themes.slice(5).map((theme) => (
           <button
             key={theme.id}
             onClick={() => handleThemeChange(theme.id)}
             className={`h-14 rounded-md border-2 transition-all ${
-              activeTheme === theme.id 
+              currentTheme === theme.id 
                 ? "border-primary scale-105" 
                 : "border-border hover:border-primary/50"
             } ${theme.gradient}`}
@@ -64,7 +59,7 @@ const ThemeSwitcher = () => {
       </div>
       
       <div className="text-xs text-muted-foreground mt-2">
-        Current: {themes.find(t => t.id === activeTheme)?.name || "Default"}
+        Current: {themes.find(t => t.id === currentTheme)?.name || "Default"}
       </div>
     </div>
   );

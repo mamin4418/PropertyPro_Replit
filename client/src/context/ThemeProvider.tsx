@@ -32,8 +32,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   
   const [currentTheme, setCurrentTheme] = useState<Theme>(getInitialTheme);
 
+  // Effect to apply theme when it changes
   useEffect(() => {
-    // Apply theme globally to document and all potential root elements
     const applyTheme = (theme: Theme) => {
       const themeClasses = [
         "dark-theme", 
@@ -47,36 +47,35 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         "atom-theme"
       ];
       
-      // Remove all theme classes from document element (html)
+      // Apply to html element
       document.documentElement.classList.remove(...themeClasses);
+      if (theme !== "default") {
+        document.documentElement.classList.add(theme);
+      }
       
-      // Remove all theme classes from body
+      // Apply to body
       document.body.classList.remove(...themeClasses);
+      if (theme !== "default") {
+        document.body.classList.add(theme);
+      }
       
-      // Apply to app root if it exists
+      // Apply to root element
       const rootElement = document.querySelector('.app-root');
       if (rootElement) {
         rootElement.classList.remove(...themeClasses);
         if (theme !== "default") {
           rootElement.classList.add(theme);
         }
+        console.log("Root element classes:", rootElement.className);
       }
       
-      // Apply to document and body for maximum coverage
-      if (theme !== "default") {
-        document.documentElement.classList.add(theme);
-        document.body.classList.add(theme);
-      }
+      // Save to localStorage
+      localStorage.setItem("pms-theme", theme);
       
       console.log("Applied theme:", theme);
-      console.log("Applied to elements:", document.querySelectorAll(`.${theme}`).length);
     };
     
-    // Apply theme immediately
     applyTheme(currentTheme);
-    
-    // Save theme preference to localStorage
-    localStorage.setItem("pms-theme", currentTheme);
   }, [currentTheme]);
 
   const changeTheme = (theme: Theme) => {

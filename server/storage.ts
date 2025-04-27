@@ -121,6 +121,15 @@ export class MemStorage implements IStorage {
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000, // prune expired entries every 24h
     });
+    // Add sample data here to fix the empty array issue
+    this.addSampleData();
+
+  }
+
+  addSampleData() {
+    this.createInsurance({propertyId: 1, insuranceProvider: "Sample Insurer", policyNumber: "12345", policyType: "Homeowners", coverageAmount: 250000, premium: 1000, startDate: new Date()});
+    this.createMortgage({propertyId: 1, lender: "Sample Lender", loanNumber: "67890", loanType: "Fixed", originalAmount: 300000, currentBalance: 200000, interestRate: 0.04, monthlyPayment: 1500, startDate: new Date()});
+    this.createAppliance({unitId: 1, type: "Refrigerator", make: "Whirlpool", model: "WRT511CZDM", serialNumber: "1234567890"});
   }
 
   // User methods
@@ -665,7 +674,7 @@ export class MemStorage implements IStorage {
   async getAllInsurances(): Promise<Insurance[]> {
     return this.getInsurances();
   }
-  
+
   async getInsurances(): Promise<Insurance[]> {
     return Array.from(this.insurances.values());
   }
@@ -677,7 +686,7 @@ export class MemStorage implements IStorage {
   async getAllMortgages(): Promise<Mortgage[]> {
     return this.getMortgages();
   }
-  
+
   async getMortgages(): Promise<Mortgage[]> {
     return Array.from(this.mortgages.values());
   }

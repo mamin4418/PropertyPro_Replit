@@ -856,7 +856,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Appliance endpoints
   app.get('/api/appliances', async (req: Request, res: Response) => {
     try {
-      const appliances = await storage.getAppliances();
+      const appliances = await storage.getAllAppliances();
+      console.log('Fetched appliances:', appliances);
       res.status(200).json(appliances);
     } catch (error) {
       console.error('Error getting appliances:', error);
@@ -1268,7 +1269,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Appliances API endpoints
   app.get('/api/appliances', async (req: Request, res: Response) => {
     try {
-      const appliances = await storage.getAppliances();
+      const appliances = await storage.getAllAppliances();
       console.log('Fetched appliances:', appliances);
       res.setHeader('Content-Type', 'application/json');
       res.json(appliances);

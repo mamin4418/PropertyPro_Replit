@@ -116,6 +116,7 @@ export default function Appliances() {
     <div className="container mx-auto py-6">
       <div className="flex justify-between items-center mb-6">
         <div>
+          <h1 className="text-3xl font-bold">Appliances</h1>
           <p className="text-muted-foreground">Manage appliances for all rental units</p>
         </div>
         <Button onClick={() => setLocation('/add-appliance')}>

@@ -140,6 +140,7 @@ export default function Insurances() {
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
         <div>
+          <h1 className="text-2xl font-bold">Insurance Policies</h1>
           {property && (
             <p className="text-muted-foreground">
               <Home className="inline mr-1" size={16} /> {property.name}

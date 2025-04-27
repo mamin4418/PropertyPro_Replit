@@ -187,7 +187,7 @@ function AppRoutes() {
               <ProtectedRoute path="/add-appliance" component={AddAppliance} />
               <ProtectedRoute path="/view-appliance/:id" component={ViewAppliance} />
               <ProtectedRoute path="/edit-appliance/:id" component={EditAppliance} />
-              
+
               {/* Insurance Routes */}
               <ProtectedRoute path="/insurances" component={Insurances} />
               <ProtectedRoute path="/insurances/:propertyId" component={Insurances} />
@@ -195,7 +195,7 @@ function AppRoutes() {
               <ProtectedRoute path="/add-insurance/:propertyId" component={AddInsurance} />
               <ProtectedRoute path="/view-insurance/:id" component={ViewInsurance} />
               <ProtectedRoute path="/edit-insurance/:id" component={EditInsurance} />
-              
+
               {/* Mortgage Routes */}
               <ProtectedRoute path="/mortgages" component={Mortgages} />
               <ProtectedRoute path="/mortgages/:propertyId" component={Mortgages} />

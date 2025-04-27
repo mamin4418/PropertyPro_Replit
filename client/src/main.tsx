@@ -73,6 +73,12 @@ import TenantDashboard from './pages/tenant-dashboard';
 import NotFound from './pages/not-found';
 import App from './App';
 
+// Define the routes
+const routes = [
+  { path: "/view-appliance/:id", component: ViewAppliance },
+  { path: "/edit-appliance/:id", component: EditAppliance },
+];
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>

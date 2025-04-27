@@ -27,9 +27,9 @@ export default function Mortgages() {
   const [loanTypeFilter, setLoanTypeFilter] = useState('all');
   const [propertyFilter, setPropertyFilter] = useState('all');
   const [sortBy, setSortBy] = useState('lender');
-  
+
   const propertyIdNum = propertyId ? parseInt(propertyId) : undefined;
-  
+
   const { data: mortgages, isLoading, error } = useQuery<Mortgage[]>({
     queryKey: ['/api/mortgages', propertyIdNum ? `/property/${propertyIdNum}` : ''],
     queryFn: async () => {
@@ -39,7 +39,7 @@ export default function Mortgages() {
           : '/api/mortgages';
         const res = await fetch(url);
         if (!res.ok) throw new Error('Failed to fetch mortgages');
-        
+
         const text = await res.text();
         try {
           return JSON.parse(text);
@@ -53,7 +53,7 @@ export default function Mortgages() {
       }
     },
   });
-  
+
   // Filter mortgages based on search term, status, loan type and property
   const filteredMortgages = mortgages?.filter((mortgage) => {
     // Search filter
@@ -61,26 +61,26 @@ export default function Mortgages() {
       searchTerm === '' || 
       mortgage.lender.toLowerCase().includes(searchTerm.toLowerCase()) ||
       mortgage.loanNumber.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
     // Status filter
     const matchesStatus = 
       statusFilter === 'all' || 
       (statusFilter === 'active' && mortgage.isActive) ||
       (statusFilter === 'inactive' && !mortgage.isActive);
-      
+
     // Loan type filter
     const matchesLoanType = 
       loanTypeFilter === 'all' || 
       mortgage.loanType === loanTypeFilter;
-      
+
     // Property filter
     const matchesProperty =
       propertyFilter === 'all' ||
       mortgage.propertyId?.toString() === propertyFilter;
-      
+
     return matchesSearch && matchesStatus && matchesLoanType && matchesProperty;
   });
-  
+
   // Sort mortgages based on sortBy
   const sortedMortgages = filteredMortgages ? [...filteredMortgages].sort((a, b) => {
     switch(sortBy) {
@@ -98,10 +98,10 @@ export default function Mortgages() {
         return 0;
     }
   }) : [];
-  
+
   // Get unique loan types for filtering
   const loanTypes = mortgages ? [...new Set(mortgages.map(m => m.loanType))] : [];
-  
+
   const { data: properties } = useQuery({
     queryKey: ['/api/properties'],
     queryFn: async () => {
@@ -121,21 +121,19 @@ export default function Mortgages() {
     },
     enabled: !!propertyIdNum
   });
-  
+
   if (error) {
     return (
       <div className="container mx-auto p-6">
-        <h1 className="text-2xl font-bold mb-6">Mortgages</h1>
         <div className="bg-red-50 text-red-600 p-4 rounded-md">
           Error loading mortgages: {error.message}
         </div>
       </div>
     );
   }
-  
+
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Mortgages</h1>
       <div className="flex justify-between items-center mb-6">
         <div>
           {property && (
@@ -148,7 +146,7 @@ export default function Mortgages() {
           <Plus className="h-4 w-4 mr-2" /> Add Mortgage
         </Button>
       </div>
-      
+
       <Card className="mb-6">
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
@@ -161,7 +159,7 @@ export default function Mortgages() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            
+
             <div>
               <Label className="mb-1 block">Status</Label>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -175,7 +173,7 @@ export default function Mortgages() {
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div>
               <Label className="mb-1 block">Loan Type</Label>
               <Select value={loanTypeFilter} onValueChange={setLoanTypeFilter}>
@@ -192,7 +190,7 @@ export default function Mortgages() {
                 </SelectContent>
               </Select>
             </div>
-            
+
             {!propertyIdNum && (
               <div>
                 <Label className="mb-1 block">Property</Label>
@@ -213,7 +211,7 @@ export default function Mortgages() {
                 </Select>
               </div>
             )}
-            
+
             <div className={!propertyIdNum ? "md:col-start-1 md:col-span-4 lg:col-start-4 lg:col-span-1" : ""}>
               <Label className="mb-1 block">Sort By</Label>
               <Select value={sortBy} onValueChange={setSortBy}>
@@ -229,7 +227,7 @@ export default function Mortgages() {
               </Select>
             </div>
           </div>
-          
+
           <div className="flex justify-end">
             <Button variant="outline" size="sm" onClick={() => {
               setSearchTerm('');
@@ -242,7 +240,7 @@ export default function Mortgages() {
           </div>
         </CardContent>
       </Card>
-      
+
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(3)].map((_, i) => (

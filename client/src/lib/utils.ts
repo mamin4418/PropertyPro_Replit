@@ -10,6 +10,15 @@ export function formatDate(date: Date): string {
   return format(date, 'PPP') // 'PPP' is a format string for date-fns that formats dates like "April 29, 2022"
 }
 
+export function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+}
+
 /**
  * Generic API request function for API interactions
  * @param endpoint The API endpoint

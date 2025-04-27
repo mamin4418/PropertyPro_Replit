@@ -936,6 +936,208 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Insurance API endpoints
+  app.get('/api/insurances/property/:propertyId', async (req: Request, res: Response) => {
+    try {
+      const propertyId = parseInt(req.params.propertyId);
+      if (isNaN(propertyId)) {
+        return res.status(400).json({ error: 'Invalid property ID' });
+      }
+      
+      const insurances = await storage.getInsurancesByProperty(propertyId);
+      res.json(insurances);
+    } catch (error) {
+      console.error('Error retrieving insurances:', error);
+      res.status(500).json({ error: 'Failed to retrieve insurances' });
+    }
+  });
+  
+  app.get('/api/insurances/:id', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid ID format' });
+      }
+      
+      const insurance = await storage.getInsurance(id);
+      if (!insurance) {
+        return res.status(404).json({ error: 'Insurance not found' });
+      }
+      
+      res.json(insurance);
+    } catch (error) {
+      console.error('Error retrieving insurance:', error);
+      res.status(500).json({ error: 'Failed to retrieve insurance' });
+    }
+  });
+  
+  app.post('/api/insurances', async (req: Request, res: Response) => {
+    try {
+      const validatedData = insertInsuranceSchema.safeParse(req.body);
+      
+      if (!validatedData.success) {
+        return res.status(400).json({ 
+          error: 'Invalid insurance data', 
+          details: validatedData.error.format() 
+        });
+      }
+      
+      const newInsurance = await storage.createInsurance(validatedData.data);
+      res.status(201).json(newInsurance);
+    } catch (error) {
+      console.error('Error creating insurance:', error);
+      res.status(500).json({ error: 'Failed to create insurance' });
+    }
+  });
+  
+  app.put('/api/insurances/:id', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid ID format' });
+      }
+      
+      const validatedData = insertInsuranceSchema.partial().safeParse(req.body);
+      
+      if (!validatedData.success) {
+        return res.status(400).json({ 
+          error: 'Invalid insurance data', 
+          details: validatedData.error.format() 
+        });
+      }
+      
+      const updatedInsurance = await storage.updateInsurance(id, validatedData.data);
+      if (!updatedInsurance) {
+        return res.status(404).json({ error: 'Insurance not found' });
+      }
+      
+      res.json(updatedInsurance);
+    } catch (error) {
+      console.error('Error updating insurance:', error);
+      res.status(500).json({ error: 'Failed to update insurance' });
+    }
+  });
+  
+  app.delete('/api/insurances/:id', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid ID format' });
+      }
+      
+      const success = await storage.deleteInsurance(id);
+      if (!success) {
+        return res.status(404).json({ error: 'Insurance not found' });
+      }
+      
+      res.status(204).end();
+    } catch (error) {
+      console.error('Error deleting insurance:', error);
+      res.status(500).json({ error: 'Failed to delete insurance' });
+    }
+  });
+  
+  // Mortgage API endpoints
+  app.get('/api/mortgages/property/:propertyId', async (req: Request, res: Response) => {
+    try {
+      const propertyId = parseInt(req.params.propertyId);
+      if (isNaN(propertyId)) {
+        return res.status(400).json({ error: 'Invalid property ID' });
+      }
+      
+      const mortgages = await storage.getMortgagesByProperty(propertyId);
+      res.json(mortgages);
+    } catch (error) {
+      console.error('Error retrieving mortgages:', error);
+      res.status(500).json({ error: 'Failed to retrieve mortgages' });
+    }
+  });
+  
+  app.get('/api/mortgages/:id', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid ID format' });
+      }
+      
+      const mortgage = await storage.getMortgage(id);
+      if (!mortgage) {
+        return res.status(404).json({ error: 'Mortgage not found' });
+      }
+      
+      res.json(mortgage);
+    } catch (error) {
+      console.error('Error retrieving mortgage:', error);
+      res.status(500).json({ error: 'Failed to retrieve mortgage' });
+    }
+  });
+  
+  app.post('/api/mortgages', async (req: Request, res: Response) => {
+    try {
+      const validatedData = insertMortgageSchema.safeParse(req.body);
+      
+      if (!validatedData.success) {
+        return res.status(400).json({ 
+          error: 'Invalid mortgage data', 
+          details: validatedData.error.format() 
+        });
+      }
+      
+      const newMortgage = await storage.createMortgage(validatedData.data);
+      res.status(201).json(newMortgage);
+    } catch (error) {
+      console.error('Error creating mortgage:', error);
+      res.status(500).json({ error: 'Failed to create mortgage' });
+    }
+  });
+  
+  app.put('/api/mortgages/:id', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid ID format' });
+      }
+      
+      const validatedData = insertMortgageSchema.partial().safeParse(req.body);
+      
+      if (!validatedData.success) {
+        return res.status(400).json({ 
+          error: 'Invalid mortgage data', 
+          details: validatedData.error.format() 
+        });
+      }
+      
+      const updatedMortgage = await storage.updateMortgage(id, validatedData.data);
+      if (!updatedMortgage) {
+        return res.status(404).json({ error: 'Mortgage not found' });
+      }
+      
+      res.json(updatedMortgage);
+    } catch (error) {
+      console.error('Error updating mortgage:', error);
+      res.status(500).json({ error: 'Failed to update mortgage' });
+    }
+  });
+  
+  app.delete('/api/mortgages/:id', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid ID format' });
+      }
+      
+      const success = await storage.deleteMortgage(id);
+      if (!success) {
+        return res.status(404).json({ error: 'Mortgage not found' });
+      }
+      
+      res.status(204).end();
+    } catch (error) {
+      console.error('Error deleting mortgage:', error);
+      res.status(500).json({ error: 'Failed to delete mortgage' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -27,9 +27,9 @@ export default function Insurances() {
   const [policyTypeFilter, setPolicyTypeFilter] = useState('all');
   const [propertyFilter, setPropertyFilter] = useState('all');
   const [sortBy, setSortBy] = useState('provider');
-
+  
   const propertyIdNum = propertyId ? parseInt(propertyId) : undefined;
-
+  
   const { data: insurances, isLoading, error } = useQuery<Insurance[]>({
     queryKey: ['/api/insurances', propertyIdNum ? `/property/${propertyIdNum}` : ''],
     queryFn: async () => {
@@ -39,7 +39,7 @@ export default function Insurances() {
           : '/api/insurances';
         const res = await fetch(url);
         if (!res.ok) throw new Error('Failed to fetch insurances');
-
+        
         const text = await res.text();
         try {
           return JSON.parse(text);
@@ -53,13 +53,13 @@ export default function Insurances() {
       }
     },
   });
-
+  
   // Get unique property IDs from insurances for filtering
   const propertyIds = insurances ? [...new Set(insurances.map(i => i.propertyId))] : [];
-
+  
   // Get unique policy types for filtering
   const policyTypes = insurances ? [...new Set(insurances.map(i => i.policyType))] : [];
-
+  
   // Filter insurances based on search term, status, policy type and property
   const filteredInsurances = insurances?.filter((insurance) => {
     // Search filter
@@ -67,26 +67,26 @@ export default function Insurances() {
       searchTerm === '' || 
       insurance.insuranceProvider.toLowerCase().includes(searchTerm.toLowerCase()) ||
       insurance.policyNumber.toLowerCase().includes(searchTerm.toLowerCase());
-
+      
     // Status filter
     const matchesStatus = 
       statusFilter === 'all' || 
       (statusFilter === 'active' && insurance.isActive) ||
       (statusFilter === 'inactive' && !insurance.isActive);
-
+      
     // Policy type filter
     const matchesPolicyType = 
       policyTypeFilter === 'all' || 
       insurance.policyType === policyTypeFilter;
-
+      
     // Property filter
     const matchesProperty =
       propertyFilter === 'all' ||
       insurance.propertyId?.toString() === propertyFilter;
-
+      
     return matchesSearch && matchesStatus && matchesPolicyType && matchesProperty;
   });
-
+  
   // Sort insurances based on sortBy
   const sortedInsurances = filteredInsurances ? [...filteredInsurances].sort((a, b) => {
     switch(sortBy) {
@@ -113,7 +113,7 @@ export default function Insurances() {
       return res.json();
     },
   });
-
+  
   const { data: property } = useQuery({
     queryKey: ['/api/properties', propertyIdNum],
     queryFn: async () => {
@@ -124,21 +124,21 @@ export default function Insurances() {
     },
     enabled: !!propertyIdNum
   });
-
+  
   if (error) {
     return (
       <div className="container mx-auto p-6">
-        <h1 className="text-2xl font-bold mb-6"></h1>
+        <h1 className="text-2xl font-bold mb-6">Insurance Policies</h1>
         <div className="bg-red-50 text-red-600 p-4 rounded-md">
           Error loading insurances: {error.message}
         </div>
       </div>
     );
   }
-
+  
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6"></h1>
+      <h1 className="text-2xl font-bold mb-6">Insurance Policies</h1>
       <div className="flex justify-between items-center mb-6">
         <div>
           {property && (
@@ -151,7 +151,7 @@ export default function Insurances() {
           <Plus className="h-4 w-4 mr-2" /> Add Insurance
         </Button>
       </div>
-
+      
       <Card className="mb-6">
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
@@ -164,7 +164,7 @@ export default function Insurances() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-
+            
             <div>
               <Label className="mb-1 block">Status</Label>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -178,7 +178,7 @@ export default function Insurances() {
                 </SelectContent>
               </Select>
             </div>
-
+            
             <div>
               <Label className="mb-1 block">Policy Type</Label>
               <Select value={policyTypeFilter} onValueChange={setPolicyTypeFilter}>
@@ -195,7 +195,7 @@ export default function Insurances() {
                 </SelectContent>
               </Select>
             </div>
-
+            
             {!propertyIdNum && (
               <div>
                 <Label className="mb-1 block">Property</Label>
@@ -214,7 +214,7 @@ export default function Insurances() {
                 </Select>
               </div>
             )}
-
+            
             <div className={!propertyIdNum ? "md:col-start-1 md:col-span-4 lg:col-start-4 lg:col-span-1" : ""}>
               <Label className="mb-1 block">Sort By</Label>
               <Select value={sortBy} onValueChange={setSortBy}>
@@ -230,7 +230,7 @@ export default function Insurances() {
               </Select>
             </div>
           </div>
-
+          
           <div className="flex justify-end">
             <Button variant="outline" size="sm" onClick={() => {
               setSearchTerm('');
@@ -244,7 +244,7 @@ export default function Insurances() {
           </div>
         </CardContent>
       </Card>
-
+      
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(3)].map((_, i) => (

@@ -17,7 +17,6 @@ export const ThemeContext = createContext<ThemeContextType>({
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Initialize theme from localStorage
   const getInitialTheme = (): Theme => {
-    // Check for localStorage support
     if (typeof window !== "undefined") {
       const savedTheme = localStorage.getItem("pms-theme") as Theme | null;
       if (savedTheme && [
@@ -33,7 +32,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [currentTheme, setCurrentTheme] = useState<Theme>(getInitialTheme);
 
   useEffect(() => {
-    // Apply theme globally to document and all potential root elements
+    // Apply theme to the document body and html element
     const applyTheme = (theme: Theme) => {
       const themeClasses = [
         "dark-theme", 
@@ -47,40 +46,37 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         "atom-theme"
       ];
       
-      // Remove all theme classes from document element (html)
+      // Remove all theme classes
       document.documentElement.classList.remove(...themeClasses);
-      
-      // Remove all theme classes from body
       document.body.classList.remove(...themeClasses);
       
-      // Apply to app root if it exists
-      const rootElement = document.querySelector('.app-root');
-      if (rootElement) {
-        rootElement.classList.remove(...themeClasses);
-        if (theme !== "default") {
-          rootElement.classList.add(theme);
-        }
-      }
-      
-      // Apply to document and body for maximum coverage
+      // Apply the theme class if it's not default
       if (theme !== "default") {
         document.documentElement.classList.add(theme);
         document.body.classList.add(theme);
       }
       
-      console.log("Applied theme:", theme);
-      console.log("Applied to elements:", document.querySelectorAll(`.${theme}`).length);
+      // Apply to app root if it exists
+      const appRoot = document.querySelector('#root');
+      if (appRoot) {
+        appRoot.classList.remove(...themeClasses);
+        if (theme !== "default") {
+          appRoot.classList.add(theme);
+        }
+      }
+
+      // Store in localStorage
+      localStorage.setItem("pms-theme", theme);
+      
+      console.log("Theme applied:", theme);
     };
     
-    // Apply theme immediately
+    // Apply theme immediately and save preference
     applyTheme(currentTheme);
-    
-    // Save theme preference to localStorage
-    localStorage.setItem("pms-theme", currentTheme);
   }, [currentTheme]);
 
   const changeTheme = (theme: Theme) => {
-    console.log("ThemeProvider changeTheme called with:", theme);
+    console.log("Changing theme to:", theme);
     setCurrentTheme(theme);
   };
 

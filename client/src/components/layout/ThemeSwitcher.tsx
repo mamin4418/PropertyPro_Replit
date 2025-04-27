@@ -25,8 +25,14 @@ const ThemeSwitcher = () => {
   ];
   
   const handleThemeChange = (themeId) => {
+    console.log("ThemeSwitcher changing theme to:", themeId);
     changeTheme(themeId);
     setActiveTheme(themeId);
+    
+    // Force refresh to ensure theme is applied
+    setTimeout(() => {
+      window.dispatchEvent(new Event('storage')); // Trigger storage event to force re-render
+    }, 50);
   };
   
   return (

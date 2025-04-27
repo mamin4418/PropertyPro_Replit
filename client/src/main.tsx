@@ -3,9 +3,9 @@ import App from "./App";
 import "./index.css";
 import { ThemeProvider } from "./context/ThemeProvider";
 
-// Create a custom element 
+// Add app-root class to the root element for theme targeting
 const rootElement = document.getElementById("root")!;
-rootElement.className = "app-root";
+rootElement.classList.add("app-root");
 
 createRoot(rootElement).render(
   <ThemeProvider>

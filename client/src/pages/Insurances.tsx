@@ -19,12 +19,24 @@ export default function Insurances() {
   const { data: insurances, isLoading, error } = useQuery<Insurance[]>({
     queryKey: ['/api/insurances', propertyIdNum ? `/property/${propertyIdNum}` : ''],
     queryFn: async () => {
-      const url = propertyIdNum 
-        ? `/api/insurances/property/${propertyIdNum}` 
-        : '/api/insurances';
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Failed to fetch insurances');
-      return res.json();
+      try {
+        const url = propertyIdNum 
+          ? `/api/insurances/property/${propertyIdNum}` 
+          : '/api/insurances';
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Failed to fetch insurances');
+        
+        const text = await res.text();
+        try {
+          return JSON.parse(text);
+        } catch (e) {
+          console.error('Error parsing JSON:', text.substring(0, 100));
+          throw new Error('Invalid response format from server');
+        }
+      } catch (err) {
+        console.error('Error fetching insurances:', err);
+        throw err;
+      }
     },
   });
   

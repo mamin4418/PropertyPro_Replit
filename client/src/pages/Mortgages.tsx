@@ -19,12 +19,24 @@ export default function Mortgages() {
   const { data: mortgages, isLoading, error } = useQuery<Mortgage[]>({
     queryKey: ['/api/mortgages', propertyIdNum ? `/property/${propertyIdNum}` : ''],
     queryFn: async () => {
-      const url = propertyIdNum 
-        ? `/api/mortgages/property/${propertyIdNum}` 
-        : '/api/mortgages';
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Failed to fetch mortgages');
-      return res.json();
+      try {
+        const url = propertyIdNum 
+          ? `/api/mortgages/property/${propertyIdNum}` 
+          : '/api/mortgages';
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Failed to fetch mortgages');
+        
+        const text = await res.text();
+        try {
+          return JSON.parse(text);
+        } catch (e) {
+          console.error('Error parsing JSON:', text.substring(0, 100));
+          throw new Error('Invalid response format from server');
+        }
+      } catch (err) {
+        console.error('Error fetching mortgages:', err);
+        throw err;
+      }
     },
   });
   

@@ -937,6 +937,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Insurance API endpoints
+  app.get('/api/insurances', async (req: Request, res: Response) => {
+    try {
+      const insurances = Array.from(storage.insurances.values());
+      res.setHeader('Content-Type', 'application/json');
+      res.json(insurances);
+    } catch (error) {
+      console.error('Error retrieving all insurances:', error);
+      res.status(500).json({ error: 'Failed to retrieve insurances' });
+    }
+  });
+  
   app.get('/api/insurances/property/:propertyId', async (req: Request, res: Response) => {
     try {
       const propertyId = parseInt(req.params.propertyId);
@@ -945,6 +956,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const insurances = await storage.getInsurancesByProperty(propertyId);
+      res.setHeader('Content-Type', 'application/json');
       res.json(insurances);
     } catch (error) {
       console.error('Error retrieving insurances:', error);
@@ -964,6 +976,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: 'Insurance not found' });
       }
       
+      res.setHeader('Content-Type', 'application/json');
       res.json(insurance);
     } catch (error) {
       console.error('Error retrieving insurance:', error);
@@ -1038,6 +1051,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Mortgage API endpoints
+  app.get('/api/mortgages', async (req: Request, res: Response) => {
+    try {
+      const mortgages = Array.from(storage.mortgages.values());
+      res.setHeader('Content-Type', 'application/json');
+      res.json(mortgages);
+    } catch (error) {
+      console.error('Error retrieving all mortgages:', error);
+      res.status(500).json({ error: 'Failed to retrieve mortgages' });
+    }
+  });
+  
   app.get('/api/mortgages/property/:propertyId', async (req: Request, res: Response) => {
     try {
       const propertyId = parseInt(req.params.propertyId);
@@ -1046,6 +1070,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const mortgages = await storage.getMortgagesByProperty(propertyId);
+      res.setHeader('Content-Type', 'application/json');
       res.json(mortgages);
     } catch (error) {
       console.error('Error retrieving mortgages:', error);
@@ -1065,6 +1090,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: 'Mortgage not found' });
       }
       
+      res.setHeader('Content-Type', 'application/json');
       res.json(mortgage);
     } catch (error) {
       console.error('Error retrieving mortgage:', error);

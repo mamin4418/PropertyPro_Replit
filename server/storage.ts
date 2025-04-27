@@ -58,6 +58,20 @@ export interface IStorage {
   createApplicationTemplate(template: InsertApplicationTemplate): Promise<ApplicationTemplate>;
   updateApplicationTemplate(id: number, template: Partial<InsertApplicationTemplate>): Promise<ApplicationTemplate | undefined>;
   deleteApplicationTemplate(id: number): Promise<boolean>;
+  
+  // Insurance methods
+  getInsurance(id: number): Promise<Insurance | undefined>;
+  getInsurancesByProperty(propertyId: number): Promise<Insurance[]>;
+  createInsurance(insurance: InsertInsurance): Promise<Insurance>;
+  updateInsurance(id: number, insurance: Partial<InsertInsurance>): Promise<Insurance | undefined>;
+  deleteInsurance(id: number): Promise<boolean>;
+  
+  // Mortgage methods
+  getMortgage(id: number): Promise<Mortgage | undefined>;
+  getMortgagesByProperty(propertyId: number): Promise<Mortgage[]>;
+  createMortgage(mortgage: InsertMortgage): Promise<Mortgage>;
+  updateMortgage(id: number, mortgage: Partial<InsertMortgage>): Promise<Mortgage | undefined>;
+  deleteMortgage(id: number): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {

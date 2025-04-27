@@ -527,6 +527,72 @@ export type InsertApplicationDocument = z.infer<typeof insertApplicationDocument
 export type Appliance = typeof appliances.$inferSelect;
 export type InsertAppliance = z.infer<typeof insertApplianceSchema>;
 
+// Property Insurance Table
+export const insurances = pgTable("insurances", {
+  id: serial("id").primaryKey(),
+  propertyId: integer("property_id").notNull().references(() => properties.id),
+  insuranceProvider: text("insurance_provider").notNull(),
+  policyNumber: text("policy_number").notNull(),
+  policyType: text("policy_type").notNull(), // homeowner, landlord, flood, etc.
+  coverageAmount: numeric("coverage_amount").notNull(),
+  premium: numeric("premium").notNull(),
+  deductible: numeric("deductible"),
+  startDate: date("start_date").notNull(),
+  endDate: date("end_date"),
+  contactName: text("contact_name"),
+  contactPhone: text("contact_phone"),
+  contactEmail: text("contact_email"),
+  coverageDetails: text("coverage_details"),
+  documents: text("documents").array(), // URLs to insurance documents
+  isActive: boolean("is_active").default(true),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertInsuranceSchema = createInsertSchema(insurances).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type Insurance = typeof insurances.$inferSelect;
+export type InsertInsurance = z.infer<typeof insertInsuranceSchema>;
+
+// Property Mortgage Table
+export const mortgages = pgTable("mortgages", {
+  id: serial("id").primaryKey(),
+  propertyId: integer("property_id").notNull().references(() => properties.id),
+  lender: text("lender").notNull(),
+  loanNumber: text("loan_number").notNull(),
+  loanType: text("loan_type").notNull(), // fixed, adjustable, etc.
+  originalAmount: numeric("original_amount").notNull(),
+  currentBalance: numeric("current_balance").notNull(),
+  interestRate: numeric("interest_rate").notNull(),
+  monthlyPayment: numeric("monthly_payment").notNull(),
+  startDate: date("start_date").notNull(),
+  maturityDate: date("maturity_date"),
+  escrowIncluded: boolean("escrow_included").default(false),
+  escrowAmount: numeric("escrow_amount"),
+  contactName: text("contact_name"),
+  contactPhone: text("contact_phone"),
+  contactEmail: text("contact_email"),
+  documents: text("documents").array(), // URLs to mortgage documents
+  isActive: boolean("is_active").default(true),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertMortgageSchema = createInsertSchema(mortgages).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type Mortgage = typeof mortgages.$inferSelect;
+export type InsertMortgage = z.infer<typeof insertMortgageSchema>;
+
 // Also export the users table from the original schema
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),

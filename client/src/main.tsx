@@ -6,6 +6,7 @@ import { ThemeProvider } from './context/ThemeProvider';
 import { Toaster } from './components/ui/toaster';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './lib/queryClient';
+import { TooltipProvider } from './components/ui/tooltip';
 
 // Pages
 import Dashboard from './pages/Dashboard';
@@ -67,86 +68,16 @@ import AuthPage from './pages/auth-page';
 import TenantAuthPage from './pages/tenant-auth-page';
 import TenantDashboard from './pages/tenant-dashboard';
 import NotFound from './pages/not-found';
-import App from './App.tsx';
-import './index.css';
-import { TooltipProvider } from './components/ui/tooltip';
-
+import App from './App';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="light" storageKey="ui-theme">
-        <Router>
-          <Switch>
-            <Route path="/auth" component={AuthPage} />
-            <Route path="/tenant/auth" component={TenantAuthPage} />
-            <Route path="/tenant/dashboard" component={TenantDashboard} />
-            <Route path="/" component={Dashboard} />
-            <Route path="/properties" component={Properties} />
-            <Route path="/view-property/:id" component={ViewProperty} />
-            <Route path="/add-property" component={AddProperty} />
-            <Route path="/edit-property/:id" component={EditProperty} />
-            <Route path="/manage-units/:propertyId" component={ManageUnits} />
-            <Route path="/tenants" component={Tenants} />
-            <Route path="/add-tenant" component={AddTenant} />
-            <Route path="/edit-tenant/:id" component={EditTenant} />
-            <Route path="/view-tenant/:id" component={ViewTenant} />
-            <Route path="/leases" component={Leases} />
-            <Route path="/add-lease" component={AddLease} />
-            <Route path="/add-lease/:tenantId" component={AddLease} />
-            <Route path="/edit-lease/:id" component={EditLease} />
-            <Route path="/view-lease/:id" component={ViewLease} />
-            <Route path="/maintenance" component={Maintenance} />
-            <Route path="/add-maintenance" component={AddMaintenance} />
-            <Route path="/edit-maintenance/:id" component={EditMaintenance} />
-            <Route path="/view-maintenance/:id" component={ViewMaintenance} />
-            <Route path="/vendors" component={Vendors} />
-            <Route path="/add-vendor" component={AddVendor} />
-            <Route path="/edit-vendor/:id" component={EditVendor} />
-            <Route path="/view-vendor/:id" component={ViewVendor} />
-            <Route path="/contacts" component={Contacts} />
-            <Route path="/add-contact" component={AddContact} />
-            <Route path="/edit-contact/:id" component={EditContact} />
-            <Route path="/view-contact/:id" component={ViewContact} />
-            <Route path="/payments" component={Payments} />
-            <Route path="/add-payment" component={AddPayment} />
-            <Route path="/edit-payment/:id" component={EditPayment} />
-            <Route path="/view-payment/:id" component={ViewPayment} />
-            <Route path="/reports" component={Reports} />
-            <Route path="/settings" component={Settings} />
-            <Route path="/vacancies" component={ManageVacancies} />
-            <Route path="/vacancies/listing" component={VacancyListing} />
-            <Route path="/vacancies/create" component={CreateVacancy} />
-            <Route path="/vacancies/view/:id" component={ViewVacancy} />
-            <Route path="/leads" component={Leads} />
-            <Route path="/add-lead" component={AddLead} />
-            <Route path="/applications" component={Applications} />
-            <Route path="/application-templates" component={ApplicationTemplates} />
-            <Route path="/application-templates/create" component={CreateApplicationTemplate} />
-            <Route path="/lease-templates/generate" component={GenerateLeaseTemplate} />
-            <Route path="/companies" component={Companies} />
-            <Route path="/add-company" component={AddCompany} />
-            <Route path="/edit-company/:id" component={EditCompany} />
-            <Route path="/view-company/:id" component={ViewCompany} />
-            <Route path="/appliances" component={Appliances} />
-            <Route path="/appliances/:propertyId" component={Appliances} />
-            <Route path="/add-appliance" component={AddAppliance} />
-            <Route path="/add-appliance/:unitId" component={AddAppliance} />
-            <Route path="/edit-appliance/:id" component={EditAppliance} />
-            <Route path="/view-appliance/:id" component={ViewAppliance} />
-            <Route path="/mortgages" component={Mortgages} />
-            <Route path="/mortgages/:propertyId" component={Mortgages} />
-            <Route path="/add-mortgage" component={AddMortgage} />
-            <Route path="/add-mortgage/:propertyId" component={AddMortgage} />
-            <Route path="/edit-mortgage/:id" component={EditMortgage} />
-            <Route path="/insurances" component={Insurances} />
-            <Route path="/insurances/:propertyId" component={Insurances} />
-            <Route path="/add-insurance" component={AddInsurance} />
-            <Route path="/add-insurance/:propertyId" component={AddInsurance} />
-            <Route component={NotFound} />
-          </Switch>
-        </Router>
-        <Toaster />
+        <TooltipProvider>
+          <App />
+          <Toaster />
+        </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>
   </React.StrictMode>,

@@ -106,7 +106,7 @@ export default function AddInsurance() {
         deductible: data.deductible ? parseFloat(data.deductible) : null,
       };
       
-      return await apiRequest("POST", "/api/insurances", numericData);
+      return await apiRequest("/api/insurances", "POST", numericData);
     },
     onSuccess: () => {
       toast({
@@ -178,7 +178,7 @@ export default function AddInsurance() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {properties?.map((property) => (
+                          {properties?.map((property: {id: number, name: string}) => (
                             <SelectItem key={property.id} value={property.id.toString()}>
                               {property.name}
                             </SelectItem>
@@ -478,7 +478,7 @@ export default function AddInsurance() {
                   <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                     <FormControl>
                       <Checkbox
-                        checked={field.value}
+                        checked={field.value === true}
                         onCheckedChange={field.onChange}
                       />
                     </FormControl>

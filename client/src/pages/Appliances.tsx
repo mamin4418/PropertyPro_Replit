@@ -30,14 +30,25 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from '@/hooks/use-toast';
 import { formatDate } from '@/lib/utils';
-import { Wrench, AlertTriangle, Plus, Search, Tag } from 'lucide-react';
+import { Wrench, AlertTriangle, Plus, Search, Tag, Filter } from 'lucide-react';
 import type { Appliance } from '@shared/schema';
 
 export default function Appliances() {
   const [location, setLocation] = useLocation();
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [propertyFilter, setPropertyFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('type');
   const { toast } = useToast();
   
   const { data: appliances, isLoading, error } = useQuery({
@@ -45,12 +56,49 @@ export default function Appliances() {
     retry: 1,
   });
 
-  const filteredAppliances = appliances?.filter((appliance: Appliance) => 
-    appliance.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (appliance.make && appliance.make.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (appliance.model && appliance.model.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (appliance.serialNumber && appliance.serialNumber.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  // Get unique property IDs from appliances for filtering
+  const propertyIds = appliances ? [...new Set(appliances.map((a: Appliance) => a.propertyId))] : [];
+  
+  // Filter appliances based on search term, status and property
+  const filteredAppliances = appliances?.filter((appliance: Appliance) => {
+    // Search filter
+    const matchesSearch = 
+      searchTerm === '' || 
+      appliance.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (appliance.make && appliance.make.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (appliance.model && appliance.model.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (appliance.serialNumber && appliance.serialNumber.toLowerCase().includes(searchTerm.toLowerCase()));
+      
+    // Status filter
+    const matchesStatus = 
+      statusFilter === 'all' || 
+      appliance.status === statusFilter;
+      
+    // Property filter
+    const matchesProperty = 
+      propertyFilter === 'all' || 
+      appliance.propertyId?.toString() === propertyFilter;
+      
+    return matchesSearch && matchesStatus && matchesProperty;
+  });
+  
+  // Sort appliances based on sortBy
+  const sortedAppliances = filteredAppliances ? [...filteredAppliances].sort((a: Appliance, b: Appliance) => {
+    switch(sortBy) {
+      case 'type':
+        return a.type.localeCompare(b.type);
+      case 'make':
+        return (a.make || '').localeCompare(b.make || '');
+      case 'unit':
+        return a.unitId - b.unitId;
+      case 'lastService':
+        if (!a.lastServiceDate) return 1;
+        if (!b.lastServiceDate) return -1;
+        return new Date(b.lastServiceDate).getTime() - new Date(a.lastServiceDate).getTime();
+      default:
+        return 0;
+    }
+  }) : [];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -78,14 +126,74 @@ export default function Appliances() {
 
       <Card className="mb-6">
         <CardContent className="pt-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search appliances by type, make, model or serial number..."
-              className="pl-10"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search appliances..."
+                className="pl-10"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            
+            <div>
+              <Label className="mb-1 block">Status</Label>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="repair-needed">Needs Repair</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label className="mb-1 block">Property</Label>
+              <Select value={propertyFilter} onValueChange={setPropertyFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Filter by property" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Properties</SelectItem>
+                  {propertyIds.map((id) => (
+                    <SelectItem key={id} value={id?.toString() || ''}>
+                      Property {id}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label className="mb-1 block">Sort By</Label>
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="type">Type</SelectItem>
+                  <SelectItem value="make">Make/Model</SelectItem>
+                  <SelectItem value="unit">Unit</SelectItem>
+                  <SelectItem value="lastService">Last Service Date</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          
+          <div className="flex justify-end">
+            <Button variant="outline" size="sm" onClick={() => {
+              setSearchTerm('');
+              setStatusFilter('all');
+              setPropertyFilter('all');
+              setSortBy('type');
+            }}>
+              Reset Filters
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -147,7 +255,7 @@ export default function Appliances() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredAppliances?.map((appliance: Appliance) => (
+                  {sortedAppliances?.map((appliance: Appliance) => (
                     <TableRow key={appliance.id}>
                       <TableCell className="font-medium flex items-center">
                         <Tag className="h-4 w-4 mr-2" />
@@ -168,10 +276,10 @@ export default function Appliances() {
                           : 'Never'}
                       </TableCell>
                       <TableCell>
-                        <Badge className={getStatusColor(appliance.status)}>
+                        <Badge className={getStatusColor(appliance.status || 'inactive')}>
                           {appliance.status === 'repair-needed' 
                             ? 'Needs Repair' 
-                            : appliance.status.charAt(0).toUpperCase() + appliance.status.slice(1)}
+                            : (appliance.status ? appliance.status.charAt(0).toUpperCase() + appliance.status.slice(1) : 'Inactive')}
                         </Badge>
                       </TableCell>
                       <TableCell>

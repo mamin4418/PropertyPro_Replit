@@ -66,6 +66,10 @@ import Insurances from "./pages/Insurances";
 import AddInsurance from "./pages/AddInsurance";
 import Mortgages from "./pages/Mortgages";
 import AddMortgage from "./pages/AddMortgage";
+import EditMortgage from "./pages/EditMortgage";
+import ViewMortgage from "./pages/ViewMortgage";
+import ViewInsurance from "./pages/ViewInsurance";
+import EditInsurance from "./pages/EditInsurance";
 import { Menu, X } from "lucide-react";
 
 function AppRoutes() {
@@ -189,12 +193,16 @@ function AppRoutes() {
               <ProtectedRoute path="/insurances/:propertyId" component={Insurances} />
               <ProtectedRoute path="/add-insurance" component={AddInsurance} />
               <ProtectedRoute path="/add-insurance/:propertyId" component={AddInsurance} />
+              <ProtectedRoute path="/view-insurance/:id" component={ViewInsurance} />
+              <ProtectedRoute path="/edit-insurance/:id" component={EditInsurance} />
               
               {/* Mortgage Routes */}
               <ProtectedRoute path="/mortgages" component={Mortgages} />
               <ProtectedRoute path="/mortgages/:propertyId" component={Mortgages} />
               <ProtectedRoute path="/add-mortgage" component={AddMortgage} />
               <ProtectedRoute path="/add-mortgage/:propertyId" component={AddMortgage} />
+              <ProtectedRoute path="/view-mortgage/:id" component={ViewMortgage} />
+              <ProtectedRoute path="/edit-mortgage/:id" component={EditMortgage} />
 
               {/* Vendors Routes */}
               <ProtectedRoute path="/vendors" component={Vendors} />

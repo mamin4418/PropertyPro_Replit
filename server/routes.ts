@@ -1265,6 +1265,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/insurances', async (req: Request, res: Response) => {
     try {
       const insurances = await storage.getAllInsurances();
+      res.setHeader('Content-Type', 'application/json');
       res.json(insurances);
     } catch (error) {
       console.error('Error fetching insurances:', error);
@@ -1276,6 +1277,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const propertyId = parseInt(req.params.propertyId);
       const insurances = await storage.getInsurancesByPropertyId(propertyId);
+      res.setHeader('Content-Type', 'application/json');
       res.json(insurances);
     } catch (error) {
       console.error('Error fetching property insurances:', error);
@@ -1287,6 +1289,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/mortgages', async (req: Request, res: Response) => {
     try {
       const mortgages = await storage.getAllMortgages();
+      res.setHeader('Content-Type', 'application/json');
       res.json(mortgages);
     } catch (error) {
       console.error('Error fetching mortgages:', error);
@@ -1298,6 +1301,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const propertyId = parseInt(req.params.propertyId);
       const mortgages = await storage.getMortgagesByPropertyId(propertyId);
+      res.setHeader('Content-Type', 'application/json');
       res.json(mortgages);
     } catch (error) {
       console.error('Error fetching property mortgages:', error);
@@ -1309,6 +1313,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/appliances', async (req: Request, res: Response) => {
     try {
       const appliances = await storage.getAllAppliances();
+      res.setHeader('Content-Type', 'application/json');
       res.json(appliances);
     } catch (error) {
       console.error('Error fetching appliances:', error);
@@ -1320,6 +1325,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const propertyId = parseInt(req.params.propertyId);
       const appliances = await storage.getAppliancesByPropertyId(propertyId);
+      res.setHeader('Content-Type', 'application/json');
       res.json(appliances);
     } catch (error) {
       console.error('Error fetching property appliances:', error);

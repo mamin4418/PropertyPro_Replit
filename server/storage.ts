@@ -660,6 +660,37 @@ export class MemStorage implements IStorage {
   async deleteAppliance(id: number): Promise<boolean> {
     return this.appliances.delete(id);
   }
+
+  // Additional methods needed for API endpoints
+  async getAllInsurances(): Promise<Insurance[]> {
+    return Array.from(this.insurances.values());
+  }
+
+  async getInsurancesByPropertyId(propertyId: number): Promise<Insurance[]> {
+    return Array.from(this.insurances.values()).filter(
+      insurance => insurance.propertyId === propertyId
+    );
+  }
+
+  async getAllMortgages(): Promise<Mortgage[]> {
+    return Array.from(this.mortgages.values());
+  }
+
+  async getMortgagesByPropertyId(propertyId: number): Promise<Mortgage[]> {
+    return Array.from(this.mortgages.values()).filter(
+      mortgage => mortgage.propertyId === propertyId
+    );
+  }
+
+  async getAllAppliances(): Promise<Appliance[]> {
+    return Array.from(this.appliances.values());
+  }
+
+  async getAppliancesByPropertyId(propertyId: number): Promise<Appliance[]> {
+    return Array.from(this.appliances.values()).filter(
+      appliance => appliance.propertyId === propertyId
+    );
+  }
 }
 
 export const storage = new MemStorage();

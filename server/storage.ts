@@ -708,7 +708,7 @@ export class MemStorage implements IStorage {
     const appliance = appliances.find(a => a.id === id);
     console.log(`Fetching appliance with ID ${id}:`, appliance);
     return appliance || null;
-  },
+  }
 }
 
 export const storage = new MemStorage();

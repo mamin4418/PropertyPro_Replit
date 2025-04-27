@@ -1261,6 +1261,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({message: 'Welcome to the protected route'});
   });
 
+  // Insurances API endpoints
+  app.get('/api/insurances', async (req: Request, res: Response) => {
+    try {
+      const insurances = await storage.getAllInsurances();
+      res.json(insurances);
+    } catch (error) {
+      console.error('Error fetching insurances:', error);
+      res.status(500).json({ error: 'Failed to fetch insurances' });
+    }
+  });
+
+  app.get('/api/insurances/property/:propertyId', async (req: Request, res: Response) => {
+    try {
+      const propertyId = parseInt(req.params.propertyId);
+      const insurances = await storage.getInsurancesByPropertyId(propertyId);
+      res.json(insurances);
+    } catch (error) {
+      console.error('Error fetching property insurances:', error);
+      res.status(500).json({ error: 'Failed to fetch property insurances' });
+    }
+  });
+
+  // Mortgages API endpoints
+  app.get('/api/mortgages', async (req: Request, res: Response) => {
+    try {
+      const mortgages = await storage.getAllMortgages();
+      res.json(mortgages);
+    } catch (error) {
+      console.error('Error fetching mortgages:', error);
+      res.status(500).json({ error: 'Failed to fetch mortgages' });
+    }
+  });
+
+  app.get('/api/mortgages/property/:propertyId', async (req: Request, res: Response) => {
+    try {
+      const propertyId = parseInt(req.params.propertyId);
+      const mortgages = await storage.getMortgagesByPropertyId(propertyId);
+      res.json(mortgages);
+    } catch (error) {
+      console.error('Error fetching property mortgages:', error);
+      res.status(500).json({ error: 'Failed to fetch property mortgages' });
+    }
+  });
+
+  // Appliances API endpoints
+  app.get('/api/appliances', async (req: Request, res: Response) => {
+    try {
+      const appliances = await storage.getAllAppliances();
+      res.json(appliances);
+    } catch (error) {
+      console.error('Error fetching appliances:', error);
+      res.status(500).json({ error: 'Failed to fetch appliances' });
+    }
+  });
+
+  app.get('/api/appliances/property/:propertyId', async (req: Request, res: Response) => {
+    try {
+      const propertyId = parseInt(req.params.propertyId);
+      const appliances = await storage.getAppliancesByPropertyId(propertyId);
+      res.json(appliances);
+    } catch (error) {
+      console.error('Error fetching property appliances:', error);
+      res.status(500).json({ error: 'Failed to fetch property appliances' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

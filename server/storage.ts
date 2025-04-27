@@ -80,6 +80,14 @@ export interface IStorage {
   createMaintenanceRequest(data: InsertMaintenanceRequest): Promise<MaintenanceRequest>;
   updateMaintenanceRequest(id: number, data: Partial<InsertMaintenanceRequest>): Promise<MaintenanceRequest | null>;
   deleteMaintenanceRequest(id: number): Promise<boolean>;
+
+  // Appliance methods added
+  getAppliances(): Promise<Appliance[]>;
+  getAppliance(id: number): Promise<Appliance | undefined>;
+  createAppliance(appliance: InsertAppliance): Promise<Appliance>;
+  updateAppliance(id: number, appliance: Partial<InsertAppliance>): Promise<Appliance | undefined>;
+  deleteAppliance(id: number): Promise<boolean>;
+
 }
 
 export class MemStorage implements IStorage {
@@ -625,6 +633,32 @@ export class MemStorage implements IStorage {
 
   async deleteMaintenanceRequest(id: number): Promise<boolean> {
     return this.maintenanceRequests.delete(id);
+  }
+
+
+  // Added Appliance methods
+  async getAppliances(): Promise<Appliance[]> {
+    return Array.from(this.appliances.values());
+  }
+
+  async createAppliance(appliance: InsertAppliance): Promise<Appliance> {
+    const id = this.applianceIdCounter++;
+    const now = new Date();
+    const newAppliance: Appliance = { ...appliance, id, createdAt: now, updatedAt: now };
+    this.appliances.set(id, newAppliance);
+    return newAppliance;
+  }
+
+  async updateAppliance(id: number, appliance: Partial<InsertAppliance>): Promise<Appliance | undefined> {
+    const existingAppliance = this.appliances.get(id);
+    if (!existingAppliance) return undefined;
+    const updatedAppliance: Appliance = { ...existingAppliance, ...appliance, updatedAt: new Date() };
+    this.appliances.set(id, updatedAppliance);
+    return updatedAppliance;
+  }
+
+  async deleteAppliance(id: number): Promise<boolean> {
+    return this.appliances.delete(id);
   }
 }
 

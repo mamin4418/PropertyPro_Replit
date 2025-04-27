@@ -53,7 +53,7 @@ export default function Mortgages() {
     },
   });
   
-  // Filter mortgages based on search term, status and loan type
+  // Filter mortgages based on search term, status, loan type and property
   const filteredMortgages = mortgages?.filter((mortgage) => {
     // Search filter
     const matchesSearch = 
@@ -72,7 +72,12 @@ export default function Mortgages() {
       loanTypeFilter === 'all' || 
       mortgage.loanType === loanTypeFilter;
       
-    return matchesSearch && matchesStatus && matchesLoanType;
+    // Property filter
+    const matchesProperty =
+      propertyFilter === 'all' ||
+      mortgage.propertyId?.toString() === propertyFilter;
+      
+    return matchesSearch && matchesStatus && matchesLoanType && matchesProperty;
   });
   
   // Sort mortgages based on sortBy
@@ -96,6 +101,15 @@ export default function Mortgages() {
   // Get unique loan types for filtering
   const loanTypes = mortgages ? [...new Set(mortgages.map(m => m.loanType))] : [];
   
+  const { data: properties } = useQuery({
+    queryKey: ['/api/properties'],
+    queryFn: async () => {
+      const res = await fetch('/api/properties');
+      if (!res.ok) throw new Error('Failed to fetch properties');
+      return res.json();
+    },
+  });
+
   const { data: property } = useQuery({
     queryKey: ['/api/properties', propertyIdNum],
     queryFn: async () => {
@@ -170,15 +184,36 @@ export default function Mortgages() {
                 <SelectContent>
                   <SelectItem value="all">All Loan Types</SelectItem>
                   {loanTypes.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type}
+                    <SelectItem key={type} value={type || ''}>
+                      {type || 'Unknown'}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             
-            <div>
+            {!propertyIdNum && (
+              <div>
+                <Label className="mb-1 block">Property</Label>
+                <Select value={propertyFilter || 'all'} onValueChange={setPropertyFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Filter by property" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Properties</SelectItem>
+                    {mortgages && properties ? [
+                      ...new Set(mortgages.map(m => m.propertyId))
+                    ].map((id) => (
+                      <SelectItem key={id} value={id?.toString() || 'unknown'}>
+                        {properties?.find(p => p.id === id)?.name || `Property ${id || 'Unknown'}`}
+                      </SelectItem>
+                    )) : null}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            
+            <div className={!propertyIdNum ? "md:col-start-1 md:col-span-4 lg:col-start-4 lg:col-span-1" : ""}>
               <Label className="mb-1 block">Sort By</Label>
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger>

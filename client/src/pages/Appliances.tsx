@@ -161,8 +161,8 @@ export default function Appliances() {
                 <SelectContent>
                   <SelectItem value="all">All Properties</SelectItem>
                   {propertyIds.map((id) => (
-                    <SelectItem key={id} value={id?.toString() || ''}>
-                      Property {id}
+                    <SelectItem key={id} value={id?.toString() || 'unknown'}>
+                      Property {id || 'Unknown'}
                     </SelectItem>
                   ))}
                 </SelectContent>

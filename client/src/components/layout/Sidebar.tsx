@@ -15,6 +15,7 @@ import {
   Contact,
   UserCheck,
   LogOut,
+  Shield,
   Menu as MenuIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -95,6 +96,14 @@ export default function Sidebar() {
 
         <SidebarNavItem href="/appliances" icon={Wrench} indented>
           Appliances
+        </SidebarNavItem>
+        
+        <SidebarNavItem href="/insurances" icon={Shield} indented>
+          Insurance
+        </SidebarNavItem>
+
+        <SidebarNavItem href="/mortgages" icon={DollarSign} indented>
+          Mortgages
         </SidebarNavItem>
 
         <div className="pt-4 pb-2">

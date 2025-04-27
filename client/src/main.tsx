@@ -73,10 +73,6 @@ import TenantDashboard from './pages/tenant-dashboard';
 import NotFound from './pages/not-found';
 import App from './App';
 
-// Import appliance pages
-import ViewAppliance from './pages/ViewAppliance';
-import EditAppliance from './pages/EditAppliance';
-
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>

@@ -62,8 +62,11 @@ import ViewAppliance from './pages/ViewAppliance';
 import Mortgages from './pages/Mortgages';
 import AddMortgage from './pages/AddMortgage';
 import EditMortgage from './pages/EditMortgage';
+import ViewMortgage from "./pages/ViewMortgage"; //Added
 import Insurances from './pages/Insurances';
 import AddInsurance from './pages/AddInsurance';
+import EditInsurance from "./pages/EditInsurance"; //Added
+import ViewInsurance from "./pages/ViewInsurance"; //Added
 import AuthPage from './pages/auth-page';
 import TenantAuthPage from './pages/tenant-auth-page';
 import TenantDashboard from './pages/tenant-dashboard';

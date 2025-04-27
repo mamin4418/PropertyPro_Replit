@@ -1252,7 +1252,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   //Protected route for testing
-  app.get('/api/profile', authenticateToken, async (req: Request, res: Response) => {
+  // Remove the authenticateToken middleware since it's not defined
+  app.get('/api/profile', async (req: Request, res: Response) => {
+    // Check if user is authenticated using the session
+    if (!req.isAuthenticated?.()) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
     res.json({message: 'Welcome to the protected route'});
   });
 

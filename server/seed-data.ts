@@ -354,7 +354,9 @@ async function seedDatabase() {
 }
 
 // Call the function if this script is executed directly
-if (require.main === module) {
+// Using ESM-compatible approach to check if file is directly executed
+const isMainModule = import.meta.url === `file://${process.argv[1]}`;
+if (isMainModule) {
   seedDatabase()
     .then(() => console.log("Seeding process finished successfully"))
     .catch(error => console.error("Error during seeding:", error));

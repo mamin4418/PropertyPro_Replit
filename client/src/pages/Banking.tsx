@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CalendarIcon, DollarSign, ArrowUp, ArrowDown, Plus, Landmark, BuildingBank } from "lucide-react";
+import { CalendarIcon, DollarSign, ArrowUp, ArrowDown, Plus, Landmark } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Banking() {

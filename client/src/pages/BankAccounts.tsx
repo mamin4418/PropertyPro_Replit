@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { DollarSign, Plus, Search, Filter, Download, ArrowUpDown, BuildingBank } from "lucide-react"; // Added BuildingBank import
+import { DollarSign, Plus, Search, Filter, Download, ArrowUpDown, Landmark } from "lucide-react";
 import { Link } from "wouter";
 import { useState } from "react";
 

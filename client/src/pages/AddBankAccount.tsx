@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import {BuildingBank} from 'lucide-react'; // Added import for BuildingBank icon
+import { Landmark } from 'lucide-react';
 
 
 export default function AddBankAccount() {
@@ -33,7 +33,7 @@ export default function AddBankAccount() {
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">
-          <BuildingBank className="mr-2 h-6 w-6" /> {/* Added BuildingBank icon */}
+          <Landmark className="mr-2 h-6 w-6" />
           Add Bank Account
         </h2>
       </div>

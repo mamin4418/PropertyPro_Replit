@@ -80,6 +80,7 @@ import BankAccounts from "@/pages/BankAccounts";
 import AddBankAccount from "@/pages/AddBankAccount";
 import BankTransactions from "@/pages/BankTransactions";
 import BankIntegration from "@/pages/BankIntegration";
+import HelpCenter from './pages/HelpCenter';
 
 
 function AppRoutes() {
@@ -252,7 +253,13 @@ function AppRoutes() {
 
               {/* Reports and Settings */}
               <Route path="/reports" component={Reports} /> {/* Removed authentication for testing */}
-              <ProtectedRoute path="/settings" component={Settings} /> {/* Assumed fix for duplicated sidebar */}
+              <ProtectedRoute path="/settings" component={Settings} />
+              <Route path="/help-center" component={HelpCenter} />
+              <Route path="/documentation" component={HelpCenter} />
+              <Route path="/tutorial" component={HelpCenter} />
+              <Route path="/faq" component={HelpCenter} />
+              <Route path="/support" component={HelpCenter} />
+
 
               {/* Auth Routes - Keep them accessible without login */}
               <Route path="/auth" component={AuthPage} />

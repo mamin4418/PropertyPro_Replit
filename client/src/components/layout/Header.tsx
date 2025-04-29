@@ -1,11 +1,12 @@
 import { useLocation } from "wouter";
-import { Bell, User, ChevronDown, LogOut, Settings } from "lucide-react";
+import { Bell, User, ChevronDown, LogOut, Settings, HelpCircle } from "lucide-react";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 
 const Header = () => {
@@ -16,6 +17,43 @@ const Header = () => {
     ? "Dashboard" 
     : location.split("/")[1].charAt(0).toUpperCase() + location.split("/")[1].slice(1).replace(/-/g, ' ');
   
+
+// Create a Help Center component for the header
+const HelpButton = () => {
+  const [, navigate] = useLocation();
+  
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="relative rounded-full p-2">
+          <HelpCircle className="h-5 w-5" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={() => navigate("/help-center")}>
+          Help Center
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate("/documentation")}>
+          Documentation
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate("/tutorial")}>
+
+        <div className="flex items-center gap-2">
+          <HelpButton />
+
+          Tutorial Guide
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate("/faq")}>
+          FAQs
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate("/support")}>
+          Contact Support
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
   const handleLogout = () => {
     logoutMutation.mutate();
   };

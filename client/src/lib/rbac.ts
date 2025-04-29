@@ -133,7 +133,7 @@ export const withPermission = (Component: React.ComponentType, resource: string,
         <div className="flex items-center justify-center h-full p-8">
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-2">Access Denied</h2>
-            <p className="text-muted-foreground">
+            <p>
               You don't have permission to {requiredAction} {resource}.
             </p>
           </div>

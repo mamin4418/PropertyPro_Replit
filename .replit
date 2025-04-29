@@ -24,7 +24,7 @@ localPort = 5002
 externalPort = 3001
 
 [workflows]
-runButton = "Restart Server"
+runButton = "Restart Dev Server"
 
 [[workflows.workflow]]
 name = "Project"
@@ -64,6 +64,31 @@ args = "NODE_ENV=development tsx server/index.ts"
 
 [[workflows.workflow]]
 name = "Restart Server"
+author = 41484040
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Checking for and killing existing Node processes...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pkill -f \"tsx server/index.ts\" || true"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "sleep 2"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Starting server...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "NODE_ENV=development tsx server/index.ts"
+
+[[workflows.workflow]]
+name = "Restart Dev Server"
 author = 41484040
 mode = "sequential"
 

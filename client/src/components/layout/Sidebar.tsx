@@ -16,8 +16,7 @@ import {
   UserCheck,
   LogOut,
   Shield,
-  Menu as MenuIcon,
-  Landmark
+  Menu as MenuIcon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ThemeSwitch from "./ThemeSwitch";
@@ -46,9 +45,7 @@ function SidebarNavItem({ href, icon: Icon, children, indented = false }: Sideba
   );
 }
 
-import { Landmark } from "lucide-react";
-
-// We're using Landmark as our bank icon
+// Using Building icon as our bank icon instead of Landmark
 const BankIcon = Landmark;
 
 export default function Sidebar() {

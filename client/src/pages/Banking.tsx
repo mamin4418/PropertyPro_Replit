@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Download, Building, Plus } from "lucide-react";
+import { Download, Building, Plus, ArrowUp, ArrowDown } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Banking() {

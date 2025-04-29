@@ -1,4 +1,3 @@
-
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -69,12 +68,12 @@ export const useRBAC = create<RBACState>()(
       // Check if the user can perform an action on a resource
       can: (action, resource) => {
         const { roles, userRole } = get();
-        
+
         if (!userRole) return false;
-        
+
         const role = roles.find(r => r.id === userRole);
         if (!role) return false;
-        
+
         const permission = role.permissions[resource];
         return permission ? permission[action] : false;
       },
@@ -93,11 +92,11 @@ export const useRBAC = create<RBACState>()(
       addRole: (role) => {
         const roles = get().roles;
         const newId = Math.max(0, ...roles.map(r => r.id)) + 1;
-        
+
         set({ 
           roles: [...roles, { id: newId, ...role }] 
         });
-        
+
         return newId;
       },
 
@@ -127,10 +126,10 @@ export const useRBAC = create<RBACState>()(
 export const withPermission = (Component: React.ComponentType, resource: string, requiredAction: keyof Permission = 'read') => {
   return (props: any) => {
     const { can } = useRBAC();
-    
+
     if (!can(requiredAction, resource)) {
       return (
-        <div className="flex items-center justify-center h-full p-8">
+        <div className="flex items-center justify-center h-full p-4">
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-2">Access Denied</h2>
             <p>
@@ -140,7 +139,7 @@ export const withPermission = (Component: React.ComponentType, resource: string,
         </div>
       );
     }
-    
+
     return <Component {...props} />;
   };
 };
@@ -148,7 +147,7 @@ export const withPermission = (Component: React.ComponentType, resource: string,
 // React Hook for component-level permission checks
 export const usePermission = () => {
   const { can, hasAccess } = useRBAC();
-  
+
   return {
     can,
     hasAccess,

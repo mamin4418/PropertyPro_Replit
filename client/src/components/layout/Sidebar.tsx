@@ -135,6 +135,26 @@ export default function Sidebar() {
         </SidebarNavItem>
 
         <div className="pt-4 pb-2">
+          <h3 className="px-3 text-xs font-semibold text-muted-foreground">ACCOUNTING</h3>
+        </div>
+
+        <SidebarNavItem href="/banking" icon={DollarSign}>
+          Banking
+        </SidebarNavItem>
+
+        <SidebarNavItem href="/banking/accounts" icon={DollarSign} indented>
+          Accounts
+        </SidebarNavItem>
+
+        <SidebarNavItem href="/banking/transactions" icon={DollarSign} indented>
+          Transactions
+        </SidebarNavItem>
+
+        <SidebarNavItem href="/banking/integration" icon={DollarSign} indented>
+          Bank Integration
+        </SidebarNavItem>
+
+        <div className="pt-4 pb-2">
           <h3 className="px-3 text-xs font-semibold text-muted-foreground">REPORTS</h3>
         </div>
 

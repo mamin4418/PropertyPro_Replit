@@ -71,10 +71,15 @@ import ViewMortgage from "./pages/ViewMortgage";
 import ViewInsurance from "./pages/ViewInsurance";
 import EditInsurance from "./pages/EditInsurance";
 import { Menu, X } from "lucide-react";
-import DocumentSigning from "@/pages/DocumentSigning"; // Added import
-import CreateDocument from "@/pages/CreateDocument"; // Added import
-import DocumentTemplates from "@/pages/DocumentTemplates"; // Added import
-import ViewDocument from "@/pages/ViewDocument"; // Added import
+import DocumentSigning from "@/pages/DocumentSigning"; 
+import CreateDocument from "@/pages/CreateDocument";
+import DocumentTemplates from "@/pages/DocumentTemplates";
+import ViewDocument from "@/pages/ViewDocument";
+import Banking from "@/pages/Banking";
+import BankAccounts from "@/pages/BankAccounts";
+import AddBankAccount from "@/pages/AddBankAccount";
+import BankTransactions from "@/pages/BankTransactions";
+import BankIntegration from "@/pages/BankIntegration";
 
 
 function AppRoutes() {
@@ -260,6 +265,12 @@ function AppRoutes() {
               <Route path="/document-templates" component={DocumentTemplates} />
               <Route path="/view-document/:id" component={ViewDocument} />
 
+              {/* Banking/Accounting Routes */}
+              <Route path="/banking" component={Banking} />
+              <Route path="/banking/accounts" component={BankAccounts} />
+              <Route path="/banking/accounts/add" component={AddBankAccount} />
+              <Route path="/banking/transactions" component={BankTransactions} />
+              <Route path="/banking/integration" component={BankIntegration} />
 
               {/* Make Dashboard accessible without login for testing */}
               <Route path="/" component={Dashboard} />

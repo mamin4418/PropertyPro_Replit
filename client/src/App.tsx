@@ -71,6 +71,11 @@ import ViewMortgage from "./pages/ViewMortgage";
 import ViewInsurance from "./pages/ViewInsurance";
 import EditInsurance from "./pages/EditInsurance";
 import { Menu, X } from "lucide-react";
+import DocumentSigning from "@/pages/DocumentSigning"; // Added import
+import CreateDocument from "@/pages/CreateDocument"; // Added import
+import DocumentTemplates from "@/pages/DocumentTemplates"; // Added import
+import ViewDocument from "@/pages/ViewDocument"; // Added import
+
 
 function AppRoutes() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -248,6 +253,13 @@ function AppRoutes() {
               <Route path="/auth" component={AuthPage} />
               <Route path="/tenant-auth" component={TenantAuthPage} />
               <Route path="/tenant-dashboard" component={TenantDashboard} />
+
+              {/* Document Signing Routes */}
+              <Route path="/document-signing" component={DocumentSigning} />
+              <Route path="/create-document" component={CreateDocument} />
+              <Route path="/document-templates" component={DocumentTemplates} />
+              <Route path="/view-document/:id" component={ViewDocument} />
+
 
               {/* Make Dashboard accessible without login for testing */}
               <Route path="/" component={Dashboard} />

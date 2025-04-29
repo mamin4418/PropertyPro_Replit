@@ -123,7 +123,7 @@ function AppRoutes() {
       {/* Main Layout Container */}
       <div className="app-layout">
         {/* Sidebar - Fixed on desktop, toggleable on mobile */}
-        <aside className={`app-sidebar ${mobileMenuOpen ? 'open' : ''}`}>
+        <aside className={`app-sidebar ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} transition-transform duration-300 ease-in-out z-50 fixed lg:static`}>
           {/* Mobile Close Button */}
           {isMobile && mobileMenuOpen && (
             <button 
@@ -150,7 +150,7 @@ function AppRoutes() {
           <Header />
 
           {/* Page Content */}
-          <div className="content-container">
+          <div className="content-container p-4">
             <Switch>
               {/* Dashboard accessible without login for easier testing */}
               <Route path="/dashboard" component={Dashboard} />

@@ -114,15 +114,24 @@ body, .app-root {
 }
 
 .app-layout {
-  @apply bg-background text-foreground;
+  @apply bg-background text-foreground flex;
+  min-height: 100vh;
 }
 
 .app-sidebar {
   @apply bg-background border-border;
+  width: 250px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
 }
 
 .app-main {
   @apply bg-background text-foreground;
+  flex: 1;
+  max-width: calc(100% - 250px);
 }
 
 .forest-theme {

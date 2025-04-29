@@ -48,7 +48,7 @@ export default function BankIntegration() {
                   <div className="flex items-center justify-between border-b pb-3">
                     <div className="flex items-center gap-3">
                       <div className="bg-primary/10 p-2 rounded-lg">
-                        <Landmark className="h-5 w-5 text-primary" /> {/* Replaced Bank with Landmark */}
+                        <Landmark className="h-5 w-5 text-primary" />
                       </div>
                       <div>
                         <h4 className="font-medium">First National Bank</h4>
@@ -64,7 +64,7 @@ export default function BankIntegration() {
                   <div className="flex items-center justify-between border-b pb-3">
                     <div className="flex items-center gap-3">
                       <div className="bg-primary/10 p-2 rounded-lg">
-                        <Landmark className="h-5 w-5 text-primary" /> {/* Replaced Bank with Landmark */}
+                        <Landmark className="h-5 w-5 text-primary" />
                       </div>
                       <div>
                         <h4 className="font-medium">Chase Bank</h4>
@@ -180,7 +180,6 @@ export default function BankIntegration() {
           </Card>
         </TabsContent>
       </Tabs>
-      {/* Placeholder for Help section with Tool icon */}
       <div>
         <Button>
           <Wrench className="mr-2 h-4 w-4"/> Help

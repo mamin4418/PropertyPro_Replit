@@ -46,6 +46,9 @@ function SidebarNavItem({ href, icon: Icon, children, indented = false }: Sideba
   );
 }
 
+// Create a custom BankIcon component using the Building icon
+const BankIcon = Building;
+
 export default function Sidebar() {
   const { user, logout } = useAuth();
 

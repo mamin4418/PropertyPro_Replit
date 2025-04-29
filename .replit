@@ -185,6 +185,14 @@ args = "rm -rf node_modules/.vite"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
+args = "echo \"Installing latest lucide-react...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm install lucide-react@latest"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
 args = "echo \"Starting server with updated dependencies...\""
 
 [[workflows.workflow.tasks]]

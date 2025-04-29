@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Landmark } from 'lucide-react';
+import { Landmark, ChevronLeft } from "lucide-react";
 
 
 export default function AddBankAccount() {

@@ -46,8 +46,8 @@ function SidebarNavItem({ href, icon: Icon, children, indented = false }: Sideba
   );
 }
 
-// Create a custom BankIcon component using the Building icon
-const BankIcon = Building;
+// Create a custom BankIcon component using the Landmark icon
+import { Landmark as BankIcon } from "lucide-react";
 
 export default function Sidebar() {
   const { user, logout } = useAuth();

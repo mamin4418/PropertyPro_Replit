@@ -1,35 +1,39 @@
-
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation, useRoute } from "wouter";
-import { 
-  ArrowLeft, 
-  FileText, 
-  Check, 
-  Download, 
-  ThumbsUp,
-  AlertCircle,
-  Send,
-  Edit,
-  Trash2
-} from "lucide-react";
+import { ArrowLeft, Check, AlertCircle, ThumbsUp, Download, Shield, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import { 
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
-// Mock data for a lease document
+// Mock document for example
 const mockDocument = {
   id: 1,
   title: "Sunset Heights Lease Agreement",
@@ -43,36 +47,37 @@ const mockDocument = {
   },
   recipient: {
     name: "John Doe",
-    email: "john.doe@example.com"
+    email: "john.doe@example.com",
+    phone: "555-123-4567" // Added phone number for communication
   },
   content: `
     <h1>RESIDENTIAL LEASE AGREEMENT</h1>
     <p>This Residential Lease Agreement ("Agreement") is made and entered into on May 15, 2023, by and between Property Management Inc. ("Landlord") and John Doe ("Tenant").</p>
-    
+
     <h2>1. PROPERTY</h2>
     <p>Landlord hereby leases to Tenant and Tenant hereby leases from Landlord, solely for residential purposes, the premises located at: 123 Main St, Apt 101, Anytown, ST 12345 ("Premises").</p>
-    
+
     <h2>2. TERM</h2>
     <p>The term of this Agreement shall be for a period of 12 months, commencing on June 1, 2023, and ending on May 31, 2024.</p>
-    
+
     <h2>3. RENT</h2>
     <p>Tenant agrees to pay, without demand, to Landlord as rent for the Premises the sum of $1,200.00 per month in advance on the 1st day of each month.</p>
-    
+
     <h2>4. SECURITY DEPOSIT</h2>
     <p>Upon execution of this Agreement, Tenant shall deposit with Landlord the sum of $1,200.00 as a security deposit.</p>
-    
+
     <h2>5. UTILITIES</h2>
     <p>Tenant will be responsible for payment of all utilities and services, except for the following which shall be paid by Landlord: Water and trash collection.</p>
-    
+
     <h2>6. SIGNATURES</h2>
     <p>By signing below, Tenant acknowledges having read and understood all the terms and conditions of this Agreement and agrees to be bound thereby.</p>
-    
+
     <div style="margin-top: 30px;">
       <div style="display: inline-block; min-width: 200px; margin-right: 50px;">
         <p style="border-bottom: 1px solid #000; min-height: 40px;" class="signature-field" data-field="landlord_signature"></p>
         <p>Landlord Signature</p>
       </div>
-      
+
       <div style="display: inline-block; min-width: 200px;">
         <p style="border-bottom: 1px solid #000; min-height: 40px;" class="signature-field" data-field="tenant_signature"></p>
         <p>Tenant Signature</p>
@@ -90,28 +95,33 @@ const ViewDocument = () => {
   const [, navigate] = useLocation();
   const [, params] = useRoute("/view-document/:id");
   const { toast } = useToast();
-  
+
   const [document, setDocument] = useState(mockDocument);
   const [showSignDialog, setShowSignDialog] = useState(false);
   const [currentField, setCurrentField] = useState<any>(null);
   const [signature, setSignature] = useState("");
   const [showCompletedDialog, setShowCompletedDialog] = useState(false);
-  
+  const [complianceData, setComplianceData] = useState({ipAddress: '', userAgent: ''}); //For Compliance
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [signatureType, setSignatureType] = useState<"draw" | "type">("draw");
-  
+
   // For typed signature
   const [typedName, setTypedName] = useState("");
   const [signatureStyle, setSignatureStyle] = useState("style1");
-  
+
   useEffect(() => {
     // In a real app, we would fetch the document from the API
     console.log("Fetching document with ID:", params?.id);
-    
+    // Get IP and UserAgent for compliance
+    fetch('https://api.ipify.org?format=json')
+      .then(res => res.json())
+      .then(data => setComplianceData({...complianceData, ipAddress: data.ip}));
+    setComplianceData({...complianceData, userAgent: navigator.userAgent});
     // For demo purposes, we'll just use the mock data
   }, [params?.id]);
-  
+
   const handleStartSign = (fieldId: string) => {
     const field = document.signingFields.find(f => f.id === fieldId);
     if (field) {
@@ -119,17 +129,17 @@ const ViewDocument = () => {
       setShowSignDialog(true);
     }
   };
-  
+
   // Canvas drawing functions
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
+
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    
+
     setIsDrawing(true);
-    
+
     // Get correct coordinates for mouse or touch event
     const rect = canvas.getBoundingClientRect();
     const x = e instanceof MouseEvent 
@@ -138,20 +148,20 @@ const ViewDocument = () => {
     const y = e instanceof MouseEvent 
       ? e.clientY - rect.top 
       : e.touches[0].clientY - rect.top;
-    
+
     ctx.beginPath();
     ctx.moveTo(x, y);
   };
-  
+
   const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     if (!isDrawing) return;
-    
+
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
+
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    
+
     // Get correct coordinates for mouse or touch event
     const rect = canvas.getBoundingClientRect();
     const x = e instanceof MouseEvent 
@@ -160,25 +170,25 @@ const ViewDocument = () => {
     const y = e instanceof MouseEvent 
       ? e.clientY - rect.top 
       : e.touches[0].clientY - rect.top;
-    
+
     ctx.lineTo(x, y);
     ctx.stroke();
   };
-  
+
   const endDrawing = () => {
     setIsDrawing(false);
   };
-  
+
   const clearCanvas = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
+
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
   };
-  
+
   // Initialize canvas
   useEffect(() => {
     if (showSignDialog && canvasRef.current && signatureType === "draw") {
@@ -191,64 +201,98 @@ const ViewDocument = () => {
       }
     }
   }, [showSignDialog, signatureType]);
-  
+
+  // Placeholder for compliance logging - needs backend integration
+  const logComplianceAction = (action: string) => {
+    console.log(`Compliance Action Logged: ${action}, IP: ${complianceData.ipAddress}, UserAgent: ${complianceData.userAgent}`);
+    // In a real app, send this data to a server for logging and audit trail.
+  };
+
   // Handle saving the signature
   const saveSignature = () => {
-    if (signatureType === "draw") {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      
-      // Save canvas as data URL
-      const signatureImage = canvas.toDataURL("image/png");
-      setSignature(signatureImage);
-      
-      // Update the field as signed
-      const updatedFields = document.signingFields.map(field => 
-        field.id === currentField.id ? { ...field, signed: true } : field
-      );
-      
-      setDocument({ ...document, signingFields: updatedFields });
-    } else {
-      // For typed signatures, we would normally generate an image
-      // For this demo, we'll just mark it as signed
-      const updatedFields = document.signingFields.map(field => 
-        field.id === currentField.id ? { ...field, signed: true } : field
-      );
-      
-      setDocument({ ...document, signingFields: updatedFields });
-    }
-    
-    setShowSignDialog(false);
-    
-    toast({
-      title: "Field Signed",
-      description: `Successfully signed ${currentField.label}.`
+    if (!currentField) return;
+
+    // Record consent and signing action for compliance
+    logComplianceAction(`field_signed:${currentField.id}`);
+
+    // In a real app, we would:
+    // 1. Send the signature data to the API
+    // 2. Include IP, timestamp, device information
+    // 3. Record consent for UETA/ESIGN compliance
+
+    // Create signature audit data (would be sent to server)
+    const signatureAuditData = {
+      fieldId: currentField.id,
+      signedAt: new Date().toISOString(),
+      ipAddress: complianceData.ipAddress,
+      userAgent: complianceData.userAgent,
+      signatureType: signatureType,
+      signatureStyle: signatureStyle,
+      consentGiven: true
+    };
+
+    console.log("Signature audit data:", signatureAuditData);
+
+    const updatedFields = document.signingFields.map(field => {
+      if (field.id === currentField.id) {
+        return { 
+          ...field, 
+          signed: true,
+          signedAt: new Date().toISOString(),
+          signatureData: signatureAuditData
+        };
+      }
+      return field;
     });
-    
-    // Check if all required fields are signed
-    const allSigned = document.signingFields
-      .filter(field => field.required)
-      .every(field => {
-        const updated = updatedFields.find(f => f.id === field.id);
-        return updated ? updated.signed : field.signed;
-      });
-    
+
+    setDocument({
+      ...document,
+      signingFields: updatedFields
+    });
+
+    setShowSignDialog(false);
+
+    // Check if all fields are signed
+    const allSigned = updatedFields.every(field => field.signed);
     if (allSigned) {
       setShowCompletedDialog(true);
     }
   };
-  
+
   const completeDocument = () => {
     // In a real app, we would submit the signed document to the API
     toast({
       title: "Document Completed",
       description: "Your signed document has been submitted successfully."
     });
-    
+
     setShowCompletedDialog(false);
     navigate("/document-signing");
   };
-  
+
+  const sendDocument = async (method: 'email' | 'text' | 'whatsapp') => {
+    try {
+      const response = await fetch(`/api/sendDocument?id=${document.id}&method=${method}`, {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      toast({
+        title: 'Document Sent',
+        description: `Document sent successfully via ${method}.`
+      });
+    } catch (error) {
+      console.error("Error sending document:", error);
+      toast({
+        title: 'Error',
+        description: `Failed to send document via ${method}.`
+      });
+    }
+  };
+
+
   return (
     <div className="pb-10">
       <div className="flex items-center mb-6">
@@ -277,7 +321,7 @@ const ViewDocument = () => {
             </CardContent>
           </Card>
         </div>
-        
+
         <div>
           <Card>
             <CardHeader>
@@ -305,26 +349,27 @@ const ViewDocument = () => {
                   </Badge>
                 </div>
               </div>
-              
+
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Sent By</p>
                 <p className="mt-1">{document.sender.name}</p>
                 <p className="text-sm text-muted-foreground">{document.sender.email}</p>
               </div>
-              
+
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Recipient</p>
                 <p className="mt-1">{document.recipient.name}</p>
                 <p className="text-sm text-muted-foreground">{document.recipient.email}</p>
+                <p className="text-sm text-muted-foreground">{document.recipient.phone}</p>
               </div>
-              
+
               <Separator />
-              
+
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Sent On</p>
                 <p className="mt-1">{document.sentDate}</p>
               </div>
-              
+
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Expires On</p>
                 <p className="mt-1">{document.expiresOn}</p>
@@ -353,9 +398,15 @@ const ViewDocument = () => {
               </div>
             </CardFooter>
           </Card>
+          <div className="mt-4">
+            <Button onClick={() => sendDocument('email')}>Send via Email</Button>
+            <Button onClick={() => sendDocument('text')}>Send via Text</Button>
+            {/* WhatsApp integration requires a specific API or library */}
+            <Button onClick={() => sendDocument('whatsapp')} disabled>Send via WhatsApp (Not Implemented)</Button>
+          </div>
         </div>
       </div>
-      
+
       {/* Signature Dialog */}
       <Dialog open={showSignDialog} onOpenChange={setShowSignDialog}>
         <DialogContent className="max-w-md">
@@ -367,13 +418,13 @@ const ViewDocument = () => {
                 : "Please provide your initials below."}
             </DialogDescription>
           </DialogHeader>
-          
+
           <Tabs value={signatureType} onValueChange={(v) => setSignatureType(v as "draw" | "type")} className="mt-2">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="draw">Draw</TabsTrigger>
               <TabsTrigger value="type">Type</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="draw" className="mt-4">
               <div className="border rounded-md overflow-hidden">
                 <canvas
@@ -394,7 +445,7 @@ const ViewDocument = () => {
                 Clear
               </Button>
             </TabsContent>
-            
+
             <TabsContent value="type" className="mt-4">
               <div className="space-y-4">
                 <div>
@@ -407,7 +458,7 @@ const ViewDocument = () => {
                     className="mt-1"
                   />
                 </div>
-                
+
                 <div>
                   <Label>Select a style</Label>
                   <div className="grid grid-cols-3 gap-2 mt-1">
@@ -440,7 +491,7 @@ const ViewDocument = () => {
               </div>
             </TabsContent>
           </Tabs>
-          
+
           <DialogFooter className="mt-4">
             <Button variant="outline" onClick={() => setShowSignDialog(false)}>Cancel</Button>
             <Button onClick={saveSignature}>
@@ -450,7 +501,7 @@ const ViewDocument = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      
+
       {/* Document Completed Dialog */}
       <Dialog open={showCompletedDialog} onOpenChange={setShowCompletedDialog}>
         <DialogContent className="max-w-md">
@@ -460,11 +511,11 @@ const ViewDocument = () => {
               You have successfully signed all required fields. Would you like to submit the document now?
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="flex justify-center py-6">
             <ThumbsUp className="h-16 w-16 text-green-500" />
           </div>
-          
+
           <DialogFooter>
             <Button onClick={completeDocument}>
               <Send className="mr-2 h-4 w-4" />

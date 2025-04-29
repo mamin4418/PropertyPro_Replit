@@ -1339,6 +1339,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: 'Failed to complete document' });
     }
   });
+  
+  // Document delivery endpoints
+  app.post('/api/document-signing/documents/:id/send', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { method, recipient, message } = req.body;
+      
+      if (!method || !recipient) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+      
+      // In a real implementation, this would:
+      // 1. Get the document from database
+      // 2. Generate a unique secure link with token
+      // 3. Send the document via the specified method
+      // 4. Log the delivery for compliance
+      
+      // For demonstration, return a mock response
+      const deliveryRecord = {
+        id: Date.now(),
+        documentId: id,
+        method,
+        recipient,
+        message: message || null,
+        sentAt: new Date().toISOString(),
+        status: "sent",
+        deliveryId: `DEL-${Math.floor(100000 + Math.random() * 900000)}`,
+        // Track IP, timestamp, delivery method for UETA/ESIGN compliance
+        compliance: {
+          senderIp: req.ip || "127.0.0.1",
+          timestamp: new Date().toISOString(),
+          consent: true
+        }
+      };
+      
+      res.status(200).json({
+        success: true,
+        message: `Document sent via ${method} to ${recipient}`,
+        delivery: deliveryRecord
+      });
+    } catch (error) {
+      console.error('Error sending document:', error);
+      res.status(500).json({ error: 'Failed to send document' });
+    }
+  });
+  
+  // Document verification endpoint (for UETA/ESIGN compliance)
+  app.get('/api/document-signing/verify/:token', async (req: Request, res: Response) => {
+    try {
+      const { token } = req.params;
+      
+      // In a real implementation:
+      // 1. Verify the token
+      // 2. Return the verification details
+      
+      res.json({
+        verified: true,
+        documentId: 1, // Example
+        title: "Sunset Heights Lease Agreement",
+        verificationTimestamp: new Date().toISOString(),
+        signers: [
+          {
+            name: "John Doe",
+            email: "john.doe@example.com",
+            signedAt: "2023-05-15T14:30:45Z",
+            ipAddress: "192.168.1.1",
+            verificationMethod: "email"
+          }
+        ]
+      });
+    } catch (error) {
+      console.error('Error verifying document:', error);
+      res.status(500).json({ error: 'Failed to verify document' });
+    }
+  });
 
   app.get('/api/document-signing/templates', async (req: Request, res: Response) => {
     try {

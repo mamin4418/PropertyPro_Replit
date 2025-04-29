@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Download, Landmark, Building, Plus } from "lucide-react";
+import { Download, Building, Plus } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Banking() {
@@ -31,8 +31,7 @@ export default function Banking() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Operating Account</CardTitle>
-                {/* Using Landmark as a placeholder until a suitable icon is found */}
-                <Landmark className="h-4 w-4 text-muted-foreground" />
+                <Building className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">$24,231.89</div>
@@ -50,8 +49,7 @@ export default function Banking() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Security Deposits</CardTitle>
-                {/* Using Landmark as a placeholder until a suitable icon is found */}
-                <Landmark className="h-4 w-4 text-muted-foreground" />
+                <Building className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">$18,500.00</div>
@@ -89,8 +87,7 @@ export default function Banking() {
               <div className="flex items-center justify-between border-b pb-4">
                 <div className="flex items-center gap-3">
                   <div className="bg-primary/10 p-2 rounded-lg">
-                    {/* Using Landmark as a placeholder until a suitable icon is found */}
-                    <Landmark className="h-5 w-5 text-primary" />
+                    <Building className="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <h4 className="font-medium">QuickBooks Online</h4>
@@ -103,8 +100,7 @@ export default function Banking() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="bg-primary/10 p-2 rounded-lg">
-                    {/* Using Landmark as a placeholder until a suitable icon is found */}
-                    <Landmark className="h-5 w-5 text-primary" />
+                    <Building className="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <h4 className="font-medium">Plaid</h4>

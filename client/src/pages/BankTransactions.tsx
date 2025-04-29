@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,7 +11,7 @@ export default function BankTransactions() {
   const [searchQuery, setSearchQuery] = useState("");
   const [accountFilter, setAccountFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
-  
+
   // Mock data for bank transactions
   const transactions = [
     {
@@ -96,7 +95,7 @@ export default function BankTransactions() {
       propertyName: "Maple Gardens"
     }
   ];
-  
+
   // Filter transactions based on search query and filters
   const filteredTransactions = transactions.filter(transaction => {
     const matchesSearch = 
@@ -104,13 +103,13 @@ export default function BankTransactions() {
       transaction.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (transaction.tenantName && transaction.tenantName.toLowerCase().includes(searchQuery.toLowerCase())) ||
       transaction.propertyName.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     const matchesAccount = accountFilter === "all" || transaction.accountId.toString() === accountFilter;
     const matchesType = typeFilter === "all" || transaction.type === typeFilter;
-    
+
     return matchesSearch && matchesAccount && matchesType;
   });
-  
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between">
@@ -122,7 +121,7 @@ export default function BankTransactions() {
           </Button>
         </div>
       </div>
-      
+
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex flex-col md:flex-row md:items-center gap-2">
           <div className="relative">
@@ -135,7 +134,7 @@ export default function BankTransactions() {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          
+
           <Select value={accountFilter} onValueChange={setAccountFilter}>
             <SelectTrigger className="w-full md:w-[180px]">
               <SelectValue placeholder="Select Account" />
@@ -147,7 +146,7 @@ export default function BankTransactions() {
               <SelectItem value="3">Maintenance Fund</SelectItem>
             </SelectContent>
           </Select>
-          
+
           <Select value={typeFilter} onValueChange={setTypeFilter}>
             <SelectTrigger className="w-full md:w-[180px]">
               <SelectValue placeholder="Transaction Type" />
@@ -159,7 +158,7 @@ export default function BankTransactions() {
             </SelectContent>
           </Select>
         </div>
-        
+
         <div className="flex gap-2">
           <Button variant="outline">
             <Filter className="mr-2 h-4 w-4" />
@@ -171,7 +170,7 @@ export default function BankTransactions() {
           </Button>
         </div>
       </div>
-      
+
       <Card>
         <CardHeader className="pb-3">
           <CardTitle>Transaction History</CardTitle>

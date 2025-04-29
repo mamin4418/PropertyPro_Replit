@@ -1,8 +1,7 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CheckCircle2, ArrowRight, Bank, DollarSign, RefreshCw, AlertCircle } from "lucide-react";
+import { CheckCircle2, ArrowRight, Landmark, DollarSign, RefreshCw, AlertCircle } from "lucide-react";
 
 export default function BankIntegration() {
   return (
@@ -14,13 +13,13 @@ export default function BankIntegration() {
           Sync Now
         </Button>
       </div>
-      
+
       <Tabs defaultValue="plaid" className="space-y-4">
         <TabsList>
           <TabsTrigger value="plaid">Plaid</TabsTrigger>
           <TabsTrigger value="quickbooks">QuickBooks</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="plaid" className="space-y-4">
           <Card>
             <CardHeader>
@@ -42,14 +41,14 @@ export default function BankIntegration() {
                   </div>
                   <Button variant="outline">Manage Connection</Button>
                 </div>
-                
+
                 <h3 className="font-semibold text-lg mt-4">Connected Accounts</h3>
-                
+
                 <div className="space-y-3">
                   <div className="flex items-center justify-between border-b pb-3">
                     <div className="flex items-center gap-3">
                       <div className="bg-primary/10 p-2 rounded-lg">
-                        <Bank className="h-5 w-5 text-primary" />
+                        <Landmark className="h-5 w-5 text-primary" />
                       </div>
                       <div>
                         <h4 className="font-medium">First National Bank</h4>
@@ -61,11 +60,11 @@ export default function BankIntegration() {
                       <ArrowRight className="ml-2 h-3 w-3" />
                     </Button>
                   </div>
-                  
+
                   <div className="flex items-center justify-between border-b pb-3">
                     <div className="flex items-center gap-3">
                       <div className="bg-primary/10 p-2 rounded-lg">
-                        <Bank className="h-5 w-5 text-primary" />
+                        <Landmark className="h-5 w-5 text-primary" />
                       </div>
                       <div>
                         <h4 className="font-medium">Chase Bank</h4>
@@ -78,12 +77,12 @@ export default function BankIntegration() {
                     </Button>
                   </div>
                 </div>
-                
+
                 <Button className="mt-4">Connect Another Bank</Button>
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader>
               <CardTitle>Transaction Matching</CardTitle>
@@ -102,7 +101,7 @@ export default function BankIntegration() {
                   </div>
                   <Button variant="outline">Configure Rules</Button>
                 </div>
-                
+
                 <div className="flex items-center justify-between p-4 border rounded-lg">
                   <div>
                     <h3 className="font-medium">Unmatched Transactions</h3>
@@ -116,7 +115,7 @@ export default function BankIntegration() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="quickbooks" className="space-y-4">
           <Card>
             <CardHeader>
@@ -138,7 +137,7 @@ export default function BankIntegration() {
                   </div>
                   <Button variant="outline">Manage Connection</Button>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                   <div className="border rounded-lg p-4">
                     <div className="flex items-center gap-2">
@@ -150,7 +149,7 @@ export default function BankIntegration() {
                     </p>
                     <Button size="sm" variant="outline" className="mt-2">Configure</Button>
                   </div>
-                  
+
                   <div className="border rounded-lg p-4">
                     <div className="flex items-center gap-2">
                       <DollarSign className="h-5 w-5 text-primary" />
@@ -162,7 +161,7 @@ export default function BankIntegration() {
                     <Button size="sm" variant="outline" className="mt-2">Configure</Button>
                   </div>
                 </div>
-                
+
                 <div className="p-4 border rounded-lg mt-4 bg-amber-50">
                   <div className="flex items-start gap-2">
                     <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5" />

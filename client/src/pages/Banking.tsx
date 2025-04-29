@@ -1,8 +1,7 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CalendarIcon, DollarSign, ArrowUp, ArrowDown, Plus } from "lucide-react";
+import { CalendarIcon, DollarSign, ArrowUp, ArrowDown, Plus, Landmark } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Banking() {
@@ -19,14 +18,14 @@ export default function Banking() {
           </Link>
         </div>
       </div>
-      
+
       <Tabs defaultValue="accounts" className="space-y-4">
         <TabsList>
           <TabsTrigger value="accounts">Accounts</TabsTrigger>
           <TabsTrigger value="transactions">Transactions</TabsTrigger>
           <TabsTrigger value="reconciliation">Reconciliation</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="accounts" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <Card>
@@ -46,7 +45,7 @@ export default function Banking() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Security Deposits</CardTitle>
@@ -64,7 +63,7 @@ export default function Banking() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card className="border-dashed bg-muted/50 flex flex-col items-center justify-center p-6">
               <Plus className="h-8 w-8 text-muted-foreground mb-2" />
               <h3 className="text-lg font-medium mb-1">Add New Account</h3>
@@ -76,9 +75,9 @@ export default function Banking() {
               </Link>
             </Card>
           </div>
-          
+
           <h3 className="text-xl font-semibold mt-6 mb-3">Integration Status</h3>
-          
+
           <Card>
             <CardHeader>
               <CardTitle>Connected Services</CardTitle>
@@ -97,7 +96,7 @@ export default function Banking() {
                 </div>
                 <Button variant="outline" size="sm">Manage</Button>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="bg-primary/10 p-2 rounded-lg">
@@ -113,7 +112,7 @@ export default function Banking() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="transactions" className="space-y-4">
           <Card>
             <CardHeader>
@@ -181,7 +180,7 @@ export default function Banking() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="reconciliation" className="space-y-4">
           <Card>
             <CardHeader>

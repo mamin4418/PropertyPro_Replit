@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,14 +10,14 @@ import { Link, useLocation } from "wouter";
 export default function AddBankAccount() {
   const [location, navigate] = useLocation();
   const [accountType, setAccountType] = useState("checking");
-  
+
   // Mock company data
   const companies = [
     { id: 1, name: "Sunrise Properties LLC" },
     { id: 2, name: "Sunset Heights Inc." },
     { id: 3, name: "Urban Living Management" }
   ];
-  
+
   // Mock form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,19 +26,19 @@ export default function AddBankAccount() {
     // Navigate back to accounts list
     navigate("/banking/accounts");
   };
-  
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Add Bank Account</h2>
       </div>
-      
+
       <Tabs defaultValue="manual" className="space-y-4">
         <TabsList>
           <TabsTrigger value="manual">Manual Entry</TabsTrigger>
           <TabsTrigger value="connect">Connect via Plaid</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="manual">
           <Card>
             <CardHeader>
@@ -55,22 +54,22 @@ export default function AddBankAccount() {
                     <Label htmlFor="accountName">Account Name</Label>
                     <Input id="accountName" placeholder="e.g., Operating Account" required />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="bankName">Bank Name</Label>
                     <Input id="bankName" placeholder="e.g., First National Bank" required />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="accountNumber">Account Number</Label>
                     <Input id="accountNumber" placeholder="Last 4 digits only" required />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="routingNumber">Routing Number</Label>
                     <Input id="routingNumber" placeholder="9 digits" required />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="accountType">Account Type</Label>
                     <Select value={accountType} onValueChange={setAccountType} required>
@@ -85,7 +84,7 @@ export default function AddBankAccount() {
                       </SelectContent>
                     </Select>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="company">Associated Company</Label>
                     <Select required>
@@ -101,18 +100,18 @@ export default function AddBankAccount() {
                       </SelectContent>
                     </Select>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="initialBalance">Initial Balance</Label>
                     <Input id="initialBalance" type="number" step="0.01" min="0" placeholder="0.00" required />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="description">Description (Optional)</Label>
                     <Input id="description" placeholder="Additional notes about this account" />
                   </div>
                 </div>
-                
+
                 <div className="flex justify-end gap-2">
                   <Link href="/banking/accounts">
                     <Button variant="outline" type="button">Cancel</Button>
@@ -123,7 +122,7 @@ export default function AddBankAccount() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="connect">
           <Card>
             <CardHeader>
@@ -140,7 +139,7 @@ export default function AddBankAccount() {
                 </p>
                 <Button>Connect Bank Account</Button>
               </div>
-              
+
               <div className="text-sm text-muted-foreground border-t pt-4">
                 <h4 className="font-medium mb-1">About Plaid Integration</h4>
                 <p>

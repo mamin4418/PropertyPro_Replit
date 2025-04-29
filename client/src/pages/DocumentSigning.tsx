@@ -263,6 +263,7 @@ const DocumentSigning = () => {
   };
 
   const handleViewDocument = (documentId: number) => {
+    console.log("Navigating to document:", documentId);
     navigate(`/view-document/${documentId}`);
   };
 

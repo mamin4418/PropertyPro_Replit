@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation, useRoute } from "wouter";
-import { ArrowLeft, Check, AlertCircle, ThumbsUp, Download, Shield, Info } from "lucide-react";
+import { ArrowLeft, Check, AlertCircle, ThumbsUp, Download, Shield, Info, RefreshCw, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -111,15 +111,41 @@ const ViewDocument = () => {
   const [typedName, setTypedName] = useState("");
   const [signatureStyle, setSignatureStyle] = useState("style1");
 
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
   useEffect(() => {
-    // In a real app, we would fetch the document from the API
-    console.log("Fetching document with ID:", params?.id);
-    // Get IP and UserAgent for compliance
-    fetch('https://api.ipify.org?format=json')
-      .then(res => res.json())
-      .then(data => setComplianceData({...complianceData, ipAddress: data.ip}));
-    setComplianceData({...complianceData, userAgent: navigator.userAgent});
-    // For demo purposes, we'll just use the mock data
+    // Fetch the document data from API
+    if (params?.id) {
+      setIsLoading(true);
+      setLoadError(null);
+      
+      fetch(`/api/document-signing/documents/${params.id}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log("Loaded document:", data);
+          setDocument(data);
+          setIsLoading(false);
+        })
+        .catch(error => {
+          console.error("Error loading document:", error);
+          setLoadError("Failed to load the document. Please try again later.");
+          setIsLoading(false);
+        });
+
+      // Get IP and UserAgent for compliance
+      fetch('https://api.ipify.org?format=json')
+        .then(res => res.json())
+        .then(data => setComplianceData({...complianceData, ipAddress: data.ip}))
+        .catch(err => console.error("Could not fetch IP for compliance:", err));
+      
+      setComplianceData({...complianceData, userAgent: navigator.userAgent});
+    }
   }, [params?.id]);
 
   const handleStartSign = (fieldId: string) => {
@@ -300,8 +326,37 @@ const ViewDocument = () => {
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Documents
         </Button>
-        <h2 className="text-2xl font-bold">{document.title}</h2>
+        {!isLoading && !loadError && (
+          <h2 className="text-2xl font-bold">{document.title}</h2>
+        )}
       </div>
+      
+      {isLoading && (
+        <div className="flex justify-center items-center h-64">
+          <div className="flex flex-col items-center">
+            <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+            <p className="mt-4 text-muted-foreground">Loading document...</p>
+          </div>
+        </div>
+      )}
+      
+      {loadError && (
+        <Card className="mx-auto max-w-md">
+          <CardContent className="pt-6">
+            <div className="flex flex-col items-center">
+              <AlertCircle className="h-12 w-12 text-destructive mb-4" />
+              <h2 className="text-xl font-semibold mb-2">Error Loading Document</h2>
+              <p className="text-center text-muted-foreground mb-4">{loadError}</p>
+              <Button onClick={() => window.location.reload()}>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Try Again
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+      
+      {!isLoading && !loadError && (
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="md:col-span-3">
@@ -524,6 +579,7 @@ const ViewDocument = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    )}
     </div>
   );
 };

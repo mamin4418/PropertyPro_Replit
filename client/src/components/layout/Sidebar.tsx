@@ -17,6 +17,7 @@ import {
   LogOut,
   Shield,
   Menu as MenuIcon,
+  Banknote
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ThemeSwitch from "./ThemeSwitch";
@@ -138,7 +139,7 @@ export default function Sidebar() {
           <h3 className="px-3 text-xs font-semibold text-muted-foreground">ACCOUNTING</h3>
         </div>
 
-        <SidebarNavItem href="/banking" icon={DollarSign}>
+        <SidebarNavItem href="/banking" icon={Banknote}>
           Banking
         </SidebarNavItem>
 

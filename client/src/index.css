@@ -1,9 +1,9 @@
+/* Signature fonts */
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script&family=Homemade+Apple&family=Sacramento&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Signature fonts */
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script&family=Homemade+Apple&family=Sacramento&display=swap');
 
 .font-signature1 {
   font-family: 'Dancing Script', cursive;

@@ -46,7 +46,10 @@ function SidebarNavItem({ href, icon: Icon, children, indented = false }: Sideba
   );
 }
 
-import { Landmark as BankIcon } from "lucide-react";
+import { Landmark } from "lucide-react";
+
+// We're using Landmark as our bank icon
+const BankIcon = Landmark;
 
 export default function Sidebar() {
   const { user, logout } = useAuth();

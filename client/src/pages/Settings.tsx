@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import RoleManagement from "@/components/settings/RoleManagement";
 
 const Settings = () => {
   const { currentTheme, changeTheme } = useTheme();
@@ -96,6 +97,10 @@ const Settings = () => {
           <TabsTrigger value="users" className="flex items-center gap-2 rounded-none border-b-2 border-transparent pb-2 pt-1 data-[state=active]:border-primary">
             <Users className="h-4 w-4" />
             <span>Users & Permissions</span>
+          </TabsTrigger>
+          <TabsTrigger value="roles" className="flex items-center gap-2 rounded-none border-b-2 border-transparent pb-2 pt-1 data-[state=active]:border-primary">
+            <Shield className="h-4 w-4" />
+            <span>Roles</span>
           </TabsTrigger>
           <TabsTrigger value="configurations" className="flex items-center gap-2 rounded-none border-b-2 border-transparent pb-2 pt-1 data-[state=active]:border-primary">
             <Database className="h-4 w-4" />
@@ -203,14 +208,16 @@ const Settings = () => {
                       <TableCell>{user.email}</TableCell>
                       <TableCell>
                         <Select defaultValue={user.role}>
-                          <SelectTrigger className="w-32">
+                          <SelectTrigger className="w-[200px]">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="Admin">Admin</SelectItem>
-                            <SelectItem value="Manager">Manager</SelectItem>
-                            <SelectItem value="Editor">Editor</SelectItem>
+                            <SelectItem value="Admin">Administrator</SelectItem>
+                            <SelectItem value="Manager">Property Manager</SelectItem>
+                            <SelectItem value="Editor">Leasing Agent</SelectItem>
                             <SelectItem value="Viewer">Viewer</SelectItem>
+                            <SelectItem value="Finance">Finance Officer</SelectItem>
+                            <SelectItem value="Maintenance">Maintenance Coordinator</SelectItem>
                           </SelectContent>
                         </Select>
                       </TableCell>
@@ -225,46 +232,23 @@ const Settings = () => {
                 </TableBody>
               </Table>
               
-              <Card className="mt-6">
-                <CardHeader>
-                  <CardTitle>Role Permissions</CardTitle>
-                  <CardDescription>Define what each role can access</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">Admin</p>
-                        <p className="text-sm text-muted-foreground">Full access to all features</p>
-                      </div>
-                      <Badge>Default</Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">Manager</p>
-                        <p className="text-sm text-muted-foreground">Can manage properties, tenants, and financial data</p>
-                      </div>
-                      <Button variant="outline" size="sm">Edit Permissions</Button>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">Editor</p>
-                        <p className="text-sm text-muted-foreground">Can edit but not delete records</p>
-                      </div>
-                      <Button variant="outline" size="sm">Edit Permissions</Button>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">Viewer</p>
-                        <p className="text-sm text-muted-foreground">Read-only access</p>
-                      </div>
-                      <Button variant="outline" size="sm">Edit Permissions</Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="flex justify-between items-center mt-6">
+                <div>
+                  <h3 className="text-lg font-medium">Role Assignment</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Assign specific roles to users. For detailed permission management, use the Roles tab.
+                  </p>
+                </div>
+                <Button variant="outline" onClick={() => document.querySelector('[data-value="roles"]')?.click()}>
+                  Manage Roles
+                </Button>
+              </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="roles">
+          <RoleManagement />
         </TabsContent>
 
         <TabsContent value="configurations">

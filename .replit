@@ -24,7 +24,7 @@ localPort = 5002
 externalPort = 3001
 
 [workflows]
-runButton = "Fix and Run Server with Icons"
+runButton = "Run With Updated Dependencies"
 
 [[workflows.workflow]]
 name = "Project"
@@ -219,6 +219,27 @@ args = "echo \"Installing latest lucide-react and @lucide/react with all availab
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm install lucide-react@latest @lucide/react"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Starting server with updated dependencies...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "NODE_ENV=development tsx server/index.ts"
+
+[[workflows.workflow]]
+name = "Run With Updated Dependencies"
+author = 41484040
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Clearing Vite cache...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "rm -rf node_modules/.vite"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

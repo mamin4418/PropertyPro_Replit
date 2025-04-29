@@ -129,19 +129,22 @@ export const withPermission = (Component: React.ComponentType, resource: string,
     const { can } = useRBAC();
 
     if (!can(requiredAction, resource)) {
-      return (
-        <div className="flex items-center justify-center h-full p-4">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold mb-2">Access Denied</h2>
-            <p>
-              You don&#39;t have permission to {requiredAction} {resource}.
-            </p>
-          </div>
-        </div>
+      // Use a more appropriate non-JSX approach since this file is processed as TS not TSX
+      return React.createElement('div', { className: "flex items-center justify-center h-full p-4" },
+        React.createElement('div', { className: "text-center" }, [
+          React.createElement('h2', { className: "text-2xl font-bold mb-2", key: 'title' }, 'Access Denied'),
+          React.createElement('p', { key: 'message' }, [
+            'You don\'t have permission to ',
+            requiredAction,
+            ' ',
+            resource,
+            '.'
+          ])
+        ])
       );
     }
 
-    return <Component {...props} />;
+    return React.createElement(Component, props);
   };
 };
 

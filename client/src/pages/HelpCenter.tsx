@@ -1,11 +1,10 @@
-
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Search, FileText, Home, Users, Building, Calendar, DollarSign, Tool, FileCheck } from "lucide-react";
+import { Search, FileText, Home, Users, Building, Calendar, DollarSign, Wrench, FileCheck } from "lucide-react";
 
 const HelpCenter = () => {
   return (
@@ -53,7 +52,7 @@ const HelpCenter = () => {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center">
-              <Tool className="mr-2 h-5 w-5" />
+              <Wrench className="mr-2 h-5 w-5" />
               Support
             </CardTitle>
           </CardHeader>

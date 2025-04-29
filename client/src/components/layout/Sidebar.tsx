@@ -1,4 +1,4 @@
-import { Link, useLocation } from "wouter";
+import { useLocation } from "wouter";
 import {
   LayoutDashboard,
   Home,
@@ -35,18 +35,14 @@ function SidebarNavItem({ href, icon: Icon, children, indented = false }: Sideba
   const isActive = location === href || (href !== "/" && location.startsWith(href));
 
   return (
-    <Link href={href}>
-      <a
-        className={cn(
+    <div className={cn(
           "flex items-center py-2 px-3 rounded-md hover:bg-secondary",
           isActive && "bg-secondary text-primary font-medium",
           indented && "ml-4 text-sm"
-        )}
-      >
-        <Icon className="h-5 w-5 mr-3" />
-        <span>{children}</span>
-      </a>
-    </Link>
+        )} onClick={() => window.location.href = href}>
+      <Icon className="h-5 w-5 mr-3" />
+      <span>{children}</span>
+    </div>
   );
 }
 
@@ -182,12 +178,10 @@ export default function Sidebar() {
             <span>Logout</span>
           </button>
         ) : (
-          <Link href="/auth">
-            <a className="flex items-center py-2 px-3 rounded-md hover:bg-secondary">
+          <div className="flex items-center py-2 px-3 rounded-md hover:bg-secondary" onClick={() => window.location.href = "/auth"}>
               <LogOut className="h-5 w-5 mr-3" />
               <span>Login</span>
-            </a>
-          </Link>
+          </div>
         )}
       </div>
     </div>

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CheckCircle2, ArrowRight, Landmark, DollarSign, RefreshCw, AlertCircle } from "lucide-react";
+import { CheckCircle2, ArrowRight, Landmark, DollarSign, RefreshCw, AlertCircle, BuildingBank, Tool } from "lucide-react";
 
 export default function BankIntegration() {
   return (
@@ -180,6 +180,12 @@ export default function BankIntegration() {
           </Card>
         </TabsContent>
       </Tabs>
+      {/* Placeholder for Help section with Tool icon */}
+      <div>
+        <Button>
+          <Tool className="mr-2 h-4 w-4"/> Help
+        </Button>
+      </div>
     </div>
   );
 }

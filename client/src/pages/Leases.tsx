@@ -128,14 +128,22 @@ const Leases = () => {
             />
           </div>
           <div className="flex gap-2">
-            <Link href="/generate-lease-template">
-              <Button variant="outline">
-                <FileText className="mr-2 h-4 w-4" /> Generate Template
+            <Link href="/add-lease">
+              <Button className="mr-2">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Lease
               </Button>
             </Link>
-            <Link href="/add-lease">
-              <Button>
-                <Plus className="mr-2 h-4 w-4" /> Add Lease
+            <Link href="/generate-lease-template">
+              <Button variant="outline" className="mr-2">
+                <FileText className="mr-2 h-4 w-4" />
+                Generate Template
+              </Button>
+            </Link>
+            <Link href="/document-signing">
+              <Button variant="outline">
+                <FileText className="mr-2 h-4 w-4" />
+                Document Signing
               </Button>
             </Link>
           </div>

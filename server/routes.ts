@@ -1169,6 +1169,236 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Document Signing API endpoints
+  app.get('/api/document-signing/documents', async (req: Request, res: Response) => {
+    try {
+      // In a real implementation, fetch signing documents from database
+      // Return mock data for now
+      const documents = [
+        {
+          id: 1,
+          title: "Sunset Heights Lease Agreement",
+          documentType: "Lease",
+          recipient: "John Doe",
+          recipientEmail: "john.doe@example.com",
+          sentDate: "2023-05-15",
+          status: "pending",
+          expiresOn: "2023-05-30",
+        },
+        {
+          id: 2,
+          title: "Maple Gardens Maintenance Contract",
+          documentType: "Vendor Contract",
+          recipient: "ABC Plumbing",
+          recipientEmail: "service@abcplumbing.com",
+          sentDate: "2023-05-14",
+          status: "viewed",
+          expiresOn: "2023-05-29",
+        },
+        {
+          id: 3,
+          title: "Riverfront Condos Lease Renewal",
+          documentType: "Lease",
+          recipient: "Sarah Johnson",
+          recipientEmail: "sarah.j@example.com",
+          sentDate: "2023-05-01",
+          signedDate: "2023-05-03",
+          status: "completed",
+        },
+        {
+          id: 4,
+          title: "Urban Lofts Cleaning Service Agreement",
+          documentType: "Vendor Contract",
+          recipient: "CleanPro Services",
+          recipientEmail: "contracts@cleanpro.com",
+          sentDate: "2023-04-28",
+          signedDate: "2023-05-02",
+          status: "completed",
+        }
+      ];
+
+      res.json(documents);
+    } catch (error) {
+      console.error('Error retrieving documents:', error);
+      res.status(500).json({ error: 'Failed to retrieve documents' });
+    }
+  });
+
+  app.get('/api/document-signing/documents/:id', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      // In a real implementation, fetch document from database
+      // Return mock data for now based on ID
+      const document = {
+        id,
+        title: "Sunset Heights Lease Agreement",
+        documentType: "Lease",
+        status: "pending",
+        sentDate: "2023-05-15",
+        expiresOn: "2023-05-30",
+        sender: {
+          name: "Property Management Inc.",
+          email: "admin@propertymanagement.com"
+        },
+        recipient: {
+          name: "John Doe",
+          email: "john.doe@example.com"
+        },
+        content: `
+          <h1>RESIDENTIAL LEASE AGREEMENT</h1>
+          <p>This Residential Lease Agreement ("Agreement") is made and entered into on May 15, 2023, by and between Property Management Inc. ("Landlord") and John Doe ("Tenant").</p>
+          
+          <h2>1. PROPERTY</h2>
+          <p>Landlord hereby leases to Tenant and Tenant hereby leases from Landlord, solely for residential purposes, the premises located at: 123 Main St, Apt 101, Anytown, ST 12345 ("Premises").</p>
+          
+          <h2>2. TERM</h2>
+          <p>The term of this Agreement shall be for a period of 12 months, commencing on June 1, 2023, and ending on May 31, 2024.</p>
+          
+          <h2>3. RENT</h2>
+          <p>Tenant agrees to pay, without demand, to Landlord as rent for the Premises the sum of $1,200.00 per month in advance on the 1st day of each month.</p>
+          
+          <h2>4. SECURITY DEPOSIT</h2>
+          <p>Upon execution of this Agreement, Tenant shall deposit with Landlord the sum of $1,200.00 as a security deposit.</p>
+          
+          <h2>5. UTILITIES</h2>
+          <p>Tenant will be responsible for payment of all utilities and services, except for the following which shall be paid by Landlord: Water and trash collection.</p>
+          
+          <h2>6. SIGNATURES</h2>
+          <p>By signing below, Tenant acknowledges having read and understood all the terms and conditions of this Agreement and agrees to be bound thereby.</p>
+          
+          <div style="margin-top: 30px;">
+            <div style="display: inline-block; min-width: 200px; margin-right: 50px;">
+              <p style="border-bottom: 1px solid #000; min-height: 40px;" class="signature-field" data-field="landlord_signature"></p>
+              <p>Landlord Signature</p>
+            </div>
+            
+            <div style="display: inline-block; min-width: 200px;">
+              <p style="border-bottom: 1px solid #000; min-height: 40px;" class="signature-field" data-field="tenant_signature"></p>
+              <p>Tenant Signature</p>
+            </div>
+          </div>
+        `,
+        signingFields: [
+          { id: "tenant_signature", type: "signature", label: "Signature", required: true, signed: false },
+          { id: "tenant_initials_1", type: "initials", label: "Initials - Page 1", required: true, signed: false },
+          { id: "tenant_initials_2", type: "initials", label: "Initials - Page 2", required: true, signed: false }
+        ]
+      };
+
+      res.json(document);
+    } catch (error) {
+      console.error('Error retrieving document:', error);
+      res.status(500).json({ error: 'Failed to retrieve document' });
+    }
+  });
+
+  app.post('/api/document-signing/documents', async (req: Request, res: Response) => {
+    try {
+      // In a real implementation, create document in database
+      const document = {
+        id: Date.now(),
+        ...req.body,
+        sentDate: new Date().toISOString().split('T')[0],
+        status: "pending"
+      };
+
+      res.status(201).json(document);
+    } catch (error) {
+      console.error('Error creating document:', error);
+      res.status(500).json({ error: 'Failed to create document' });
+    }
+  });
+
+  app.post('/api/document-signing/documents/:id/sign', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { fieldId, signatureData } = req.body;
+
+      // In a real implementation, update the document in database with signature data
+      res.json({ 
+        success: true, 
+        message: "Field signed successfully" 
+      });
+    } catch (error) {
+      console.error('Error signing document:', error);
+      res.status(500).json({ error: 'Failed to sign document' });
+    }
+  });
+
+  app.post('/api/document-signing/documents/:id/complete', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+
+      // In a real implementation, mark document as completed in database
+      res.json({ 
+        success: true, 
+        message: "Document completed successfully" 
+      });
+    } catch (error) {
+      console.error('Error completing document:', error);
+      res.status(500).json({ error: 'Failed to complete document' });
+    }
+  });
+
+  app.get('/api/document-signing/templates', async (req: Request, res: Response) => {
+    try {
+      // In a real implementation, fetch templates from database
+      // Return mock data for now
+      const templates = [
+        {
+          id: 1,
+          name: "Standard Lease Agreement",
+          type: "lease",
+          description: "Default lease agreement for residential properties",
+          created: "2023-01-15",
+          lastUsed: "2023-05-10",
+          usageCount: 24
+        },
+        {
+          id: 2,
+          name: "Month-to-Month Lease",
+          type: "lease",
+          description: "Short-term lease agreement with monthly renewal",
+          created: "2023-02-03",
+          lastUsed: "2023-05-01",
+          usageCount: 8
+        },
+        {
+          id: 3,
+          name: "Commercial Lease",
+          type: "lease",
+          description: "Lease agreement for commercial properties",
+          created: "2023-01-20",
+          lastUsed: "2023-04-15",
+          usageCount: 5
+        },
+        {
+          id: 4,
+          name: "Vendor Service Contract",
+          type: "vendor",
+          description: "Standard contract for service vendors",
+          created: "2023-03-05",
+          lastUsed: "2023-05-12",
+          usageCount: 12
+        },
+        {
+          id: 5,
+          name: "Maintenance Agreement",
+          type: "maintenance",
+          description: "Agreement for recurring property maintenance",
+          created: "2023-03-10",
+          lastUsed: "2023-04-20",
+          usageCount: 7
+        }
+      ];
+
+      res.json(templates);
+    } catch (error) {
+      console.error('Error retrieving templates:', error);
+      res.status(500).json({ error: 'Failed to retrieve templates' });
+    }
+  });
+
   // Maintenance requests routes
   app.get('/api/maintenance-requests', async (req: Request, res: Response) => {
     try {

@@ -62,16 +62,20 @@ import ViewAppliance from './pages/ViewAppliance';
 import Mortgages from './pages/Mortgages';
 import AddMortgage from './pages/AddMortgage';
 import EditMortgage from './pages/EditMortgage';
-import ViewMortgage from "./pages/ViewMortgage"; //Added
+import ViewMortgage from "./pages/ViewMortgage";
 import Insurances from './pages/Insurances';
 import AddInsurance from './pages/AddInsurance';
-import EditInsurance from "./pages/EditInsurance"; //Added
-import ViewInsurance from "./pages/ViewInsurance"; //Added
+import EditInsurance from "./pages/EditInsurance";
+import ViewInsurance from "./pages/ViewInsurance";
 import AuthPage from './pages/auth-page';
 import TenantAuthPage from './pages/tenant-auth-page';
 import TenantDashboard from './pages/tenant-dashboard';
 import NotFound from './pages/not-found';
 import App from './App';
+import DocumentSigning from "./pages/DocumentSigning";
+import CreateDocument from "./pages/CreateDocument";
+import DocumentTemplates from "./pages/DocumentTemplates";
+import ViewDocument from "./pages/ViewDocument";
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

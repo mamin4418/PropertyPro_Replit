@@ -82,12 +82,12 @@ export default function Sidebar() {
           Tenants
         </SidebarNavItem>
 
-        <SidebarNavItem href="/leases" icon={ClipboardList} indented>
+        <SidebarNavItem href="/leases" icon={FileText} indented>
           Leases
         </SidebarNavItem>
 
-        <SidebarNavItem href="/payments" icon={DollarSign} indented>
-          Payments
+        <SidebarNavItem href="/document-signing" icon={FileText} indented>
+          Documents & Signing
         </SidebarNavItem>
 
         <SidebarNavItem href="/maintenance" icon={Wrench} indented>
@@ -97,7 +97,7 @@ export default function Sidebar() {
         <SidebarNavItem href="/appliances" icon={Wrench} indented>
           Appliances
         </SidebarNavItem>
-        
+
         <SidebarNavItem href="/insurances" icon={Shield} indented>
           Insurance
         </SidebarNavItem>

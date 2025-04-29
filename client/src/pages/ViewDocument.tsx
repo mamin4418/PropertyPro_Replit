@@ -1,0 +1,480 @@
+
+import { useState, useRef, useEffect } from "react";
+import { useLocation, useRoute } from "wouter";
+import { 
+  ArrowLeft, 
+  FileText, 
+  Check, 
+  Download, 
+  ThumbsUp,
+  AlertCircle,
+  Send,
+  Edit,
+  Trash2
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
+
+// Mock data for a lease document
+const mockDocument = {
+  id: 1,
+  title: "Sunset Heights Lease Agreement",
+  documentType: "Lease",
+  status: "pending",
+  sentDate: "2023-05-15",
+  expiresOn: "2023-05-30",
+  sender: {
+    name: "Property Management Inc.",
+    email: "admin@propertymanagement.com"
+  },
+  recipient: {
+    name: "John Doe",
+    email: "john.doe@example.com"
+  },
+  content: `
+    <h1>RESIDENTIAL LEASE AGREEMENT</h1>
+    <p>This Residential Lease Agreement ("Agreement") is made and entered into on May 15, 2023, by and between Property Management Inc. ("Landlord") and John Doe ("Tenant").</p>
+    
+    <h2>1. PROPERTY</h2>
+    <p>Landlord hereby leases to Tenant and Tenant hereby leases from Landlord, solely for residential purposes, the premises located at: 123 Main St, Apt 101, Anytown, ST 12345 ("Premises").</p>
+    
+    <h2>2. TERM</h2>
+    <p>The term of this Agreement shall be for a period of 12 months, commencing on June 1, 2023, and ending on May 31, 2024.</p>
+    
+    <h2>3. RENT</h2>
+    <p>Tenant agrees to pay, without demand, to Landlord as rent for the Premises the sum of $1,200.00 per month in advance on the 1st day of each month.</p>
+    
+    <h2>4. SECURITY DEPOSIT</h2>
+    <p>Upon execution of this Agreement, Tenant shall deposit with Landlord the sum of $1,200.00 as a security deposit.</p>
+    
+    <h2>5. UTILITIES</h2>
+    <p>Tenant will be responsible for payment of all utilities and services, except for the following which shall be paid by Landlord: Water and trash collection.</p>
+    
+    <h2>6. SIGNATURES</h2>
+    <p>By signing below, Tenant acknowledges having read and understood all the terms and conditions of this Agreement and agrees to be bound thereby.</p>
+    
+    <div style="margin-top: 30px;">
+      <div style="display: inline-block; min-width: 200px; margin-right: 50px;">
+        <p style="border-bottom: 1px solid #000; min-height: 40px;" class="signature-field" data-field="landlord_signature"></p>
+        <p>Landlord Signature</p>
+      </div>
+      
+      <div style="display: inline-block; min-width: 200px;">
+        <p style="border-bottom: 1px solid #000; min-height: 40px;" class="signature-field" data-field="tenant_signature"></p>
+        <p>Tenant Signature</p>
+      </div>
+    </div>
+  `,
+  signingFields: [
+    { id: "tenant_signature", type: "signature", label: "Signature", required: true, signed: false },
+    { id: "tenant_initials_1", type: "initials", label: "Initials - Page 1", required: true, signed: false },
+    { id: "tenant_initials_2", type: "initials", label: "Initials - Page 2", required: true, signed: false }
+  ]
+};
+
+const ViewDocument = () => {
+  const [, navigate] = useLocation();
+  const [, params] = useRoute("/view-document/:id");
+  const { toast } = useToast();
+  
+  const [document, setDocument] = useState(mockDocument);
+  const [showSignDialog, setShowSignDialog] = useState(false);
+  const [currentField, setCurrentField] = useState<any>(null);
+  const [signature, setSignature] = useState("");
+  const [showCompletedDialog, setShowCompletedDialog] = useState(false);
+  
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [signatureType, setSignatureType] = useState<"draw" | "type">("draw");
+  
+  // For typed signature
+  const [typedName, setTypedName] = useState("");
+  const [signatureStyle, setSignatureStyle] = useState("style1");
+  
+  useEffect(() => {
+    // In a real app, we would fetch the document from the API
+    console.log("Fetching document with ID:", params?.id);
+    
+    // For demo purposes, we'll just use the mock data
+  }, [params?.id]);
+  
+  const handleStartSign = (fieldId: string) => {
+    const field = document.signingFields.find(f => f.id === fieldId);
+    if (field) {
+      setCurrentField(field);
+      setShowSignDialog(true);
+    }
+  };
+  
+  // Canvas drawing functions
+  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    setIsDrawing(true);
+    
+    // Get correct coordinates for mouse or touch event
+    const rect = canvas.getBoundingClientRect();
+    const x = e instanceof MouseEvent 
+      ? e.clientX - rect.left 
+      : e.touches[0].clientX - rect.left;
+    const y = e instanceof MouseEvent 
+      ? e.clientY - rect.top 
+      : e.touches[0].clientY - rect.top;
+    
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+  };
+  
+  const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    if (!isDrawing) return;
+    
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    // Get correct coordinates for mouse or touch event
+    const rect = canvas.getBoundingClientRect();
+    const x = e instanceof MouseEvent 
+      ? e.clientX - rect.left 
+      : e.touches[0].clientX - rect.left;
+    const y = e instanceof MouseEvent 
+      ? e.clientY - rect.top 
+      : e.touches[0].clientY - rect.top;
+    
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  };
+  
+  const endDrawing = () => {
+    setIsDrawing(false);
+  };
+  
+  const clearCanvas = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  };
+  
+  // Initialize canvas
+  useEffect(() => {
+    if (showSignDialog && canvasRef.current && signatureType === "draw") {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = 'black';
+      }
+    }
+  }, [showSignDialog, signatureType]);
+  
+  // Handle saving the signature
+  const saveSignature = () => {
+    if (signatureType === "draw") {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      
+      // Save canvas as data URL
+      const signatureImage = canvas.toDataURL("image/png");
+      setSignature(signatureImage);
+      
+      // Update the field as signed
+      const updatedFields = document.signingFields.map(field => 
+        field.id === currentField.id ? { ...field, signed: true } : field
+      );
+      
+      setDocument({ ...document, signingFields: updatedFields });
+    } else {
+      // For typed signatures, we would normally generate an image
+      // For this demo, we'll just mark it as signed
+      const updatedFields = document.signingFields.map(field => 
+        field.id === currentField.id ? { ...field, signed: true } : field
+      );
+      
+      setDocument({ ...document, signingFields: updatedFields });
+    }
+    
+    setShowSignDialog(false);
+    
+    toast({
+      title: "Field Signed",
+      description: `Successfully signed ${currentField.label}.`
+    });
+    
+    // Check if all required fields are signed
+    const allSigned = document.signingFields
+      .filter(field => field.required)
+      .every(field => {
+        const updated = updatedFields.find(f => f.id === field.id);
+        return updated ? updated.signed : field.signed;
+      });
+    
+    if (allSigned) {
+      setShowCompletedDialog(true);
+    }
+  };
+  
+  const completeDocument = () => {
+    // In a real app, we would submit the signed document to the API
+    toast({
+      title: "Document Completed",
+      description: "Your signed document has been submitted successfully."
+    });
+    
+    setShowCompletedDialog(false);
+    navigate("/document-signing");
+  };
+  
+  return (
+    <div className="pb-10">
+      <div className="flex items-center mb-6">
+        <Button variant="ghost" className="mr-4" onClick={() => navigate("/document-signing")}>
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Documents
+        </Button>
+        <h2 className="text-2xl font-bold">{document.title}</h2>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="md:col-span-3">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Document Preview</CardTitle>
+              <Button variant="outline" size="sm">
+                <Download className="mr-2 h-4 w-4" />
+                Download
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <div
+                className="p-6 border rounded-md bg-white"
+                dangerouslySetInnerHTML={{ __html: document.content }}
+              />
+            </CardContent>
+          </Card>
+        </div>
+        
+        <div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Document Details</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Status</p>
+                <div className="mt-1">
+                  <Badge 
+                    variant="outline" 
+                    className={
+                      document.status === "completed" 
+                        ? "text-green-500 border-green-500" 
+                        : document.status === "viewed"
+                        ? "text-blue-500 border-blue-500"
+                        : "text-amber-500 border-amber-500"
+                    }
+                  >
+                    {document.status === "completed"
+                      ? "Completed"
+                      : document.status === "viewed"
+                      ? "Viewed"
+                      : "Awaiting Signature"}
+                  </Badge>
+                </div>
+              </div>
+              
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Sent By</p>
+                <p className="mt-1">{document.sender.name}</p>
+                <p className="text-sm text-muted-foreground">{document.sender.email}</p>
+              </div>
+              
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Recipient</p>
+                <p className="mt-1">{document.recipient.name}</p>
+                <p className="text-sm text-muted-foreground">{document.recipient.email}</p>
+              </div>
+              
+              <Separator />
+              
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Sent On</p>
+                <p className="mt-1">{document.sentDate}</p>
+              </div>
+              
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Expires On</p>
+                <p className="mt-1">{document.expiresOn}</p>
+              </div>
+            </CardContent>
+            <CardFooter className="flex flex-col items-start">
+              <p className="text-sm font-medium mb-2">Required Fields</p>
+              <div className="w-full space-y-2">
+                {document.signingFields.map((field) => (
+                  <div key={field.id} className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      {field.signed ? (
+                        <Check className="mr-2 h-4 w-4 text-green-500" />
+                      ) : (
+                        <AlertCircle className="mr-2 h-4 w-4 text-amber-500" />
+                      )}
+                      <span className={field.signed ? "line-through text-muted-foreground" : ""}>{field.label}</span>
+                    </div>
+                    {!field.signed && (
+                      <Button variant="outline" size="sm" onClick={() => handleStartSign(field.id)}>
+                        Sign
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </CardFooter>
+          </Card>
+        </div>
+      </div>
+      
+      {/* Signature Dialog */}
+      <Dialog open={showSignDialog} onOpenChange={setShowSignDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Create Your Signature</DialogTitle>
+            <DialogDescription>
+              {currentField?.type === "signature" 
+                ? "Please sign below to continue." 
+                : "Please provide your initials below."}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <Tabs value={signatureType} onValueChange={(v) => setSignatureType(v as "draw" | "type")} className="mt-2">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="draw">Draw</TabsTrigger>
+              <TabsTrigger value="type">Type</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="draw" className="mt-4">
+              <div className="border rounded-md overflow-hidden">
+                <canvas
+                  ref={canvasRef}
+                  width={450}
+                  height={200}
+                  className="bg-white w-full touch-none"
+                  onMouseDown={startDrawing}
+                  onMouseMove={draw}
+                  onMouseUp={endDrawing}
+                  onMouseLeave={endDrawing}
+                  onTouchStart={startDrawing}
+                  onTouchMove={draw}
+                  onTouchEnd={endDrawing}
+                />
+              </div>
+              <Button variant="outline" className="w-full mt-2" onClick={clearCanvas}>
+                Clear
+              </Button>
+            </TabsContent>
+            
+            <TabsContent value="type" className="mt-4">
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="typedName">Type your {currentField?.type === "signature" ? "name" : "initials"}</Label>
+                  <Input
+                    id="typedName"
+                    value={typedName}
+                    onChange={(e) => setTypedName(e.target.value)}
+                    placeholder={currentField?.type === "signature" ? "Your name" : "Your initials"}
+                    className="mt-1"
+                  />
+                </div>
+                
+                <div>
+                  <Label>Select a style</Label>
+                  <div className="grid grid-cols-3 gap-2 mt-1">
+                    <Button
+                      type="button"
+                      variant={signatureStyle === "style1" ? "default" : "outline"}
+                      className={`font-signature1 h-14 text-lg ${signatureStyle === "style1" ? "" : "hover:bg-secondary"}`}
+                      onClick={() => setSignatureStyle("style1")}
+                    >
+                      {typedName || "Your Name"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={signatureStyle === "style2" ? "default" : "outline"}
+                      className={`font-signature2 h-14 text-lg ${signatureStyle === "style2" ? "" : "hover:bg-secondary"}`}
+                      onClick={() => setSignatureStyle("style2")}
+                    >
+                      {typedName || "Your Name"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={signatureStyle === "style3" ? "default" : "outline"}
+                      className={`font-signature3 h-14 text-lg ${signatureStyle === "style3" ? "" : "hover:bg-secondary"}`}
+                      onClick={() => setSignatureStyle("style3")}
+                    >
+                      {typedName || "Your Name"}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+          
+          <DialogFooter className="mt-4">
+            <Button variant="outline" onClick={() => setShowSignDialog(false)}>Cancel</Button>
+            <Button onClick={saveSignature}>
+              <Check className="mr-2 h-4 w-4" />
+              {currentField?.type === "signature" ? "Sign Document" : "Add Initials"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Document Completed Dialog */}
+      <Dialog open={showCompletedDialog} onOpenChange={setShowCompletedDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Document Completed!</DialogTitle>
+            <DialogDescription>
+              You have successfully signed all required fields. Would you like to submit the document now?
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="flex justify-center py-6">
+            <ThumbsUp className="h-16 w-16 text-green-500" />
+          </div>
+          
+          <DialogFooter>
+            <Button onClick={completeDocument}>
+              <Send className="mr-2 h-4 w-4" />
+              Submit Document
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+export default ViewDocument;

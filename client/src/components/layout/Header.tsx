@@ -37,10 +37,6 @@ const HelpButton = () => {
           Documentation
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => navigate("/tutorial")}>
-
-        <div className="flex items-center gap-2">
-          <HelpButton />
-
           Tutorial Guide
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => navigate("/faq")}>

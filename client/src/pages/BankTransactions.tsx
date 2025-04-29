@@ -98,7 +98,7 @@ export default function BankTransactions() {
 
   // Filter transactions based on search query and filters
   const filteredTransactions = transactions.filter(transaction => {
-    const matchesSearch = 
+    const matchesSearch =
       transaction.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       transaction.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (transaction.tenantName && transaction.tenantName.toLowerCase().includes(searchQuery.toLowerCase())) ||

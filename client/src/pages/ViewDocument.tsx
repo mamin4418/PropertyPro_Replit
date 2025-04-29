@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { useLocation, useRoute } from "wouter";
 import { ArrowLeft, Check, AlertCircle, ThumbsUp, Download, Shield, Info, RefreshCw, Send } from "lucide-react";
@@ -21,6 +22,9 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
 import {
   Tooltip,
   TooltipContent,
@@ -357,110 +361,110 @@ const ViewDocument = () => {
       )}
       
       {!isLoading && !loadError && (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="md:col-span-3">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle>Document Preview</CardTitle>
+                <Button variant="outline" size="sm">
+                  <Download className="mr-2 h-4 w-4" />
+                  Download
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <div
+                  className="p-6 border rounded-md bg-white"
+                  dangerouslySetInnerHTML={{ __html: document.content }}
+                />
+              </CardContent>
+            </Card>
+          </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="md:col-span-3">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Document Preview</CardTitle>
-              <Button variant="outline" size="sm">
-                <Download className="mr-2 h-4 w-4" />
-                Download
-              </Button>
-            </CardHeader>
-            <CardContent>
-              <div
-                className="p-6 border rounded-md bg-white"
-                dangerouslySetInnerHTML={{ __html: document.content }}
-              />
-            </CardContent>
-          </Card>
-        </div>
-
-        <div>
-          <Card>
-            <CardHeader>
-              <CardTitle>Document Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Status</p>
-                <div className="mt-1">
-                  <Badge 
-                    variant="outline" 
-                    className={
-                      document.status === "completed" 
-                        ? "text-green-500 border-green-500" 
+          <div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Document Details</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Status</p>
+                  <div className="mt-1">
+                    <Badge 
+                      variant="outline" 
+                      className={
+                        document.status === "completed" 
+                          ? "text-green-500 border-green-500" 
+                          : document.status === "viewed"
+                          ? "text-blue-500 border-blue-500"
+                          : "text-amber-500 border-amber-500"
+                      }
+                    >
+                      {document.status === "completed"
+                        ? "Completed"
                         : document.status === "viewed"
-                        ? "text-blue-500 border-blue-500"
-                        : "text-amber-500 border-amber-500"
-                    }
-                  >
-                    {document.status === "completed"
-                      ? "Completed"
-                      : document.status === "viewed"
-                      ? "Viewed"
-                      : "Awaiting Signature"}
-                  </Badge>
-                </div>
-              </div>
-
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Sent By</p>
-                <p className="mt-1">{document.sender.name}</p>
-                <p className="text-sm text-muted-foreground">{document.sender.email}</p>
-              </div>
-
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Recipient</p>
-                <p className="mt-1">{document.recipient.name}</p>
-                <p className="text-sm text-muted-foreground">{document.recipient.email}</p>
-                <p className="text-sm text-muted-foreground">{document.recipient.phone}</p>
-              </div>
-
-              <Separator />
-
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Sent On</p>
-                <p className="mt-1">{document.sentDate}</p>
-              </div>
-
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Expires On</p>
-                <p className="mt-1">{document.expiresOn}</p>
-              </div>
-            </CardContent>
-            <CardFooter className="flex flex-col items-start">
-              <p className="text-sm font-medium mb-2">Required Fields</p>
-              <div className="w-full space-y-2">
-                {document.signingFields.map((field) => (
-                  <div key={field.id} className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      {field.signed ? (
-                        <Check className="mr-2 h-4 w-4 text-green-500" />
-                      ) : (
-                        <AlertCircle className="mr-2 h-4 w-4 text-amber-500" />
-                      )}
-                      <span className={field.signed ? "line-through text-muted-foreground" : ""}>{field.label}</span>
-                    </div>
-                    {!field.signed && (
-                      <Button variant="outline" size="sm" onClick={() => handleStartSign(field.id)}>
-                        Sign
-                      </Button>
-                    )}
+                        ? "Viewed"
+                        : "Awaiting Signature"}
+                    </Badge>
                   </div>
-                ))}
-              </div>
-            </CardFooter>
-          </Card>
-          <div className="mt-4">
-            <Button onClick={() => sendDocument('email')}>Send via Email</Button>
-            <Button onClick={() => sendDocument('text')}>Send via Text</Button>
-            {/* WhatsApp integration requires a specific API or library */}
-            <Button onClick={() => sendDocument('whatsapp')} disabled>Send via WhatsApp (Not Implemented)</Button>
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Sent By</p>
+                  <p className="mt-1">{document.sender.name}</p>
+                  <p className="text-sm text-muted-foreground">{document.sender.email}</p>
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Recipient</p>
+                  <p className="mt-1">{document.recipient.name}</p>
+                  <p className="text-sm text-muted-foreground">{document.recipient.email}</p>
+                  <p className="text-sm text-muted-foreground">{document.recipient.phone}</p>
+                </div>
+
+                <Separator />
+
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Sent On</p>
+                  <p className="mt-1">{document.sentDate}</p>
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Expires On</p>
+                  <p className="mt-1">{document.expiresOn}</p>
+                </div>
+              </CardContent>
+              <CardFooter className="flex flex-col items-start">
+                <p className="text-sm font-medium mb-2">Required Fields</p>
+                <div className="w-full space-y-2">
+                  {document.signingFields.map((field) => (
+                    <div key={field.id} className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        {field.signed ? (
+                          <Check className="mr-2 h-4 w-4 text-green-500" />
+                        ) : (
+                          <AlertCircle className="mr-2 h-4 w-4 text-amber-500" />
+                        )}
+                        <span className={field.signed ? "line-through text-muted-foreground" : ""}>{field.label}</span>
+                      </div>
+                      {!field.signed && (
+                        <Button variant="outline" size="sm" onClick={() => handleStartSign(field.id)}>
+                          Sign
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardFooter>
+            </Card>
+            <div className="mt-4">
+              <Button onClick={() => sendDocument('email')}>Send via Email</Button>
+              <Button onClick={() => sendDocument('text')}>Send via Text</Button>
+              {/* WhatsApp integration requires a specific API or library */}
+              <Button onClick={() => sendDocument('whatsapp')} disabled>Send via WhatsApp (Not Implemented)</Button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Signature Dialog */}
       <Dialog open={showSignDialog} onOpenChange={setShowSignDialog}>
@@ -579,7 +583,6 @@ const ViewDocument = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    )}
     </div>
   );
 };

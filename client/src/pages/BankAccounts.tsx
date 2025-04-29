@@ -67,7 +67,10 @@ export default function BankAccounts() {
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Bank Accounts</h2>
+        <div className="flex items-center gap-2">
+            <Landmark className="h-5 w-5 text-muted-foreground" />
+            <h2 className="text-3xl font-bold tracking-tight">Bank Accounts</h2>
+          </div>
         <div className="flex items-center gap-2">
           <Link href="/banking/accounts/add">
             <Button>

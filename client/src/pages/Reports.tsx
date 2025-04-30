@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -12,6 +11,68 @@ const Reports = () => {
   const [timeRange, setTimeRange] = useState<string>("month");
   const [propertyFilter, setPropertyFilter] = useState<string>("all");
   const [financialReportType, setFinancialReportType] = useState<string>("overview");
+  const [showDetailedReport, setShowDetailedReport] = useState<boolean>(false);
+  const [currentDetailReport, setCurrentDetailReport] = useState<string>("");
+
+  // Function to handle PDF export
+  const handleExportPDF = () => {
+    // In a real application, you would generate a PDF using a library like jsPDF
+    // For demonstration purposes, we'll just show an alert
+    alert(`Exporting ${reportType} report as PDF...`);
+    // Mock download behavior
+    setTimeout(() => {
+      alert("PDF export complete!");
+    }, 1000);
+  };
+
+  // Function to handle CSV export
+  const handleExportCSV = () => {
+    // In a real application, you would generate a CSV file
+    // For demonstration purposes, we'll just show an alert
+    alert(`Exporting ${reportType} report as CSV...`);
+
+    let data = [];
+    if (reportType === "financial") {
+      if (financialReportType === "overview") {
+        data = financialData;
+      } else if (financialReportType === "cashflow") {
+        data = cashFlowData;
+      } else if (financialReportType === "profitloss") {
+        data = propertyPLData;
+      } else if (financialReportType === "roi") {
+        data = roiData;
+      } else if (financialReportType === "tax") {
+        data = taxData;
+      }
+    } else if (reportType === "occupancy") {
+      data = demographicData;
+    } else if (reportType === "maintenance") {
+      data = maintenanceData;
+    }
+
+    // Mock download behavior
+    setTimeout(() => {
+      alert("CSV export complete!");
+    }, 1000);
+  };
+
+  // Function to handle View Report button clicks
+  const handleViewReport = (reportName: string) => {
+    setCurrentDetailReport(reportName);
+    setShowDetailedReport(true);
+
+    // Scroll to the top to show the detailed report
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // For now, we'll just show an alert for demonstration
+    alert(`Viewing detailed ${reportName} report...`);
+  };
+
+  // Function to close detailed report view
+  const closeDetailedReport = () => {
+    setShowDetailedReport(false);
+    setCurrentDetailReport("");
+  };
 
   // Sample data for financial report
   const financialData = [
@@ -102,13 +163,13 @@ const Reports = () => {
           <h1 className="text-3xl font-bold">Reports & Analytics</h1>
           <p className="text-muted-foreground">Generate insights and track performance metrics</p>
         </div>
-        
+
         <div className="flex space-x-2 mt-4 md:mt-0">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleExportPDF}>
             <FileText className="mr-2 h-4 w-4" />
             Export PDF
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleExportCSV}>
             <Download className="mr-2 h-4 w-4" />
             Export CSV
           </Button>
@@ -151,7 +212,7 @@ const Reports = () => {
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div>
                 <label className="text-sm font-medium mb-2 block">Property</label>
                 <Select value={propertyFilter} onValueChange={setPropertyFilter}>
@@ -168,7 +229,7 @@ const Reports = () => {
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div>
                 <Button className="mt-6" variant="outline">Apply Filters</Button>
               </div>
@@ -202,7 +263,7 @@ const Reports = () => {
                 Tax Report
               </TabsTrigger>
             </TabsList>
-          
+
             {/* Overview Report */}
             <TabsContent value="overview">
               <Card>
@@ -288,7 +349,7 @@ const Reports = () => {
                       </RechartsBarChart>
                     </RechartsResponsiveContainer>
                   </div>
-                  
+
                   <div className="mt-6">
                     <h3 className="text-lg font-medium mb-2">Cash Flow Summary</h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -357,7 +418,7 @@ const Reports = () => {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button className="w-full">Generate Detailed Cash Flow Report</Button>
+                  <Button className="w-full" onClick={() => handleViewReport("Detailed Cash Flow Report")}>Generate Detailed Cash Flow Report</Button>
                 </CardFooter>
               </Card>
             </TabsContent>
@@ -395,7 +456,7 @@ const Reports = () => {
                       </RechartsBarChart>
                     </RechartsResponsiveContainer>
                   </div>
-                  
+
                   <div className="mt-6">
                     <h3 className="text-lg font-medium mb-2">P&L Summary by Property</h3>
                     <table className="w-full border-collapse">
@@ -458,7 +519,7 @@ const Reports = () => {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button className="w-full">Generate Detailed P&L Report</Button>
+                  <Button className="w-full" onClick={() => handleViewReport("Detailed P&L Report")}>Generate Detailed P&L Report</Button>
                 </CardFooter>
               </Card>
             </TabsContent>
@@ -496,7 +557,7 @@ const Reports = () => {
                       </RechartsBarChart>
                     </RechartsResponsiveContainer>
                   </div>
-                  
+
                   <div className="mt-6">
                     <h3 className="text-lg font-medium mb-2">ROI Analysis</h3>
                     <table className="w-full border-collapse">
@@ -559,7 +620,7 @@ const Reports = () => {
                   </div>
 
                   <div className="mt-6 p-4 bg-amber-50 dark:bg-amber-950 rounded-md">
-                    <h3 className="text-lg font-medium mb-2 text-amber-800 dark:text-amber-300">ROI Analysis Notes</h3>
+                    <h3 className="text-lg font-medium mb-2 text-amber800 dark:text-amber-300">ROI Analysis Notes</h3>
                     <ul className="list-disc pl-5 space-y-1 text-amber-700 dark:text-amber-400">
                       <li>ROI calculations include both cash flow and property appreciation</li>
                       <li>Sunset Heights shows the highest ROI at 4.09%</li>
@@ -569,7 +630,7 @@ const Reports = () => {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button className="w-full">Export Detailed ROI Analysis</Button>
+                  <Button className="w-full" onClick={() => handleViewReport("Detailed ROI Analysis")}>Export Detailed ROI Analysis</Button>
                 </CardFooter>
               </Card>
             </TabsContent>
@@ -722,7 +783,7 @@ const Reports = () => {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button className="w-full">Export Tax Report for Accountant</Button>
+                  <Button className="w-full" onClick={() => handleViewReport("Detailed Tax Report")}>Export Tax Report for Accountant</Button>
                 </CardFooter>
               </Card>
             </TabsContent>
@@ -837,10 +898,10 @@ const Reports = () => {
             </p>
           </CardContent>
           <CardFooter>
-            <Button variant="outline" className="w-full">View Full Report</Button>
+            <Button variant="outline" className="w-full" onClick={() => handleViewReport("Tenant Demographics")}>View Full Report</Button>
           </CardFooter>
         </Card>
-        
+
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-lg">Payment Analytics</CardTitle>
@@ -857,10 +918,10 @@ const Reports = () => {
             </p>
           </CardContent>
           <CardFooter>
-            <Button variant="outline" className="w-full">View Report</Button>
+            <Button variant="outline" className="w-full" onClick={() => handleViewReport("Payment Analytics")}>View Report</Button>
           </CardFooter>
         </Card>
-        
+
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-lg">Market Comparison</CardTitle>
@@ -877,7 +938,7 @@ const Reports = () => {
             </p>
           </CardContent>
           <CardFooter>
-            <Button variant="outline" className="w-full">View Report</Button>
+            <Button variant="outline" className="w-full" onClick={() => handleViewReport("Market Comparison")}>View Report</Button>
           </CardFooter>
         </Card>
       </div>

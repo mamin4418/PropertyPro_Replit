@@ -81,6 +81,10 @@ import AddBankAccount from "@/pages/AddBankAccount";
 import BankTransactions from "@/pages/BankTransactions";
 import BankIntegration from "@/pages/BankIntegration";
 import HelpCenter from './pages/HelpCenter';
+import ViewBankAccount from "@/pages/ViewBankAccount"; // Added
+import EditBankAccount from "@/pages/EditBankAccount"; // Added
+import ViewTransaction from "@/pages/ViewTransaction"; // Added
+import MatchTransaction from "@/pages/MatchTransaction"; // Added
 
 
 function AppRoutes() {
@@ -276,7 +280,11 @@ function AppRoutes() {
               <Route path="/banking" component={Banking} />
               <Route path="/banking/accounts" component={BankAccounts} />
               <Route path="/banking/accounts/add" component={AddBankAccount} />
+              <Route path="/banking/accounts/:id" component={ViewBankAccount} />
+              <Route path="/banking/accounts/:id/edit" component={EditBankAccount} />
               <Route path="/banking/transactions" component={BankTransactions} />
+              <Route path="/banking/transactions/:id" component={ViewTransaction} />
+              <Route path="/banking/transactions/:id/match" component={MatchTransaction} />
               <Route path="/banking/integration" component={BankIntegration} />
 
               {/* Make Dashboard accessible without login for testing */}

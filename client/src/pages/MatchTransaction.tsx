@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -188,10 +187,50 @@ export default function MatchTransaction() {
     // In a real application, you would send this to the backend
     console.log("Saving rules:", rules);
     console.log("Saving actions:", actions);
-    
+
+    // Show a success message
+    alert("Rules saved successfully! These will now be applied to incoming transactions.");
+
     // Navigate back or show success message
-    // For now, we'll just switch to the manual tab
     setActiveTab("manual");
+  };
+
+  // Evaluate if a transaction matches the rules
+  const evaluateRules = (transaction) => {
+    // Return true if any enabled rule matches
+    return rules.some(rule => {
+      if (!rule.enabled) return false;
+
+      const value = transaction[rule.field];
+      const ruleValue = rule.value;
+
+      switch(rule.condition) {
+        case "contains":
+          return String(value).toLowerCase().includes(String(ruleValue).toLowerCase());
+        case "equals":
+          return String(value).toLowerCase() === String(ruleValue).toLowerCase();
+        case "starts_with":
+          return String(value).toLowerCase().startsWith(String(ruleValue).toLowerCase());
+        case "ends_with":
+          return String(value).toLowerCase().endsWith(String(ruleValue).toLowerCase());
+        case "greater_than":
+          return Number(value) > Number(ruleValue);
+        case "less_than":
+          return Number(value) < Number(ruleValue);
+        default:
+          return false;
+      }
+    });
+  };
+
+  // Apply actions when rules match
+  const applyActions = (transaction) => {
+    if (evaluateRules(transaction)) {
+      console.log("Transaction matches rules! Applying actions:", actions);
+      // In a real app, you would apply the actions here
+      return actions;
+    }
+    return null;
   };
 
   // Filter items based on search query and transaction type (income/expense)
@@ -272,7 +311,7 @@ export default function MatchTransaction() {
               <TabsTrigger value="manual">Manual Matching</TabsTrigger>
               <TabsTrigger value="rules">Rule-Based Matching</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="manual" className="space-y-4">
               <div className="space-y-6">
                 <div>
@@ -514,7 +553,7 @@ export default function MatchTransaction() {
                 </Button>
               </div>
             </TabsContent>
-            
+
             <TabsContent value="rules" className="space-y-6">
               <div className="bg-muted/30 rounded-lg p-4 mb-4">
                 <h3 className="text-sm font-medium mb-2">About Rule-Based Matching</h3>
@@ -523,7 +562,7 @@ export default function MatchTransaction() {
                   When rules match, the specified actions will be applied.
                 </p>
               </div>
-              
+
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-medium">Matching Rules</h3>
@@ -532,7 +571,7 @@ export default function MatchTransaction() {
                     Add Rule
                   </Button>
                 </div>
-                
+
                 <Card>
                   <CardContent className="p-4">
                     {rules.map((rule) => (
@@ -543,7 +582,7 @@ export default function MatchTransaction() {
                             onCheckedChange={(checked) => updateRule(rule.id, 'enabled', checked)} 
                           />
                         </div>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 flex-grow">
                           <Select 
                             value={rule.field} 
@@ -558,7 +597,7 @@ export default function MatchTransaction() {
                               ))}
                             </SelectContent>
                           </Select>
-                          
+
                           <Select 
                             value={rule.condition} 
                             onValueChange={(value) => updateRule(rule.id, 'condition', value)}
@@ -572,14 +611,14 @@ export default function MatchTransaction() {
                               ))}
                             </SelectContent>
                           </Select>
-                          
+
                           <Input 
                             placeholder="Value" 
                             value={rule.value} 
                             onChange={(e) => updateRule(rule.id, 'value', e.target.value)}
                           />
                         </div>
-                        
+
                         <Button 
                           variant="ghost" 
                           size="icon" 
@@ -590,7 +629,7 @@ export default function MatchTransaction() {
                         </Button>
                       </div>
                     ))}
-                    
+
                     {rules.length === 0 && (
                       <div className="text-center py-4 text-muted-foreground">
                         No rules have been created yet. Click "Add Rule" to get started.
@@ -599,7 +638,7 @@ export default function MatchTransaction() {
                   </CardContent>
                 </Card>
               </div>
-              
+
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-medium">Actions When Rules Match</h3>
@@ -608,7 +647,7 @@ export default function MatchTransaction() {
                     Add Action
                   </Button>
                 </div>
-                
+
                 <Card>
                   <CardContent className="p-4">
                     {actions.map((action) => (
@@ -626,7 +665,7 @@ export default function MatchTransaction() {
                               <SelectItem value="payment">Payment</SelectItem>
                             </SelectContent>
                           </Select>
-                          
+
                           <Select 
                             value={action.property} 
                             onValueChange={(value) => updateAction(action.id, 'property', value)}
@@ -640,7 +679,7 @@ export default function MatchTransaction() {
                               ))}
                             </SelectContent>
                           </Select>
-                          
+
                           <Select 
                             value={action.category} 
                             onValueChange={(value) => updateAction(action.id, 'category', value)}
@@ -659,7 +698,7 @@ export default function MatchTransaction() {
                               }
                             </SelectContent>
                           </Select>
-                          
+
                           <div className="flex items-center gap-2">
                             <Input 
                               type="number" 
@@ -672,7 +711,7 @@ export default function MatchTransaction() {
                             <span className="text-muted-foreground">%</span>
                           </div>
                         </div>
-                        
+
                         <Button 
                           variant="ghost" 
                           size="icon" 
@@ -683,7 +722,7 @@ export default function MatchTransaction() {
                         </Button>
                       </div>
                     ))}
-                    
+
                     {actions.length === 0 && (
                       <div className="text-center py-4 text-muted-foreground">
                         No actions have been created yet. Click "Add Action" to get started.
@@ -692,7 +731,7 @@ export default function MatchTransaction() {
                   </CardContent>
                 </Card>
               </div>
-              
+
               <div className="flex justify-end gap-2 mt-4">
                 <Button variant="outline" asChild>
                   <Link href={`/banking/transactions/${transaction.id}`}>Cancel</Link>

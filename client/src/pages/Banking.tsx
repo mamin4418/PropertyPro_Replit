@@ -188,9 +188,20 @@ export default function Banking() {
               <CardDescription>Match transactions and reconcile your accounts</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
-                <p>No pending reconciliation tasks.</p>
-                <Button variant="outline">Start New Reconciliation</Button>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">Current Reconciliation Status</p>
+                    <p className="text-sm text-muted-foreground">77% of transactions matched</p>
+                  </div>
+                  <div className="text-amber-500 font-medium">In Progress</div>
+                </div>
+                
+                <div className="flex justify-center mt-4">
+                  <Link href="/banking/reconciliation">
+                    <Button>View Reconciliation Dashboard</Button>
+                  </Link>
+                </div>
               </div>
             </CardContent>
           </Card>

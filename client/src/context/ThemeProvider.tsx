@@ -1,7 +1,7 @@
 
 import React, { createContext, useState, useEffect } from "react";
 
-type Theme = "default" | "dark-theme" | "forest-theme" | "ocean-theme" | "sunset-theme" | 
+type Theme = "default" | "dark-theme" | "slate-theme" | "navy-theme" | "slate-blue-theme" | 
   "purple-theme" | "emerald-theme" | "sky-theme" | "rose-theme" | "atom-theme";
 
 interface ThemeContextType {
@@ -20,7 +20,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (typeof window !== "undefined") {
       const savedTheme = localStorage.getItem("pms-theme") as Theme | null;
       if (savedTheme && [
-        "default", "dark-theme", "forest-theme", "ocean-theme", "sunset-theme",
+        "default", "dark-theme", "slate-theme", "navy-theme", "slate-blue-theme",
         "purple-theme", "emerald-theme", "sky-theme", "rose-theme", "atom-theme"
       ].includes(savedTheme)) {
         return savedTheme;
@@ -37,9 +37,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       // List of all possible theme classes
       const themeClasses = [
         "dark-theme", 
-        "forest-theme", 
-        "ocean-theme", 
-        "sunset-theme",
+        "slate-theme", 
+        "navy-theme", 
+        "slate-blue-theme",
         "purple-theme",
         "emerald-theme",
         "sky-theme",

@@ -46,7 +46,6 @@ function SidebarNavItem({ href, icon: Icon, children, indented = false }: Sideba
 }
 
 // Using Building icon as our bank icon instead
-import { Building } from "lucide-react";
 const BankIcon = Building;
 
 export default function Sidebar() {

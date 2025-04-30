@@ -51,6 +51,7 @@ import AddLead from "./pages/AddLead";
 import Applications from "./pages/Applications";
 import ApplicationTemplates from "./pages/ApplicationTemplates";
 import CreateApplicationTemplate from "./pages/CreateApplicationTemplate";
+import NewApplication from "@/pages/NewApplication"; // Added import
 import VacancyListing from "./pages/VacancyListing";
 import ManageVacancies from "./pages/ManageVacancies";
 import CreateVacancy from "./pages/CreateVacancy";
@@ -245,6 +246,7 @@ function AppRoutes() {
               <ProtectedRoute path="/view-lead/:id" component={ViewContact} />
               <ProtectedRoute path="/edit-lead/:id" component={EditContact} />
               <ProtectedRoute path="/applications" component={Applications} />
+              <ProtectedRoute path="/applications/new" component={NewApplication} /> {/* Added new route */}
               <ProtectedRoute path="/application-templates" component={ApplicationTemplates} />
               <ProtectedRoute path="/create-template" component={CreateApplicationTemplate} />
               <ProtectedRoute path="/edit-template/:id" component={CreateApplicationTemplate} />

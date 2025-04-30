@@ -90,6 +90,7 @@ import ImportTransaction from './pages/ImportTransaction';
 import { ThemeProvider } from "./context/ThemeProvider";
 import ReconciliationDashboard from "@/pages/ReconciliationDashboard"; // Added import
 import TransactionRules from "@/pages/TransactionRules"; // Added import
+import { lazy } from 'react';
 
 
 function AppRoutes() {
@@ -233,8 +234,19 @@ function AppRoutes() {
               <ProtectedRoute path="/view-vacancy/:id" component={ViewVacancy} />
               <ProtectedRoute path="/vacancy/:id" component={ViewVacancy} />
 
+              {/* Reports Routes */}
               <Route path="/reports" component={Reports} />
-              <ProtectedRoute path="/settings" component={Settings} />
+
+              {/* Utilities Management */}
+              <Route path="/utilities" component={lazy(() => import('./pages/Utilities'))} />
+              <Route path="/add-utility-account" component={lazy(() => import('./pages/AddUtilityAccount'))} />
+
+              {/* Property Inspections */}
+              <Route path="/property-inspections" component={lazy(() => import('./pages/PropertyInspections'))} />
+              <Route path="/schedule-inspection" component={lazy(() => import('./pages/ScheduleInspection'))} />
+
+              {/* Settings Routes */}
+              <Route path="/settings" component={Settings} />
               <Route path="/help-center" component={HelpCenter} />
               <Route path="/documentation" component={HelpCenter} />
               <Route path="/tutorial" component={HelpCenter} />

@@ -16,7 +16,9 @@ import {
   UserCheck,
   LogOut,
   Shield,
-  Menu as MenuIcon
+  Menu as MenuIcon,
+  Zap,
+  ClipboardCheck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ThemeSwitch from "./ThemeSwitch";
@@ -104,6 +106,24 @@ export default function Sidebar() {
         <SidebarNavItem href="/mortgages" icon={DollarSign} indented>
           Mortgages
         </SidebarNavItem>
+
+        <div className="pt-4 pb-2">
+          <h3 className="px-3 text-xs font-semibold text-muted-foreground">UTILITIES</h3>
+        </div>
+
+        <SidebarNavItem href="/utilities" icon={Zap}>
+          Utilities
+        </SidebarNavItem>
+
+
+        <div className="pt-4 pb-2">
+          <h3 className="px-3 text-xs font-semibold text-muted-foreground">PROPERTY INSPECTIONS</h3>
+        </div>
+
+        <SidebarNavItem href="/property-inspections" icon={ClipboardCheck}>
+          Inspections
+        </SidebarNavItem>
+
 
         <div className="pt-4 pb-2">
           <h3 className="px-3 text-xs font-semibold text-muted-foreground">CONTACTS</h3>

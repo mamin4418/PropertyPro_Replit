@@ -46,7 +46,7 @@ const ThemeSwitcher = () => {
           />
         ))}
       </div>
-
+      
       <div className="grid grid-cols-5 gap-2">
         {themes.slice(5).map((theme) => (
           <button

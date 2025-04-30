@@ -86,6 +86,7 @@ import EditBankAccount from "@/pages/EditBankAccount"; // Added
 import ViewTransaction from "@/pages/ViewTransaction"; // Added
 import MatchTransaction from "@/pages/MatchTransaction"; // Added
 import ImportTransaction from './pages/ImportTransaction'; // Added
+import { ThemeProvider } from "./context/ThemeProvider"; // Added
 
 
 function AppRoutes() {
@@ -304,14 +305,16 @@ function AppRoutes() {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <TooltipProvider>
-          <AppRoutes />
-          <Toaster />
-        </TooltipProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <TooltipProvider>
+            <AppRoutes />
+            <Toaster />
+          </TooltipProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
 

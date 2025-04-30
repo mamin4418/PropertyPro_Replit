@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useEffect } from "react";
 
 type Theme = "default" | "dark-theme" | "forest-theme" | "ocean-theme" | "sunset-theme" | 
@@ -32,29 +33,57 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Apply theme whenever it changes
   useEffect(() => {
-    const themeClasses = [
-      "default",
-      "dark-theme", 
-      "forest-theme", 
-      "ocean-theme", 
-      "sunset-theme",
-      "lavender-theme",
-      "honey-theme",
-      "sky-theme",
-      "mint-theme",
-      "atom-theme"
-    ];
+    const applyThemeToElements = () => {
+      // List of all possible theme classes
+      const themeClasses = [
+        "dark-theme", 
+        "forest-theme", 
+        "ocean-theme", 
+        "sunset-theme",
+        "lavender-theme",
+        "honey-theme",
+        "sky-theme",
+        "mint-theme",
+        "atom-theme"
+      ];
 
-    // Remove all theme classes first
-    document.documentElement.classList.remove(...themeClasses);
+      // List of elements to apply theme to
+      const elements = [
+        document.documentElement, 
+        document.body,
+        document.querySelector('.app-container'),
+        document.querySelector('.app-layout'),
+        document.querySelector('.app-sidebar'),
+        document.querySelector('.app-main')
+      ].filter(Boolean);
+      
+      // Remove all theme classes from each element
+      elements.forEach(el => {
+        if (el) {
+          el.classList.remove(...themeClasses);
+          
+          // Add new theme class if not default
+          if (currentTheme !== 'default') {
+            el.classList.add(currentTheme);
+          }
+        }
+      });
+    };
 
-    // Apply the new theme
-    document.documentElement.classList.add(currentTheme);
-
+    // Apply the theme
+    applyThemeToElements();
+    
     // Store in localStorage
     localStorage.setItem("pms-theme", currentTheme);
 
+    // Force reflow with a slight delay to ensure theme is applied
+    const timer = setTimeout(() => {
+      applyThemeToElements();
+    }, 50);
+    
     console.log("Applied theme:", currentTheme);
+    
+    return () => clearTimeout(timer);
   }, [currentTheme]);
 
   const changeTheme = (theme: Theme) => {

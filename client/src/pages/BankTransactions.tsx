@@ -222,9 +222,14 @@ export default function BankTransactions() {
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Link href={`/banking/transactions/${transaction.id}`}>
-                      <Button variant="outline" size="sm">View</Button>
-                    </Link>
+                    <div className="flex justify-end gap-2">
+                      <Link href={`/banking/transactions/${transaction.id}`}>
+                        <Button variant="outline" size="sm">View</Button>
+                      </Link>
+                      <Link href={`/banking/transactions/${transaction.id}/match`}>
+                        <Button variant="default" size="sm">Match</Button>
+                      </Link>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

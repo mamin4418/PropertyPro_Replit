@@ -2,7 +2,7 @@
 import React, { createContext, useState, useEffect } from "react";
 
 type Theme = "default" | "dark-theme" | "forest-theme" | "ocean-theme" | "sunset-theme" | 
-  "lavender-theme" | "honey-theme" | "sky-theme" | "mint-theme" | "atom-theme";
+  "purple-theme" | "emerald-theme" | "sky-theme" | "rose-theme" | "atom-theme";
 
 interface ThemeContextType {
   currentTheme: Theme;
@@ -21,7 +21,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const savedTheme = localStorage.getItem("pms-theme") as Theme | null;
       if (savedTheme && [
         "default", "dark-theme", "forest-theme", "ocean-theme", "sunset-theme",
-        "lavender-theme", "honey-theme", "sky-theme", "mint-theme", "atom-theme"
+        "purple-theme", "emerald-theme", "sky-theme", "rose-theme", "atom-theme"
       ].includes(savedTheme)) {
         return savedTheme;
       }
@@ -40,10 +40,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         "forest-theme", 
         "ocean-theme", 
         "sunset-theme",
-        "lavender-theme",
-        "honey-theme",
+        "purple-theme",
+        "emerald-theme",
         "sky-theme",
-        "mint-theme",
+        "rose-theme",
         "atom-theme"
       ];
 

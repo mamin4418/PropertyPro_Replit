@@ -24,7 +24,7 @@ localPort = 5002
 externalPort = 3001
 
 [workflows]
-runButton = "Run With Updated Dependencies"
+runButton = "Fix and Run With Dotenv"
 
 [[workflows.workflow]]
 name = "Project"
@@ -244,6 +244,27 @@ args = "rm -rf node_modules/.vite"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "echo \"Starting server with updated dependencies...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "NODE_ENV=development tsx server/index.ts"
+
+[[workflows.workflow]]
+name = "Fix and Run With Dotenv"
+author = 41484040
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Installing dotenv package...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm install dotenv"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Starting server...\""
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

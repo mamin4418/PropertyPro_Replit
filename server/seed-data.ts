@@ -1,11 +1,10 @@
-
 import { storage } from "./storage";
 import { seedApplications } from "./seed-applications";
 
 // Function to seed the database with sample data
 async function seedDatabase() {
   console.log("Seeding database with insurance, mortgage, and appliance records...");
-  
+
   // Sample properties for reference (if they don't exist yet)
   const properties = [
     {
@@ -61,7 +60,7 @@ async function seedDatabase() {
       console.log(`Property ${property.name} may already exist, continuing...`);
     }
   }
-  
+
   // Sample insurance records
   const insurances = [
     {
@@ -253,18 +252,6 @@ async function seedDatabase() {
       isActive: true
     }
   ];
-
-  // Add insurance records
-  for (const insurance of insurances) {
-    await storage.createInsurance(insurance);
-    console.log(`Created insurance: ${insurance.policyNumber} for property ${insurance.propertyId}`);
-  }
-
-  // Add mortgage records
-  for (const mortgage of mortgages) {
-    await storage.createMortgage(mortgage);
-    console.log(`Created mortgage: ${mortgage.loanNumber} for property ${mortgage.propertyId}`);
-  }
 
   // Sample appliance records
   const appliances = [
@@ -507,7 +494,7 @@ async function seedDatabase() {
       console.log(`Error creating appliance, may already exist: ${error}`);
     }
   }
-  
+
   // Add some additional test appliances with explicit IDs for testing
   const testAppliances = [
     {
@@ -547,7 +534,7 @@ async function seedDatabase() {
       updatedAt: new Date()
     }
   ];
-  
+
   for (const appliance of testAppliances) {
     try {
       await storage.createAppliance(appliance);
@@ -568,9 +555,49 @@ async function seedDatabase() {
   }
 
   console.log("Database seeding completed!");
-  
+
   // Seed application data
   await seedApplications();
+
+
+  // Try to add insurance records if they don't exist
+  try {
+    const existingInsurances = await storage.getAllInsurances();
+    if (existingInsurances.length === 0) {
+      for (const insurance of insurances) {
+        await storage.createInsurance(insurance);
+        console.log(`Created insurance record: ${insurance.policyNumber}`);
+      }
+    }
+  } catch (error) {
+    console.log("Error creating insurance records:", error);
+  }
+
+  // Seed utilities and inspections data
+  await seedUtilitiesAndInspections();
+}
+
+async function seedUtilitiesAndInspections() {
+  const utilities = [
+    { propertyId: 1, utilityType: "Water", provider: "City Water", accountNumber: "12345", lastBillAmount: 50.00, nextDueDate: new Date("2024-05-15") },
+    { propertyId: 2, utilityType: "Gas", provider: "Natural Gas Co.", accountNumber: "67890", lastBillAmount: 75.00, nextDueDate: new Date("2024-06-10") },
+    { propertyId: 3, utilityType: "Electricity", provider: "Power Grid", accountNumber: "13579", lastBillAmount: 100.00, nextDueDate: new Date("2024-07-01") }
+  ];
+
+  const inspections = [
+    { propertyId: 1, inspectionType: "Annual", inspector: "ABC Inspections", date: new Date("2023-10-26"), notes: "All systems operational", report: "https://example.com/report1" },
+    { propertyId: 2, inspectionType: "Pre-Tenant", inspector: "XYZ Inspection", date: new Date("2024-01-15"), notes: "Minor repairs needed", report: "https://example.com/report2" },
+    { propertyId: 3, inspectionType: "Post-Tenant", inspector: "ABC Inspections", date: new Date("2024-03-10"), notes: "Property in good condition", report: "https://example.com/report3" }
+  ];
+
+  for (const util of utilities) {
+    await storage.createUtility(util);
+    console.log(`Created utility record: ${util.utilityType} for property ${util.propertyId}`);
+  }
+  for (const insp of inspections) {
+    await storage.createInspection(insp);
+    console.log(`Created inspection record: ${insp.inspectionType} for property ${insp.propertyId}`);
+  }
 }
 
 // Call the function if this script is executed directly

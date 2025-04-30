@@ -1,6 +1,7 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 import { Plus, FileText, Search, Filter, ArrowUpDown, Download, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,9 +26,49 @@ import {
 const UtilityManagement = () => {
   const [, navigate] = useLocation();
   const [selectedProperty, setSelectedProperty] = useState<string>("all");
+  const [utilityAccounts, setUtilityAccounts] = useState<any[]>([]);
+  const [utilityBills, setUtilityBills] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
   
-  // Mock data for utility accounts
-  const utilityAccounts = [
+  useEffect(() => {
+    const fetchUtilityData = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch utility accounts
+        const accountsResponse = await fetch('/api/utilities/accounts');
+        if (!accountsResponse.ok) {
+          throw new Error('Failed to fetch utility accounts');
+        }
+        const accountsData = await accountsResponse.json();
+        setUtilityAccounts(accountsData);
+        
+        // Fetch utility bills
+        const billsResponse = await fetch('/api/utilities/bills');
+        if (!billsResponse.ok) {
+          throw new Error('Failed to fetch utility bills');
+        }
+        const billsData = await billsResponse.json();
+        setUtilityBills(billsData);
+        
+      } catch (error) {
+        console.error('Error fetching utility data:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load utility data. Please try again later.",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchUtilityData();
+  }, [toast]);
+
+  // Use API data, fallback to sample data if API fails
+  const displayUtilityAccounts = utilityAccounts.length ? utilityAccounts : [
     {
       id: 1,
       propertyId: 1,
@@ -90,8 +131,8 @@ const UtilityManagement = () => {
     },
   ];
   
-  // Mock data for utility bills
-  const utilityBills = [
+  // Use API data, fallback to sample data if API fails
+  const displayUtilityBills = utilityBills.length ? utilityBills : [
     {
       id: 1,
       utilityAccountId: 1,
@@ -156,13 +197,13 @@ const UtilityManagement = () => {
 
   // Filter utilities based on selected property
   const filteredAccounts = selectedProperty === "all" 
-    ? utilityAccounts 
-    : utilityAccounts.filter(account => account.propertyId.toString() === selectedProperty);
+    ? displayUtilityAccounts 
+    : displayUtilityAccounts.filter(account => account.propertyId.toString() === selectedProperty);
   
   const filteredBills = selectedProperty === "all"
-    ? utilityBills
-    : utilityBills.filter(bill => {
-        const account = utilityAccounts.find(acc => acc.id === bill.utilityAccountId);
+    ? displayUtilityBills
+    : displayUtilityBills.filter(bill => {
+        const account = displayUtilityAccounts.find(acc => acc.id === bill.utilityAccountId);
         return account && account.propertyId.toString() === selectedProperty;
       });
   
@@ -218,7 +259,7 @@ const UtilityManagement = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ${utilityAccounts.reduce((sum, account) => sum + account.averageCost, 0).toLocaleString()}
+              ${displayUtilityAccounts.reduce((sum, account) => sum + account.averageCost, 0).toLocaleString()}
             </div>
           </CardContent>
         </Card>
@@ -229,7 +270,7 @@ const UtilityManagement = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {utilityBills.filter(bill => bill.status === "due" || bill.status === "overdue").length}
+              {displayUtilityBills.filter(bill => bill.status === "due" || bill.status === "overdue").length}
             </div>
           </CardContent>
         </Card>

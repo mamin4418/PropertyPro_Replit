@@ -87,6 +87,26 @@ export interface IStorage {
   createAppliance(appliance: InsertAppliance): Promise<Appliance>;
   updateAppliance(id: number, appliance: Partial<InsertAppliance>): Promise<Appliance | undefined>;
   deleteAppliance(id: number): Promise<boolean>;
+  getUtilityAccounts(): Promise<any[]>;
+  getUtilityAccount(id: number): Promise<any | undefined>;
+  createUtilityAccount(account: any): Promise<any>;
+  updateUtilityAccount(id: number, account: any): Promise<any | undefined>;
+  deleteUtilityAccount(id: number): Promise<boolean>;
+  getUtilityBills(): Promise<any[]>;
+  getUtilityBill(id: number): Promise<any | undefined>;
+  createUtilityBill(bill: any): Promise<any>;
+  updateUtilityBill(id: number, bill: any): Promise<any | undefined>;
+  deleteUtilityBill(id: number): Promise<boolean>;
+  getInspections():Promise<any[]>;
+  getInspection(id: number): Promise<any | undefined>;
+  createInspection(inspection: any): Promise<any>;
+  updateInspection(id: number, inspection: any): Promise<any | undefined>;
+  deleteInspection(id: number): Promise<boolean>;
+  getCompletedInspections(): Promise<any[]>;
+  getCompletedInspection(id: number): Promise<any | undefined>;
+  createCompletedInspection(inspection: any): Promise<any>;
+  updateCompletedInspection(id: number, inspection: any): Promise<any | undefined>;
+  deleteCompletedInspection(id: number): Promise<boolean>;
 
 }
 
@@ -104,6 +124,10 @@ export class MemStorage implements IStorage {
   private insurances: Map<number, Insurance> = new Map();
   private mortgages: Map<number, Mortgage> = new Map();
   private maintenanceRequests: Map<number, MaintenanceRequest> = new Map();
+  public utilityAccounts: Map<number, any> = new Map();
+  public utilityBills: Map<number, any> = new Map();
+  public inspections: Map<number, any> = new Map();
+  public completedInspections: Map<number, any> = new Map();
 
   private userIdCounter: number = 1;
   private contactIdCounter: number = 1;
@@ -115,6 +139,10 @@ export class MemStorage implements IStorage {
   private insuranceIdCounter: number = 1;
   private mortgageIdCounter: number = 1;
   private maintenanceRequestIdCounter: number = 1;
+  private utilityAccountIdCounter: number = 1;
+  private utilityBillIdCounter: number = 1;
+  private inspectionIdCounter: number = 1;
+  private completedInspectionIdCounter: number = 1;
 
 
   constructor() {
@@ -133,6 +161,10 @@ export class MemStorage implements IStorage {
     this.createAppliance({unitId: 1, type: "Oven", make: "LG", model: "LFXS28968S", serialNumber: "9876543210"});
     this.createAppliance({unitId: 2, type: "Washer", make: "Samsung", model: "WF45R6300AW", serialNumber: "1357913579"});
     this.createAppliance({unitId: 2, type: "Dryer", make: "Samsung", model: "DV45R6300AW", serialNumber: "2468024680"});
+    this.createUtilityAccount({propertyId: 1, utilityProvider: "Sample Electric", accountNumber: "11111"});
+    this.createUtilityBill({propertyId: 1, utilityAccountId: 1, amount: 100, dueDate: new Date()});
+    this.createInspection({propertyId: 1, inspector: "John Doe", date: new Date(), notes: "All good"});
+    this.createCompletedInspection({propertyId: 1, inspectionId: 1, dateCompleted: new Date(), notes: "Inspection completed successfully"});
 
   }
 
@@ -708,6 +740,106 @@ export class MemStorage implements IStorage {
     const appliance = appliances.find(a => a.id === id);
     console.log(`Fetching appliance with ID ${id}:`, appliance);
     return appliance || null;
+  }
+
+  async getUtilityAccounts(): Promise<any[]> {
+    return Array.from(this.utilityAccounts.values());
+  }
+
+  async getUtilityAccount(id: number): Promise<any | undefined> {
+    return this.utilityAccounts.get(id);
+  }
+
+  async createUtilityAccount(account: any): Promise<any> {
+    const id = this.utilityAccountIdCounter++;
+    this.utilityAccounts.set(id, { ...account, id });
+    return this.utilityAccounts.get(id);
+  }
+
+  async updateUtilityAccount(id: number, account: any): Promise<any | undefined> {
+    const existingAccount = this.utilityAccounts.get(id);
+    if (!existingAccount) return undefined;
+    this.utilityAccounts.set(id, { ...existingAccount, ...account });
+    return this.utilityAccounts.get(id);
+  }
+
+  async deleteUtilityAccount(id: number): Promise<boolean> {
+    return this.utilityAccounts.delete(id);
+  }
+
+  async getUtilityBills(): Promise<any[]> {
+    return Array.from(this.utilityBills.values());
+  }
+
+  async getUtilityBill(id: number): Promise<any | undefined> {
+    return this.utilityBills.get(id);
+  }
+
+  async createUtilityBill(bill: any): Promise<any> {
+    const id = this.utilityBillIdCounter++;
+    this.utilityBills.set(id, { ...bill, id });
+    return this.utilityBills.get(id);
+  }
+
+  async updateUtilityBill(id: number, bill: any): Promise<any | undefined> {
+    const existingBill = this.utilityBills.get(id);
+    if (!existingBill) return undefined;
+    this.utilityBills.set(id, { ...existingBill, ...bill });
+    return this.utilityBills.get(id);
+  }
+
+  async deleteUtilityBill(id: number): Promise<boolean> {
+    return this.utilityBills.delete(id);
+  }
+
+  async getInspections(): Promise<any[]> {
+    return Array.from(this.inspections.values());
+  }
+
+  async getInspection(id: number): Promise<any | undefined> {
+    return this.inspections.get(id);
+  }
+
+  async createInspection(inspection: any): Promise<any> {
+    const id = this.inspectionIdCounter++;
+    this.inspections.set(id, { ...inspection, id });
+    return this.inspections.get(id);
+  }
+
+  async updateInspection(id: number, inspection: any): Promise<any | undefined> {
+    const existingInspection = this.inspections.get(id);
+    if (!existingInspection) return undefined;
+    this.inspections.set(id, { ...existingInspection, ...inspection });
+    return this.inspections.get(id);
+  }
+
+  async deleteInspection(id: number): Promise<boolean> {
+    return this.inspections.delete(id);
+  }
+
+  async getCompletedInspections(): Promise<any[]> {
+    return Array.from(this.completedInspections.values());
+  }
+
+  async getCompletedInspection(id: number): Promise<any | undefined> {
+    return this.completedInspections.get(id);
+  }
+
+  async createCompletedInspection(inspection: any): Promise<any> {
+    const id = this.completedInspectionIdCounter++;
+    this.completedInspections.set(id, { ...inspection, id });
+    return this.completedInspections.get(id);
+  }
+
+  async updateCompletedInspection(id: number, inspection: any): Promise<any | undefined> {
+    const existingInspection = this.completedInspections.get(id);
+    if (!existingInspection) return undefined;
+    this.completedInspections.set(id, { ...existingInspection, ...inspection });
+    return this.completedInspections.get(id);
+  }
+
+  async deleteCompletedInspection(id: number): Promise<boolean> {
+    return this.completedInspections.delete(id);
   }
 }
 

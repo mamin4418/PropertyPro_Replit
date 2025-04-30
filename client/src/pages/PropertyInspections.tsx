@@ -1,6 +1,7 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Plus, Search, Filter, Calendar, ClipboardCheck, Check, 
   X, MoreHorizontal, ChevronDown, ChevronRight, Eye, FileText 
@@ -34,9 +35,49 @@ const PropertyInspections = () => {
   const [, navigate] = useLocation();
   const [selectedProperty, setSelectedProperty] = useState<string>("all");
   const [expandedInspection, setExpandedInspection] = useState<number | null>(null);
+  const [scheduledInspections, setScheduledInspections] = useState<any[]>([]);
+  const [completedInspections, setCompletedInspections] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
   
-  // Mock data for scheduled inspections
-  const scheduledInspections = [
+  useEffect(() => {
+    const fetchInspectionData = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch scheduled inspections
+        const scheduledResponse = await fetch('/api/property-inspections/scheduled');
+        if (!scheduledResponse.ok) {
+          throw new Error('Failed to fetch scheduled inspections');
+        }
+        const scheduledData = await scheduledResponse.json();
+        setScheduledInspections(scheduledData);
+        
+        // Fetch completed inspections
+        const completedResponse = await fetch('/api/property-inspections/completed');
+        if (!completedResponse.ok) {
+          throw new Error('Failed to fetch completed inspections');
+        }
+        const completedData = await completedResponse.json();
+        setCompletedInspections(completedData);
+        
+      } catch (error) {
+        console.error('Error fetching inspection data:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load inspection data. Please try again later.",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchInspectionData();
+  }, [toast]);
+  
+  // Use API data, fallback to sample data if API fails
+  const displayScheduledInspections = scheduledInspections.length ? scheduledInspections : [
     {
       id: 1,
       propertyId: 1,
@@ -72,8 +113,8 @@ const PropertyInspections = () => {
     },
   ];
   
-  // Mock data for completed inspections
-  const completedInspections = [
+  // Use API data, fallback to sample data if API fails
+  const displayCompletedInspections = completedInspections.length ? completedInspections : [
     {
       id: 4,
       propertyId: 1,
@@ -129,12 +170,12 @@ const PropertyInspections = () => {
   
   // Filter inspections based on selected property
   const filteredScheduled = selectedProperty === "all" 
-    ? scheduledInspections 
-    : scheduledInspections.filter(insp => insp.propertyId.toString() === selectedProperty);
+    ? displayScheduledInspections 
+    : displayScheduledInspections.filter(insp => insp.propertyId.toString() === selectedProperty);
   
   const filteredCompleted = selectedProperty === "all"
-    ? completedInspections
-    : completedInspections.filter(insp => insp.propertyId.toString() === selectedProperty);
+    ? displayCompletedInspections
+    : displayCompletedInspections.filter(insp => insp.propertyId.toString() === selectedProperty);
   
   // Mock properties for the dropdown
   const properties = [
@@ -187,7 +228,7 @@ const PropertyInspections = () => {
             <CardDescription>Next 30 days</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{scheduledInspections.length}</div>
+            <div className="text-2xl font-bold">{displayScheduledInspections.length}</div>
           </CardContent>
         </Card>
         <Card>
@@ -196,7 +237,7 @@ const PropertyInspections = () => {
             <CardDescription>Last 30 days</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{completedInspections.length}</div>
+            <div className="text-2xl font-bold">{displayCompletedInspections.length}</div>
           </CardContent>
         </Card>
         <Card>
@@ -206,7 +247,7 @@ const PropertyInspections = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {completedInspections.filter(insp => insp.status === "issues").length}
+              {displayCompletedInspections.filter(insp => insp.status === "issues").length}
             </div>
           </CardContent>
         </Card>

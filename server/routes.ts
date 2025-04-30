@@ -1173,6 +1173,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Utilities API endpoints
+  app.get('/api/utilities/accounts', async (req: Request, res: Response) => {
+    try {
+      const accounts = Array.from(storage.utilityAccounts?.values() || []);
+      res.json(accounts);
+    } catch (error) {
+      console.error('Error retrieving utility accounts:', error);
+      res.status(500).json({ error: 'Failed to retrieve utility accounts' });
+    }
+  });
+
+  app.get('/api/utilities/bills', async (req: Request, res: Response) => {
+    try {
+      const bills = Array.from(storage.utilityBills?.values() || []);
+      res.json(bills);
+    } catch (error) {
+      console.error('Error retrieving utility bills:', error);
+      res.status(500).json({ error: 'Failed to retrieve utility bills' });
+    }
+  });
+
+  // Property Inspections API endpoints
+  app.get('/api/property-inspections/scheduled', async (req: Request, res: Response) => {
+    try {
+      const inspections = Array.from(storage.inspections?.values() || []);
+      res.json(inspections);
+    } catch (error) {
+      console.error('Error retrieving scheduled inspections:', error);
+      res.status(500).json({ error: 'Failed to retrieve scheduled inspections' });
+    }
+  });
+
+  app.get('/api/property-inspections/completed', async (req: Request, res: Response) => {
+    try {
+      const inspections = Array.from(storage.completedInspections?.values() || []);
+      res.json(inspections);
+    } catch (error) {
+      console.error('Error retrieving completed inspections:', error);
+      res.status(500).json({ error: 'Failed to retrieve completed inspections' });
+    }
+  });
+
   // Document Signing API endpoints
   app.get('/api/document-signing/documents', async (req: Request, res: Response) => {
     try {

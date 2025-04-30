@@ -222,8 +222,8 @@ export default function BankTransactions() {
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Link href={`/banking/transactions/${transaction.id}/match`}>
-                      <Button variant="outline" size="sm">Match Transaction</Button>
+                    <Link href={`/banking/transactions/${transaction.id}`}>
+                      <Button variant="outline" size="sm">View</Button>
                     </Link>
                   </TableCell>
                 </TableRow>

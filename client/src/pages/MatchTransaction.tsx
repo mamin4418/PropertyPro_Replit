@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,12 +6,12 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Link, useParams, useLocation } from "wouter";
+import { Link, useRoute, useLocation } from "wouter";
 import { useState } from "react";
 import { ArrowLeft, ArrowUp, ArrowDown, Search, CheckCircle2 } from "lucide-react";
 
 export default function MatchTransaction() {
-  const [, params] = useParams();
+  const [, params] = useRoute("/banking/transactions/:id/match");
   const [, navigate] = useLocation();
   const transactionId = params?.id;
   const [matchType, setMatchType] = useState("rentPayment");
@@ -60,7 +59,7 @@ export default function MatchTransaction() {
 
   // Filter items based on search query and transaction type (income/expense)
   let filteredItems = [];
-  
+
   if (matchType === "rentPayment") {
     filteredItems = rentPayments.filter(item =>
       item.tenant.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -90,10 +89,10 @@ export default function MatchTransaction() {
   // Handle match confirmation
   const handleMatchConfirm = () => {
     if (!selectedItem) return;
-    
+
     // In a real app, this would send the match data to the server
     console.log("Matching transaction", transaction.id, "with", matchType, "item", selectedItem);
-    
+
     // Navigate back to transaction details
     navigate(`/banking/transactions/${transaction.id}`);
   };

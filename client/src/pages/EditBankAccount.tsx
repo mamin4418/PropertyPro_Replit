@@ -6,11 +6,11 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Building2 } from "lucide-react";
-import { Link, useParams } from "wouter";
+import { Link, useRoute } from "wouter";
 import { useState } from "react";
 
 export default function EditBankAccount() {
-  const [, params] = useParams();
+  const [, params] = useRoute("/banking/accounts/:id/edit");
   const accountId = params?.id;
 
   // Mock data for bank account (in a real app, you would fetch this from an API)

@@ -3,11 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ArrowLeft, Building2, Download, Pencil, Calendar, ArrowUp, ArrowDown } from "lucide-react";
-import { Link, useParams } from "wouter";
+import { Link, useRoute } from "wouter";
 import { useState } from "react";
 
 export default function ViewBankAccount() {
-  const [, params] = useParams();
+  const [, params] = useRoute("/banking/accounts/:id");
   const accountId = params?.id;
 
   // Mock data for bank account (in a real app, you would fetch this from an API)

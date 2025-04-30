@@ -3,10 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ArrowLeft, ArrowUp, ArrowDown, Calendar, Building, User, Home } from "lucide-react";
-import { Link, useParams } from "wouter";
+import { Link, useRoute } from "wouter";
 
 export default function ViewTransaction() {
-  const [, params] = useParams();
+  const [, params] = useRoute("/banking/transactions/:id");
   const transactionId = params?.id;
 
   // Mock transaction data (in a real app, you would fetch this from an API)

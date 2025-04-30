@@ -45,8 +45,9 @@ function SidebarNavItem({ href, icon: Icon, children, indented = false }: Sideba
   );
 }
 
-// Using Building icon as our bank icon instead of Landmark
-const BankIcon = Landmark;
+// Using Building icon as our bank icon instead
+import { Building } from "lucide-react";
+const BankIcon = Building;
 
 export default function Sidebar() {
   const { user, logout } = useAuth();
@@ -137,7 +138,7 @@ export default function Sidebar() {
           <h3 className="px-3 text-xs font-semibold text-muted-foreground">ACCOUNTING</h3>
         </div>
 
-        <SidebarNavItem href="/banking" icon={Landmark}>
+        <SidebarNavItem href="/banking" icon={Building}>
           Banking
         </SidebarNavItem>
 

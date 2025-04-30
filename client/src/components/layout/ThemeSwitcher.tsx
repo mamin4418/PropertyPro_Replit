@@ -13,9 +13,10 @@ const ThemeSwitcher = () => {
   const themes = [
     { id: "default", name: "Default", gradient: "bg-gradient-to-br from-[#F9FAFB] to-[#F3F4F6]" },
     { id: "dark-theme", name: "Dark", gradient: "bg-gradient-to-br from-[#111827] to-[#1F2937]" },
-    { id: "slate-theme", name: "Slate", gradient: "bg-gradient-to-br from-[#EFF1F3] to-[#5D737E]" },
-    { id: "navy-theme", name: "Navy", gradient: "bg-gradient-to-br from-[#E6EAEE] to-[#243447]" },
-    { id: "slate-blue-theme", name: "Slate Blue", gradient: "bg-gradient-to-br from-[#E6E9FA] to-[#6A5ACD]" },
+    { id: "forest-theme", name: "Forest", gradient: "bg-gradient-to-br from-[#F0FDF4] to-[#DCFCE7]" },
+    { id: "ocean-theme", name: "Ocean", gradient: "bg-gradient-to-br from-[#ECFEFF] to-[#CFFAFE]" },
+    { id: "sunset-theme", name: "Sunset", gradient: "bg-gradient-to-br from-[#FFF7ED] to-[#FFEDD5]" },
+    // Additional themes
     { id: "purple-theme", name: "Purple", gradient: "bg-gradient-to-br from-[#f5f3ff] to-[#ddd6fe]" },
     { id: "emerald-theme", name: "Emerald", gradient: "bg-gradient-to-br from-[#ecfdf5] to-[#a7f3d0]" },
     { id: "sky-theme", name: "Sky", gradient: "bg-gradient-to-br from-[#e8fbff] to-[#c4f5ff]" },

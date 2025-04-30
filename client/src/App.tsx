@@ -85,6 +85,7 @@ import ViewBankAccount from "@/pages/ViewBankAccount"; // Added
 import EditBankAccount from "@/pages/EditBankAccount"; // Added
 import ViewTransaction from "@/pages/ViewTransaction"; // Added
 import MatchTransaction from "@/pages/MatchTransaction"; // Added
+import ImportTransaction from './pages/ImportTransaction'; // Added
 
 
 function AppRoutes() {
@@ -283,6 +284,7 @@ function AppRoutes() {
               <Route path="/banking/accounts/:id" component={ViewBankAccount} />
               <Route path="/banking/accounts/:id/edit" component={EditBankAccount} />
               <Route path="/banking/transactions" component={BankTransactions} />
+              <Route path="/banking/transactions/import" component={ImportTransaction} />
               <Route path="/banking/transactions/:id" component={ViewTransaction} />
               <Route path="/banking/transactions/:id/match" component={MatchTransaction} />
               <Route path="/banking/integration" component={BankIntegration} />

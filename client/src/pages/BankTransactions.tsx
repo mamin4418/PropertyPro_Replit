@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Building, Search, Filter, ArrowUpDown, Download, Calendar } from "lucide-react";
+import { Building, Search, Filter, ArrowUpDown, Download, Calendar, ArrowUp, ArrowDown } from "lucide-react";
 import { useState } from "react";
 import { Link } from "wouter";
 

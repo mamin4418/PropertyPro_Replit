@@ -1,45 +1,17 @@
-import { useState } from "react";
-import { 
-  BarChart, 
-  PieChart, 
-  LineChart, 
-  DollarSign, 
-  Calendar, 
-  Home, 
-  Users, 
-  Percent, 
-  Download, 
-  FileText,
-  Filter,
-  ArrowUpDown
-} from "lucide-react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 
-// Import recharts components for charts
-import {
-  LineChart as RechartsLineChart,
-  Line,
-  BarChart as RechartsBarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  PieChart as RechartsPieChart,
-  Pie,
-  Cell
-} from "recharts";
+import { useState } from "react";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { BarChart, LineChart, FileText, Download, DollarSign, Users, Home, PieChart, TrendingUp, FileClock, Calculator, Receipt } from "lucide-react";
+import { ResponsiveContainer as RechartsResponsiveContainer, BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart as RechartsPieChart, Pie, Cell } from "recharts";
 
 const Reports = () => {
   const [reportType, setReportType] = useState<string>("financial");
   const [timeRange, setTimeRange] = useState<string>("month");
   const [propertyFilter, setPropertyFilter] = useState<string>("all");
+  const [financialReportType, setFinancialReportType] = useState<string>("overview");
 
   // Sample data for financial report
   const financialData = [
@@ -57,42 +29,71 @@ const Reports = () => {
     { month: 'Dec', revenue: 24800, expenses: 17400, profit: 7400 },
   ];
 
-  // Sample data for occupancy report
-  const occupancyData = [
-    { month: 'Jan', occupancyRate: 82 },
-    { month: 'Feb', occupancyRate: 83 },
-    { month: 'Mar', occupancyRate: 84 },
-    { month: 'Apr', occupancyRate: 85 },
-    { month: 'May', occupancyRate: 85 },
-    { month: 'Jun', occupancyRate: 86 },
-    { month: 'Jul', occupancyRate: 87 },
-    { month: 'Aug', occupancyRate: 87 },
-    { month: 'Sep', occupancyRate: 88 },
-    { month: 'Oct', occupancyRate: 88 },
-    { month: 'Nov', occupancyRate: 88 },
-    { month: 'Dec', occupancyRate: 87 },
+  // Sample data for cash flow
+  const cashFlowData = [
+    { month: 'Jan', inflow: 18200, outflow: 14100, netCashFlow: 4100 },
+    { month: 'Feb', inflow: 17800, outflow: 13900, netCashFlow: 3900 },
+    { month: 'Mar', inflow: 19500, outflow: 14300, netCashFlow: 5200 },
+    { month: 'Apr', inflow: 20100, outflow: 14700, netCashFlow: 5400 },
+    { month: 'May', inflow: 21000, outflow: 15200, netCashFlow: 5800 },
+    { month: 'Jun', inflow: 22300, outflow: 15800, netCashFlow: 6500 },
+    { month: 'Jul', inflow: 23500, outflow: 16100, netCashFlow: 7400 },
+    { month: 'Aug', inflow: 23800, outflow: 16500, netCashFlow: 7300 },
+    { month: 'Sep', inflow: 24100, outflow: 16800, netCashFlow: 7300 },
+    { month: 'Oct', inflow: 24300, outflow: 17000, netCashFlow: 7300 },
+    { month: 'Nov', inflow: 24500, outflow: 17200, netCashFlow: 7300 },
+    { month: 'Dec', inflow: 24800, outflow: 17400, netCashFlow: 7400 },
   ];
 
-  // Sample data for maintenance report
-  const maintenanceData = [
-    { category: 'Plumbing', value: 28 },
-    { category: 'Electrical', value: 22 },
-    { category: 'HVAC', value: 18 },
-    { category: 'Appliances', value: 15 },
-    { category: 'Structural', value: 10 },
-    { category: 'Other', value: 7 },
+  // Sample data for property P&L
+  const propertyPLData = [
+    { property: 'Parkside Apartments', revenue: 120000, expenses: 75000, profit: 45000 },
+    { property: 'Highland Residences', revenue: 95000, expenses: 60000, profit: 35000 },
+    { property: 'Sunset Heights', revenue: 88000, expenses: 52000, profit: 36000 },
+    { property: 'Meadow View Condos', revenue: 76000, expenses: 48000, profit: 28000 },
+    { property: 'Riverfront Townhomes', revenue: 110000, expenses: 70000, profit: 40000 },
   ];
 
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
-  
-  // Sample data for tenant demographics
+  // Sample data for ROI
+  const roiData = [
+    { property: 'Parkside Apartments', investment: 1200000, annualReturn: 45000, roi: 3.75 },
+    { property: 'Highland Residences', investment: 950000, annualReturn: 35000, roi: 3.68 },
+    { property: 'Sunset Heights', investment: 880000, annualReturn: 36000, roi: 4.09 },
+    { property: 'Meadow View Condos', investment: 760000, annualReturn: 28000, roi: 3.68 },
+    { property: 'Riverfront Townhomes', investment: 1100000, annualReturn: 40000, roi: 3.64 },
+  ];
+
+  // Sample data for tax preparation
+  const taxData = [
+    { category: 'Property Taxes', amount: 38500 },
+    { category: 'Mortgage Interest', amount: 52000 },
+    { category: 'Repairs & Maintenance', amount: 28700 },
+    { category: 'Insurance', amount: 22300 },
+    { category: 'Property Management', amount: 18600 },
+    { category: 'Utilities', amount: 15200 },
+    { category: 'Depreciation', amount: 42000 },
+    { category: 'Legal & Professional', amount: 12500 },
+  ];
+
+  // Sample data for demographics
   const demographicData = [
-    { name: '18-25', value: 15 },
+    { name: '18-25', value: 10 },
     { name: '26-35', value: 35 },
     { name: '36-45', value: 25 },
-    { name: '46-55', value: 15 },
+    { name: '46-55', value: 20 },
     { name: '56+', value: 10 },
   ];
+
+  // Sample data for maintenance categories
+  const maintenanceData = [
+    { category: 'Plumbing', value: 32 },
+    { category: 'Electrical', value: 18 },
+    { category: 'HVAC', value: 27 },
+    { category: 'Appliances', value: 15 },
+    { category: 'Structural', value: 8 },
+  ];
+
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#83a6ed', '#8dd1e1', '#82ca9d'];
 
   return (
     <div className="container mx-auto p-6">
@@ -114,126 +115,6 @@ const Reports = () => {
         </div>
       </div>
 
-      {/* Report Filters */}
-      <Card className="mb-6">
-        <CardContent className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="text-sm font-medium mb-2 block">Time Range</label>
-              <Select value={timeRange} onValueChange={setTimeRange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select time range" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="week">Last Week</SelectItem>
-                  <SelectItem value="month">Last Month</SelectItem>
-                  <SelectItem value="quarter">Last Quarter</SelectItem>
-                  <SelectItem value="year">Last Year</SelectItem>
-                  <SelectItem value="custom">Custom Range</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div>
-              <label className="text-sm font-medium mb-2 block">Property</label>
-              <Select value={propertyFilter} onValueChange={setPropertyFilter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select property" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Properties</SelectItem>
-                  <SelectItem value="property1">Parkside Apartments</SelectItem>
-                  <SelectItem value="property2">Highland Residences</SelectItem>
-                  <SelectItem value="property3">Westlake Condominiums</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="flex items-end">
-              <Button>
-                <Filter className="mr-2 h-4 w-4" />
-                Apply Filters
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-sm text-muted-foreground">Total Revenue</p>
-                <h2 className="text-3xl font-bold mt-1">$24,358</h2>
-                <p className="text-xs text-green-500 flex items-center mt-1">
-                  <ArrowUpDown className="h-3 w-3 mr-1" />
-                  +4.3% from previous period
-                </p>
-              </div>
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <DollarSign className="h-5 w-5 text-primary" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-sm text-muted-foreground">Occupancy Rate</p>
-                <h2 className="text-3xl font-bold mt-1">87.5%</h2>
-                <p className="text-xs text-green-500 flex items-center mt-1">
-                  <ArrowUpDown className="h-3 w-3 mr-1" />
-                  +2.1% from previous period
-                </p>
-              </div>
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Percent className="h-5 w-5 text-primary" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-sm text-muted-foreground">Avg. Lease Duration</p>
-                <h2 className="text-3xl font-bold mt-1">14.3 mo</h2>
-                <p className="text-xs text-green-500 flex items-center mt-1">
-                  <ArrowUpDown className="h-3 w-3 mr-1" />
-                  +0.8 mo from previous period
-                </p>
-              </div>
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Calendar className="h-5 w-5 text-primary" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-sm text-muted-foreground">Maintenance Costs</p>
-                <h2 className="text-3xl font-bold mt-1">$4,217</h2>
-                <p className="text-xs text-red-500 flex items-center mt-1">
-                  <ArrowUpDown className="h-3 w-3 mr-1" />
-                  +12.8% from previous period
-                </p>
-              </div>
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Home className="h-5 w-5 text-primary" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Report Types */}
       <Tabs value={reportType} onValueChange={setReportType} className="mb-6">
         <TabsList className="mb-4">
@@ -251,162 +132,620 @@ const Reports = () => {
           </TabsTrigger>
         </TabsList>
 
+        {/* Report Filters */}
+        <Card className="mb-6">
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Time Range</label>
+                <Select value={timeRange} onValueChange={setTimeRange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select time range" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="week">Last Week</SelectItem>
+                    <SelectItem value="month">Last Month</SelectItem>
+                    <SelectItem value="quarter">Last Quarter</SelectItem>
+                    <SelectItem value="year">Last Year</SelectItem>
+                    <SelectItem value="custom">Custom Range</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <label className="text-sm font-medium mb-2 block">Property</label>
+                <Select value={propertyFilter} onValueChange={setPropertyFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select property" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Properties</SelectItem>
+                    <SelectItem value="property1">Parkside Apartments</SelectItem>
+                    <SelectItem value="property2">Highland Residences</SelectItem>
+                    <SelectItem value="property3">Sunset Heights</SelectItem>
+                    <SelectItem value="property4">Meadow View Condos</SelectItem>
+                    <SelectItem value="property5">Riverfront Townhomes</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Button className="mt-6" variant="outline">Apply Filters</Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Financial Reports */}
         <TabsContent value="financial">
-          <Card>
-            <CardHeader>
-              <CardTitle>Financial Performance</CardTitle>
-              <CardDescription>
-                Revenue, expenses, and net income by property
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[400px] w-full overflow-x-auto">
-                <ResponsiveContainer width="100%" height="100%">
-                  <RechartsBarChart
-                    data={financialData}
-                    margin={{
-                      top: 20,
-                      right: 30,
-                      left: 20,
-                      bottom: 5,
-                    }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip formatter={(value) => `$${value}`} />
-                    <Legend />
-                    <Bar dataKey="revenue" name="Revenue" fill="#0088FE" />
-                    <Bar dataKey="expenses" name="Expenses" fill="#FF8042" />
-                    <Bar dataKey="profit" name="Net Income" fill="#00C49F" />
-                  </RechartsBarChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                <div className="bg-blue-50 dark:bg-blue-950 rounded-md p-4">
-                  <div className="text-sm text-muted-foreground">Total Revenue</div>
-                  <div className="text-2xl font-bold mt-1">$259,600</div>
-                  <div className="text-xs text-green-500 mt-1">+5.8% year over year</div>
-                </div>
-                <div className="bg-orange-50 dark:bg-orange-950 rounded-md p-4">
-                  <div className="text-sm text-muted-foreground">Total Expenses</div>
-                  <div className="text-2xl font-bold mt-1">$183,000</div>
-                  <div className="text-xs text-red-500 mt-1">+4.2% year over year</div>
-                </div>
-                <div className="bg-green-50 dark:bg-green-950 rounded-md p-4">
-                  <div className="text-sm text-muted-foreground">Net Income</div>
-                  <div className="text-2xl font-bold mt-1">$76,600</div>
-                  <div className="text-xs text-green-500 mt-1">+9.1% year over year</div>
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter className="justify-between border-t px-6 py-4">
-              <div className="text-sm text-muted-foreground">
-                Last updated: April 26, 2025
-              </div>
-              <Button variant="outline" size="sm">
-                <Download className="mr-2 h-4 w-4" />
-                Download Report
-              </Button>
-            </CardFooter>
-          </Card>
+          {/* Financial Report Types */}
+          <Tabs value={financialReportType} onValueChange={setFinancialReportType} className="mb-6">
+            <TabsList className="mb-4 flex flex-wrap">
+              <TabsTrigger value="overview">
+                <BarChart className="h-4 w-4 mr-2" />
+                Overview
+              </TabsTrigger>
+              <TabsTrigger value="cashflow">
+                <TrendingUp className="h-4 w-4 mr-2" />
+                Cash Flow
+              </TabsTrigger>
+              <TabsTrigger value="profitloss">
+                <DollarSign className="h-4 w-4 mr-2" />
+                Profit & Loss
+              </TabsTrigger>
+              <TabsTrigger value="roi">
+                <Calculator className="h-4 w-4 mr-2" />
+                ROI Analysis
+              </TabsTrigger>
+              <TabsTrigger value="tax">
+                <Receipt className="h-4 w-4 mr-2" />
+                Tax Report
+              </TabsTrigger>
+            </TabsList>
+          
+            {/* Overview Report */}
+            <TabsContent value="overview">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Financial Performance</CardTitle>
+                  <CardDescription>
+                    Revenue, expenses, and net income by property
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[400px] w-full overflow-x-auto">
+                    <RechartsResponsiveContainer width="100%" height="100%">
+                      <RechartsBarChart
+                        data={financialData}
+                        margin={{
+                          top: 20,
+                          right: 30,
+                          left: 20,
+                          bottom: 5,
+                        }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="month" />
+                        <YAxis />
+                        <Tooltip formatter={(value) => `$${value}`} />
+                        <Legend />
+                        <Bar dataKey="revenue" name="Revenue" fill="#0088FE" />
+                        <Bar dataKey="expenses" name="Expenses" fill="#FF8042" />
+                        <Bar dataKey="profit" name="Net Income" fill="#00C49F" />
+                      </RechartsBarChart>
+                    </RechartsResponsiveContainer>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                    <div className="bg-blue-50 dark:bg-blue-950 rounded-md p-4">
+                      <p className="font-semibold text-blue-700 dark:text-blue-300">Total Revenue</p>
+                      <p className="text-2xl font-bold">$265,400</p>
+                      <p className="text-sm text-blue-600 dark:text-blue-400">+8.2% from last year</p>
+                    </div>
+                    <div className="bg-orange-50 dark:bg-orange-950 rounded-md p-4">
+                      <p className="font-semibold text-orange-700 dark:text-orange-300">Total Expenses</p>
+                      <p className="text-2xl font-bold">$179,000</p>
+                      <p className="text-sm text-orange-600 dark:text-orange-400">+5.4% from last year</p>
+                    </div>
+                    <div className="bg-green-50 dark:bg-green-950 rounded-md p-4">
+                      <p className="font-semibold text-green-700 dark:text-green-300">Net Income</p>
+                      <p className="text-2xl font-bold">$86,400</p>
+                      <p className="text-sm text-green-600 dark:text-green-400">+14.8% from last year</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Cash Flow */}
+            <TabsContent value="cashflow">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Cash Flow Statement</CardTitle>
+                  <CardDescription>
+                    Track incoming, outgoing cash and net cash flow by period
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[400px] w-full overflow-x-auto">
+                    <RechartsResponsiveContainer width="100%" height="100%">
+                      <RechartsBarChart
+                        data={cashFlowData}
+                        margin={{
+                          top: 20,
+                          right: 30,
+                          left: 20,
+                          bottom: 5,
+                        }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="month" />
+                        <YAxis />
+                        <Tooltip formatter={(value) => `$${value}`} />
+                        <Legend />
+                        <Bar dataKey="inflow" name="Cash Inflow" fill="#4CAF50" />
+                        <Bar dataKey="outflow" name="Cash Outflow" fill="#F44336" />
+                        <Bar dataKey="netCashFlow" name="Net Cash Flow" fill="#2196F3" />
+                      </RechartsBarChart>
+                    </RechartsResponsiveContainer>
+                  </div>
+                  
+                  <div className="mt-6">
+                    <h3 className="text-lg font-medium mb-2">Cash Flow Summary</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="bg-green-50 dark:bg-green-950 rounded-md p-4">
+                        <p className="font-semibold text-green-700 dark:text-green-300">Total Cash Inflow</p>
+                        <p className="text-2xl font-bold">$265,400</p>
+                        <p className="text-sm">Rent payments, security deposits, etc.</p>
+                      </div>
+                      <div className="bg-red-50 dark:bg-red-950 rounded-md p-4">
+                        <p className="font-semibold text-red-700 dark:text-red-300">Total Cash Outflow</p>
+                        <p className="text-2xl font-bold">$179,000</p>
+                        <p className="text-sm">Maintenance, mortgage, taxes, etc.</p>
+                      </div>
+                      <div className="bg-blue-50 dark:bg-blue-950 rounded-md p-4">
+                        <p className="font-semibold text-blue-700 dark:text-blue-300">Net Cash Flow</p>
+                        <p className="text-2xl font-bold">$86,400</p>
+                        <p className="text-sm">Available to reinvest or distribute</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-6">
+                    <h3 className="text-lg font-medium mb-2">Cash Flow by Property</h3>
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-2">Property</th>
+                          <th className="text-right py-2">Cash Inflow</th>
+                          <th className="text-right py-2">Cash Outflow</th>
+                          <th className="text-right py-2">Net Cash Flow</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="border-b">
+                          <td className="py-2">Parkside Apartments</td>
+                          <td className="text-right py-2 text-green-600">$120,000</td>
+                          <td className="text-right py-2 text-red-600">$75,000</td>
+                          <td className="text-right py-2 font-semibold">$45,000</td>
+                        </tr>
+                        <tr className="border-b">
+                          <td className="py-2">Highland Residences</td>
+                          <td className="text-right py-2 text-green-600">$95,000</td>
+                          <td className="text-right py-2 text-red-600">$60,000</td>
+                          <td className="text-right py-2 font-semibold">$35,000</td>
+                        </tr>
+                        <tr className="border-b">
+                          <td className="py-2">Sunset Heights</td>
+                          <td className="text-right py-2 text-green-600">$88,000</td>
+                          <td className="text-right py-2 text-red-600">$52,000</td>
+                          <td className="text-right py-2 font-semibold">$36,000</td>
+                        </tr>
+                        <tr className="border-b">
+                          <td className="py-2">Meadow View Condos</td>
+                          <td className="text-right py-2 text-green-600">$76,000</td>
+                          <td className="text-right py-2 text-red-600">$48,000</td>
+                          <td className="text-right py-2 font-semibold">$28,000</td>
+                        </tr>
+                        <tr>
+                          <td className="py-2">Riverfront Townhomes</td>
+                          <td className="text-right py-2 text-green-600">$110,000</td>
+                          <td className="text-right py-2 text-red-600">$70,000</td>
+                          <td className="text-right py-2 font-semibold">$40,000</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Button className="w-full">Generate Detailed Cash Flow Report</Button>
+                </CardFooter>
+              </Card>
+            </TabsContent>
+
+            {/* Profit & Loss */}
+            <TabsContent value="profitloss">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Profit & Loss Report by Property</CardTitle>
+                  <CardDescription>
+                    Detailed income, expenses, and profitability by property
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[400px] w-full overflow-x-auto">
+                    <RechartsResponsiveContainer width="100%" height="100%">
+                      <RechartsBarChart
+                        data={propertyPLData}
+                        margin={{
+                          top: 20,
+                          right: 30,
+                          left: 20,
+                          bottom: 5,
+                        }}
+                        layout="vertical"
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis type="number" />
+                        <YAxis type="category" dataKey="property" width={150} />
+                        <Tooltip formatter={(value) => `$${value}`} />
+                        <Legend />
+                        <Bar dataKey="revenue" name="Revenue" fill="#4CAF50" />
+                        <Bar dataKey="expenses" name="Expenses" fill="#F44336" />
+                        <Bar dataKey="profit" name="Net Profit" fill="#2196F3" />
+                      </RechartsBarChart>
+                    </RechartsResponsiveContainer>
+                  </div>
+                  
+                  <div className="mt-6">
+                    <h3 className="text-lg font-medium mb-2">P&L Summary by Property</h3>
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-2">Property</th>
+                          <th className="text-right py-2">Revenue</th>
+                          <th className="text-right py-2">Expenses</th>
+                          <th className="text-right py-2">Net Profit</th>
+                          <th className="text-right py-2">Profit Margin</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="border-b">
+                          <td className="py-2">Parkside Apartments</td>
+                          <td className="text-right py-2">$120,000</td>
+                          <td className="text-right py-2">$75,000</td>
+                          <td className="text-right py-2 font-semibold">$45,000</td>
+                          <td className="text-right py-2">37.5%</td>
+                        </tr>
+                        <tr className="border-b">
+                          <td className="py-2">Highland Residences</td>
+                          <td className="text-right py-2">$95,000</td>
+                          <td className="text-right py-2">$60,000</td>
+                          <td className="text-right py-2 font-semibold">$35,000</td>
+                          <td className="text-right py-2">36.8%</td>
+                        </tr>
+                        <tr className="border-b">
+                          <td className="py-2">Sunset Heights</td>
+                          <td className="text-right py-2">$88,000</td>
+                          <td className="text-right py-2">$52,000</td>
+                          <td className="text-right py-2 font-semibold">$36,000</td>
+                          <td className="text-right py-2">40.9%</td>
+                        </tr>
+                        <tr className="border-b">
+                          <td className="py-2">Meadow View Condos</td>
+                          <td className="text-right py-2">$76,000</td>
+                          <td className="text-right py-2">$48,000</td>
+                          <td className="text-right py-2 font-semibold">$28,000</td>
+                          <td className="text-right py-2">36.8%</td>
+                        </tr>
+                        <tr>
+                          <td className="py-2">Riverfront Townhomes</td>
+                          <td className="text-right py-2">$110,000</td>
+                          <td className="text-right py-2">$70,000</td>
+                          <td className="text-right py-2 font-semibold">$40,000</td>
+                          <td className="text-right py-2">36.4%</td>
+                        </tr>
+                      </tbody>
+                      <tfoot>
+                        <tr className="border-t font-semibold">
+                          <td className="py-2">Total</td>
+                          <td className="text-right py-2">$489,000</td>
+                          <td className="text-right py-2">$305,000</td>
+                          <td className="text-right py-2">$184,000</td>
+                          <td className="text-right py-2">37.6%</td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Button className="w-full">Generate Detailed P&L Report</Button>
+                </CardFooter>
+              </Card>
+            </TabsContent>
+
+            {/* ROI Analysis */}
+            <TabsContent value="roi">
+              <Card>
+                <CardHeader>
+                  <CardTitle>ROI Calculations Per Property</CardTitle>
+                  <CardDescription>
+                    Analysis of return on investment for each property
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[400px] w-full overflow-x-auto">
+                    <RechartsResponsiveContainer width="100%" height="100%">
+                      <RechartsBarChart
+                        data={roiData}
+                        margin={{
+                          top: 20,
+                          right: 30,
+                          left: 20,
+                          bottom: 5,
+                        }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="property" />
+                        <YAxis yAxisId="left" orientation="left" />
+                        <YAxis yAxisId="right" orientation="right" />
+                        <Tooltip />
+                        <Legend />
+                        <Bar yAxisId="left" dataKey="investment" name="Investment ($)" fill="#8884d8" />
+                        <Bar yAxisId="left" dataKey="annualReturn" name="Annual Return ($)" fill="#82ca9d" />
+                        <Bar yAxisId="right" dataKey="roi" name="ROI (%)" fill="#ff7300" />
+                      </RechartsBarChart>
+                    </RechartsResponsiveContainer>
+                  </div>
+                  
+                  <div className="mt-6">
+                    <h3 className="text-lg font-medium mb-2">ROI Analysis</h3>
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-2">Property</th>
+                          <th className="text-right py-2">Investment</th>
+                          <th className="text-right py-2">Annual Return</th>
+                          <th className="text-right py-2">ROI (%)</th>
+                          <th className="text-right py-2">Payback Period</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="border-b">
+                          <td className="py-2">Parkside Apartments</td>
+                          <td className="text-right py-2">$1,200,000</td>
+                          <td className="text-right py-2">$45,000</td>
+                          <td className="text-right py-2 font-semibold">3.75%</td>
+                          <td className="text-right py-2">26.7 years</td>
+                        </tr>
+                        <tr className="border-b">
+                          <td className="py-2">Highland Residences</td>
+                          <td className="text-right py-2">$950,000</td>
+                          <td className="text-right py-2">$35,000</td>
+                          <td className="text-right py-2 font-semibold">3.68%</td>
+                          <td className="text-right py-2">27.1 years</td>
+                        </tr>
+                        <tr className="border-b">
+                          <td className="py-2">Sunset Heights</td>
+                          <td className="text-right py-2">$880,000</td>
+                          <td className="text-right py-2">$36,000</td>
+                          <td className="text-right py-2 font-semibold">4.09%</td>
+                          <td className="text-right py-2">24.4 years</td>
+                        </tr>
+                        <tr className="border-b">
+                          <td className="py-2">Meadow View Condos</td>
+                          <td className="text-right py-2">$760,000</td>
+                          <td className="text-right py-2">$28,000</td>
+                          <td className="text-right py-2 font-semibold">3.68%</td>
+                          <td className="text-right py-2">27.1 years</td>
+                        </tr>
+                        <tr>
+                          <td className="py-2">Riverfront Townhomes</td>
+                          <td className="text-right py-2">$1,100,000</td>
+                          <td className="text-right py-2">$40,000</td>
+                          <td className="text-right py-2 font-semibold">3.64%</td>
+                          <td className="text-right py-2">27.5 years</td>
+                        </tr>
+                      </tbody>
+                      <tfoot>
+                        <tr className="border-t font-semibold">
+                          <td className="py-2">Portfolio Average</td>
+                          <td className="text-right py-2">$4,890,000</td>
+                          <td className="text-right py-2">$184,000</td>
+                          <td className="text-right py-2">3.76%</td>
+                          <td className="text-right py-2">26.6 years</td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+
+                  <div className="mt-6 p-4 bg-amber-50 dark:bg-amber-950 rounded-md">
+                    <h3 className="text-lg font-medium mb-2 text-amber-800 dark:text-amber-300">ROI Analysis Notes</h3>
+                    <ul className="list-disc pl-5 space-y-1 text-amber-700 dark:text-amber-400">
+                      <li>ROI calculations include both cash flow and property appreciation</li>
+                      <li>Sunset Heights shows the highest ROI at 4.09%</li>
+                      <li>Average portfolio ROI of 3.76% exceeds average market return of 3.2%</li>
+                      <li>Properties with longer payback periods may offer better long-term appreciation</li>
+                    </ul>
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Button className="w-full">Export Detailed ROI Analysis</Button>
+                </CardFooter>
+              </Card>
+            </TabsContent>
+
+            {/* Tax Report */}
+            <TabsContent value="tax">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Tax-Related Reports</CardTitle>
+                  <CardDescription>
+                    Tax deduction summary and preparation resources
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h3 className="text-lg font-medium mb-3">Tax Deductions by Category</h3>
+                      <div className="h-[300px]">
+                        <RechartsResponsiveContainer width="100%" height="100%">
+                          <RechartsPieChart>
+                            <Pie
+                              data={taxData}
+                              cx="50%"
+                              cy="50%"
+                              labelLine={false}
+                              outerRadius={100}
+                              fill="#8884d8"
+                              dataKey="amount"
+                              nameKey="category"
+                              label={({ category, percent }) => `${category}: ${(percent * 100).toFixed(0)}%`}
+                            >
+                              {taxData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                              ))}
+                            </Pie>
+                            <Tooltip formatter={(value) => `$${value}`} />
+                          </RechartsPieChart>
+                        </RechartsResponsiveContainer>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="text-lg font-medium mb-3">Deductible Expenses Summary</h3>
+                      <div className="space-y-4">
+                        <table className="w-full border-collapse">
+                          <thead>
+                            <tr className="border-b">
+                              <th className="text-left py-2">Category</th>
+                              <th className="text-right py-2">Amount</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {taxData.map((item, index) => (
+                              <tr key={index} className="border-b">
+                                <td className="py-2">{item.category}</td>
+                                <td className="text-right py-2">${item.amount.toLocaleString()}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                          <tfoot>
+                            <tr className="border-t font-semibold">
+                              <td className="py-2">Total Deductible Expenses</td>
+                              <td className="text-right py-2">
+                                ${taxData.reduce((sum, item) => sum + item.amount, 0).toLocaleString()}
+                              </td>
+                            </tr>
+                          </tfoot>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-6">
+                    <h3 className="text-lg font-medium mb-3">Property-Specific Tax Information</h3>
+                    <div className="overflow-x-auto">
+                      <table className="w-full border-collapse">
+                        <thead>
+                          <tr className="border-b">
+                            <th className="text-left py-2">Property</th>
+                            <th className="text-right py-2">Property Tax</th>
+                            <th className="text-right py-2">Mortgage Interest</th>
+                            <th className="text-right py-2">Depreciation</th>
+                            <th className="text-right py-2">Repairs</th>
+                            <th className="text-right py-2">Insurance</th>
+                            <th className="text-right py-2">Total</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr className="border-b">
+                            <td className="py-2">Parkside Apartments</td>
+                            <td className="text-right py-2">$12,500</td>
+                            <td className="text-right py-2">$18,300</td>
+                            <td className="text-right py-2">$14,500</td>
+                            <td className="text-right py-2">$8,700</td>
+                            <td className="text-right py-2">$6,200</td>
+                            <td className="text-right py-2 font-semibold">$60,200</td>
+                          </tr>
+                          <tr className="border-b">
+                            <td className="py-2">Highland Residences</td>
+                            <td className="text-right py-2">$9,200</td>
+                            <td className="text-right py-2">$12,700</td>
+                            <td className="text-right py-2">$10,800</td>
+                            <td className="text-right py-2">$7,100</td>
+                            <td className="text-right py-2">$5,400</td>
+                            <td className="text-right py-2 font-semibold">$45,200</td>
+                          </tr>
+                          <tr className="border-b">
+                            <td className="py-2">Sunset Heights</td>
+                            <td className="text-right py-2">$8,600</td>
+                            <td className="text-right py-2">$10,300</td>
+                            <td className="text-right py-2">$8,800</td>
+                            <td className="text-right py-2">$5,300</td>
+                            <td className="text-right py-2">$4,800</td>
+                            <td className="text-right py-2 font-semibold">$37,800</td>
+                          </tr>
+                          <tr className="border-b">
+                            <td className="py-2">Meadow View Condos</td>
+                            <td className="text-right py-2">$6,400</td>
+                            <td className="text-right py-2">$8,900</td>
+                            <td className="text-right py-2">$7,500</td>
+                            <td className="text-right py-2">$3,800</td>
+                            <td className="text-right py-2">$3,200</td>
+                            <td className="text-right py-2 font-semibold">$29,800</td>
+                          </tr>
+                          <tr>
+                            <td className="py-2">Riverfront Townhomes</td>
+                            <td className="text-right py-2">$11,800</td>
+                            <td className="text-right py-2">$15,800</td>
+                            <td className="text-right py-2">$13,400</td>
+                            <td className="text-right py-2">$7,600</td>
+                            <td className="text-right py-2">$5,700</td>
+                            <td className="text-right py-2 font-semibold">$54,300</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950 rounded-md">
+                    <h3 className="text-lg font-medium mb-2 text-blue-800 dark:text-blue-300">Tax Preparation Resources</h3>
+                    <ul className="list-disc pl-5 space-y-1 text-blue-700 dark:text-blue-400">
+                      <li>Schedule E (Form 1040) for reporting rental income and expenses</li>
+                      <li>Form 4562 for depreciation and amortization</li>
+                      <li>Form 8825 for rental real estate income and expenses of a partnership or an S corporation</li>
+                      <li>Form 1098 for mortgage interest statements</li>
+                    </ul>
+                    <div className="mt-3">
+                      <Button size="sm" variant="outline">Download Tax Forms</Button>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Button className="w-full">Export Tax Report for Accountant</Button>
+                </CardFooter>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </TabsContent>
 
         {/* Occupancy Reports */}
         <TabsContent value="occupancy">
           <Card>
             <CardHeader>
-              <CardTitle>Occupancy Analysis</CardTitle>
+              <CardTitle>Occupancy Rates</CardTitle>
               <CardDescription>
-                Occupancy rates, tenant turnover, and lease renewals
+                Occupancy trends and tenant turnover analysis
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-[400px] w-full overflow-x-auto">
-                <ResponsiveContainer width="100%" height="100%">
-                  <RechartsLineChart
-                    data={occupancyData}
-                    margin={{
-                      top: 20,
-                      right: 30,
-                      left: 20,
-                      bottom: 5,
-                    }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis domain={[75, 95]} />
-                    <Tooltip formatter={(value) => `${value}%`} />
-                    <Legend />
-                    <Line 
-                      type="monotone" 
-                      dataKey="occupancyRate" 
-                      name="Occupancy Rate" 
-                      stroke="#8884d8" 
-                      strokeWidth={2}
-                      dot={{ r: 4 }}
-                      activeDot={{ r: 6 }} 
-                    />
-                  </RechartsLineChart>
-                </ResponsiveContainer>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                <div className="border rounded-md p-4">
-                  <h3 className="text-lg font-medium mb-3">Occupancy Trends</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Average Occupancy</p>
-                      <p className="text-2xl font-bold">85.8%</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Vacancy Rate</p>
-                      <p className="text-2xl font-bold">14.2%</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Peak Occupancy</p>
-                      <p className="text-2xl font-bold">88%</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Lowest Occupancy</p>
-                      <p className="text-2xl font-bold">82%</p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="border rounded-md p-4">
-                  <h3 className="text-lg font-medium mb-3">Tenant Retention</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Renewal Rate</p>
-                      <p className="text-2xl font-bold">76%</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Avg. Tenant Stay</p>
-                      <p className="text-2xl font-bold">2.4 yrs</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Move-outs (YTD)</p>
-                      <p className="text-2xl font-bold">28</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Move-ins (YTD)</p>
-                      <p className="text-2xl font-bold">34</p>
-                    </div>
-                  </div>
+              <div className="h-[400px] w-full">
+                {/* Placeholder for occupancy chart */}
+                <div className="flex items-center justify-center h-full border rounded-md">
+                  <p className="text-muted-foreground">Occupancy chart will be displayed here</p>
                 </div>
               </div>
             </CardContent>
-            <CardFooter className="justify-between border-t px-6 py-4">
-              <div className="text-sm text-muted-foreground">
-                Last updated: April 26, 2025
-              </div>
-              <Button variant="outline" size="sm">
-                <Download className="mr-2 h-4 w-4" />
-                Download Report
-              </Button>
-            </CardFooter>
           </Card>
         </TabsContent>
 
@@ -424,7 +763,7 @@ const Reports = () => {
                 <div>
                   <h3 className="text-lg font-medium mb-3">Maintenance Requests by Category</h3>
                   <div className="h-[300px]">
-                    <ResponsiveContainer width="100%" height="100%">
+                    <RechartsResponsiveContainer width="100%" height="100%">
                       <RechartsPieChart>
                         <Pie
                           data={maintenanceData}
@@ -442,77 +781,21 @@ const Reports = () => {
                           ))}
                         </Pie>
                         <Tooltip formatter={(value) => `${value} requests`} />
-                        <Legend />
                       </RechartsPieChart>
-                    </ResponsiveContainer>
+                    </RechartsResponsiveContainer>
                   </div>
                 </div>
-                
                 <div>
-                  <h3 className="text-lg font-medium mb-3">Maintenance Performance</h3>
-                  <div className="space-y-6">
-                    <div className="border rounded-md p-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <p className="text-sm text-muted-foreground">Total Requests</p>
-                          <p className="text-2xl font-bold">142</p>
-                          <p className="text-xs text-green-500">-8% from previous year</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">Avg. Response Time</p>
-                          <p className="text-2xl font-bold">1.4 days</p>
-                          <p className="text-xs text-green-500">-0.3 days from previous year</p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <h4 className="text-sm font-medium mb-2">Request Status</h4>
-                      <div className="grid grid-cols-3 gap-2 text-center">
-                        <div className="bg-green-50 dark:bg-green-950 p-2 rounded-md">
-                          <p className="text-sm text-muted-foreground">Completed</p>
-                          <p className="text-xl font-semibold">112</p>
-                          <p className="text-xs text-muted-foreground">78.9%</p>
-                        </div>
-                        <div className="bg-yellow-50 dark:bg-yellow-950 p-2 rounded-md">
-                          <p className="text-sm text-muted-foreground">In Progress</p>
-                          <p className="text-xl font-semibold">24</p>
-                          <p className="text-xs text-muted-foreground">16.9%</p>
-                        </div>
-                        <div className="bg-red-50 dark:bg-red-950 p-2 rounded-md">
-                          <p className="text-sm text-muted-foreground">Pending</p>
-                          <p className="text-xl font-semibold">6</p>
-                          <p className="text-xs text-muted-foreground">4.2%</p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <h4 className="text-sm font-medium mb-2">Maintenance Costs</h4>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <p className="text-sm text-muted-foreground">Total Costs</p>
-                          <p className="text-xl font-semibold">$48,742</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">Avg. Cost/Unit</p>
-                          <p className="text-xl font-semibold">$724</p>
-                        </div>
-                      </div>
+                  <h3 className="text-lg font-medium mb-3">Maintenance Costs by Property</h3>
+                  <div className="h-[300px]">
+                    {/* Placeholder for maintenance costs chart */}
+                    <div className="flex items-center justify-center h-full border rounded-md">
+                      <p className="text-muted-foreground">Maintenance costs chart will be displayed here</p>
                     </div>
                   </div>
                 </div>
               </div>
             </CardContent>
-            <CardFooter className="justify-between border-t px-6 py-4">
-              <div className="text-sm text-muted-foreground">
-                Last updated: April 26, 2025
-              </div>
-              <Button variant="outline" size="sm">
-                <Download className="mr-2 h-4 w-4" />
-                Download Report
-              </Button>
-            </CardFooter>
           </Card>
         </TabsContent>
       </Tabs>
@@ -528,7 +811,7 @@ const Reports = () => {
           </CardHeader>
           <CardContent>
             <div className="h-[180px]">
-              <ResponsiveContainer width="100%" height="100%">
+              <RechartsResponsiveContainer width="100%" height="100%">
                 <RechartsPieChart>
                   <Pie
                     data={demographicData}
@@ -547,7 +830,7 @@ const Reports = () => {
                   </Pie>
                   <Tooltip formatter={(value) => `${value}%`} />
                 </RechartsPieChart>
-              </ResponsiveContainer>
+              </RechartsResponsiveContainer>
             </div>
             <p className="text-sm text-center text-muted-foreground mt-4">
               Age distribution of current tenants across all properties

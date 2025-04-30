@@ -1,5 +1,6 @@
 
 import { storage } from "./storage";
+import { seedApplications } from "./seed-applications";
 
 // Function to seed the database with sample data
 async function seedDatabase() {
@@ -567,6 +568,9 @@ async function seedDatabase() {
   }
 
   console.log("Database seeding completed!");
+  
+  // Seed application data
+  await seedApplications();
 }
 
 // Call the function if this script is executed directly

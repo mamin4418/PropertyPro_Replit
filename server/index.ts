@@ -1,89 +1,53 @@
-import express, { type Request, Response, NextFunction } from "express";
+import express from "express";
 import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log } from "./vite";
+import { seedData } from "./seed-data";
+import { seedApplications } from "./seed-applications";
+import { seedUtilitiesAndInspections } from "./seed-features";
+import { Server } from "http";
+import { createServer as createViteServer } from "vite";
+import path from "path";
+import { viteSetup } from "./vite";
+import cors from "cors";
+import dotenv from "dotenv";
 
-const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+dotenv.config();
 
-app.use((req, res, next) => {
-  const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
+const PORT = process.env.PORT || 3000;
 
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
+async function startServer() {
+  const app = express();
 
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
+  // Middleware
+  app.use(cors());
+  app.use(express.json());
+  app.use(express.static(path.resolve("client/dist")));
 
-      if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "…";
-      }
-
-      log(logLine);
-    }
-  });
-
-  next();
-});
-
-(async () => {
+  // Setup API routes
   const server = await registerRoutes(app);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
+  // Seed data
+  seedData();
+  seedApplications();
+  seedUtilitiesAndInspections(); // Add the utilities and property inspections data
 
-    res.status(status).json({ message });
-    throw err;
-  });
-
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
-    await setupVite(app, server);
-  } else {
-    serveStatic(app);
+  // In development mode, setup Vite for HMR
+  if (process.env.NODE_ENV === "development") {
+    await viteSetup(app);
   }
 
-  // Try to get a different port if the default one is in use
-  const startServer = async (retryCount = 0) => {
-    try {
-      const port = process.env.PORT || (5000 + retryCount); // Try incremental ports
-
-      server.listen({
-        port,
-        host: "0.0.0.0",
-        reusePort: true,
-      }, () => {
-        log(`serving on port ${port}`);
-      });
-
-      // Handle errors during server startup
-      server.on('error', (error: any) => {
-        if (error.code === 'EADDRINUSE' && retryCount < 5) {
-          console.log(`Port ${port} is in use, trying another port...`);
-          // Try the next port
-          startServer(retryCount + 1);
-        } else {
-          console.error('Server error:', error);
-        }
-      });
-    } catch (error) {
-      console.error('Failed to start server:', error);
+  // Catch-all route to serve the frontend for all other requests
+  app.get("*", (req, res) => {
+    if (process.env.NODE_ENV === "development") {
+      res.redirect(`http://localhost:3001${req.originalUrl}`);
+    } else {
+      res.sendFile(path.resolve("client/dist/index.html"));
     }
-  };
+  });
 
-  // Start the server
-  startServer();
-})();
+  server.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server started on port ${PORT}`);
+    console.log(`Mode: ${process.env.NODE_ENV || "development"}`);
+  });
+}
+
+startServer().catch(console.error);

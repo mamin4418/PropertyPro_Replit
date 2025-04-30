@@ -1,10 +1,37 @@
-
 import { storage } from "./storage";
+
+// Function to store utility accounts in storage
+async function storeUtilityAccounts(accounts: any[]) {
+  for (const account of accounts) {
+    await storage.createUtilityAccount(account);
+  }
+}
+
+// Function to store utility bills in storage
+async function storeUtilityBills(bills: any[]) {
+  for (const bill of bills) {
+    await storage.createUtilityBill(bill);
+  }
+}
+
+// Function to store inspections in storage
+async function storeInspections(inspections: any[]) {
+  for (const inspection of inspections) {
+    await storage.createInspection(inspection);
+  }
+}
+
+// Function to store completed inspections in storage
+async function storeCompletedInspections(inspections: any[]) {
+  for (const inspection of inspections) {
+    await storage.createCompletedInspection(inspection);
+  }
+}
 
 export async function seedUtilitiesAndInspections() {
   try {
     console.log("Seeding utilities and property inspections data...");
-    
+
     // Sample utility accounts
     const utilityAccounts = [
       {
@@ -68,7 +95,7 @@ export async function seedUtilitiesAndInspections() {
         status: "active"
       },
     ];
-    
+
     // Sample utility bills
     const utilityBills = [
       {
@@ -132,7 +159,7 @@ export async function seedUtilitiesAndInspections() {
         paidDate: null
       },
     ];
-    
+
     // Sample property inspections
     const inspections = [
       {
@@ -169,7 +196,7 @@ export async function seedUtilitiesAndInspections() {
         units: ["A1", "A2", "B1", "B2"]
       },
     ];
-    
+
     // Sample completed inspections
     const completedInspections = [
       {
@@ -224,7 +251,7 @@ export async function seedUtilitiesAndInspections() {
         ]
       },
     ];
-    
+
     // Add data to storage
     await Promise.all([
       storeUtilityAccounts(utilityAccounts),
@@ -232,78 +259,9 @@ export async function seedUtilitiesAndInspections() {
       storeInspections(inspections),
       storeCompletedInspections(completedInspections)
     ]);
-    
+
     console.log("Successfully seeded utilities and property inspections data");
   } catch (error) {
     console.error("Error seeding utilities and property inspections data:", error);
-  }
-}
-
-// Helper functions to store data in the storage
-async function storeUtilityAccounts(accounts) {
-  try {
-    if (!storage.utilityAccounts) {
-      storage.utilityAccounts = new Map();
-    }
-    
-    accounts.forEach(account => {
-      storage.utilityAccounts.set(account.id, account);
-    });
-    
-    return true;
-  } catch (error) {
-    console.error("Error storing utility accounts:", error);
-    return false;
-  }
-}
-
-async function storeUtilityBills(bills) {
-  try {
-    if (!storage.utilityBills) {
-      storage.utilityBills = new Map();
-    }
-    
-    bills.forEach(bill => {
-      storage.utilityBills.set(bill.id, bill);
-    });
-    
-    return true;
-  } catch (error) {
-    console.error("Error storing utility bills:", error);
-    return false;
-  }
-}
-
-async function storeInspections(inspections) {
-  try {
-    if (!storage.inspections) {
-      storage.inspections = new Map();
-    }
-    
-    inspections.forEach(inspection => {
-      storage.inspections.set(inspection.id, inspection);
-    });
-    
-    return true;
-  } catch (error) {
-    console.error("Error storing inspections:", error);
-    return false;
-  }
-}
-
-async function storeCompletedInspections(inspections) {
-  try {
-    if (!storage.completedInspections) {
-      storage.completedInspections = new Map();
-    }
-    
-    inspections.forEach(inspection => {
-      storage.completedInspections.set(inspection.id, inspection);
-    });
-    
-    return true;
-  } catch (error) {
-    console.error("Error storing completed inspections:", error);
-    return false;
   }
 }

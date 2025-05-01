@@ -1940,13 +1940,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   // Property inspections endpoints
-  app.get('/api/inspections', async (req: Request, res: Response) => {
+  app.get('/api/property-inspections/scheduled', async (req: Request, res: Response) => {
     try {
-      const inspections = await storage.getInspections() || [];
+      const inspections = Array.from(storage.inspections?.values() || []);
       res.json(inspections);
     } catch (error) {
-      console.error('Error retrieving inspections:', error);
-      res.status(500).json({ error: 'Failed to retrieve inspections' });
+      console.error('Error retrieving scheduled inspections:', error);
+      res.status(500).json({ error: 'Failed to retrieve scheduled inspections' });
+    }
+  });
+
+  app.get('/api/property-inspections/completed', async (req: Request, res: Response) => {
+    try {
+      const inspections = Array.from(storage.completedInspections?.values() || []);
+      res.json(inspections);
+    } catch (error) {
+      console.error('Error retrieving completed inspections:', error);
+      res.status(500).json({ error: 'Failed to retrieve completed inspections' });
+    }
+  });
+
+  app.get('/api/utility-accounts', async (req: Request, res: Response) => {
+    try {
+      const accounts = Array.from(storage.utilityAccounts?.values() || []);
+      res.json(accounts);
+    } catch (error) {
+      console.error('Error retrieving utility accounts:', error);
+      res.status(500).json({ error: 'Failed to retrieve utility accounts' });
+    }
+  });
+
+  app.get('/api/utility-bills', async (req: Request, res: Response) => {
+    try {
+      const bills = Array.from(storage.utilityBills?.values() || []);
+      res.json(bills);
+    } catch (error) {
+      console.error('Error retrieving utility bills:', error);
+      res.status(500).json({ error: 'Failed to retrieve utility bills' });
     }
   });
   app.get('/api/completed-inspections', async (req: Request, res: Response) => {

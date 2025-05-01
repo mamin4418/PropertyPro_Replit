@@ -209,9 +209,15 @@ export class MemStorage implements IStorage {
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000, // prune expired entries every 24h
     });
-    // Add sample data here to fix the empty array issue
+    
+    // Initialize maps
+    this.utilityAccounts = new Map();
+    this.utilityBills = new Map();
+    this.inspections = new Map();
+    this.completedInspections = new Map();
+    
+    // Add sample data
     this.addSampleData();
-
   }
 
   addSampleData() {

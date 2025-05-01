@@ -3,28 +3,48 @@ import { storage } from "./storage";
 // Function to store utility accounts in storage
 async function storeUtilityAccounts(accounts: any[]) {
   for (const account of accounts) {
-    await storage.createUtilityAccount(account);
+    try {
+      await storage.createUtilityAccount(account);
+      console.log(`Created utility account: ${account.utilityType} for ${account.propertyName}`);
+    } catch (error) {
+      console.error(`Error creating utility account:`, error);
+    }
   }
 }
 
 // Function to store utility bills in storage
 async function storeUtilityBills(bills: any[]) {
   for (const bill of bills) {
-    await storage.createUtilityBill(bill);
+    try {
+      await storage.createUtilityBill(bill);
+      console.log(`Created utility bill: $${bill.amount} for account ID ${bill.utilityAccountId}`);
+    } catch (error) {
+      console.error(`Error creating utility bill:`, error);
+    }
   }
 }
 
 // Function to store inspections in storage
 async function storeInspections(inspections: any[]) {
   for (const inspection of inspections) {
-    await storage.createInspection(inspection);
+    try {
+      await storage.createInspection(inspection);
+      console.log(`Created inspection: ${inspection.inspectionType} for ${inspection.propertyName}`);
+    } catch (error) {
+      console.error(`Error creating inspection:`, error);
+    }
   }
 }
 
 // Function to store completed inspections in storage
 async function storeCompletedInspections(inspections: any[]) {
   for (const inspection of inspections) {
-    await storage.createCompletedInspection(inspection);
+    try {
+      await storage.createCompletedInspection(inspection);
+      console.log(`Created completed inspection: ${inspection.inspectionType} for ${inspection.propertyName}`);
+    } catch (error) {
+      console.error(`Error creating completed inspection:`, error);
+    }
   }
 }
 

@@ -15,140 +15,177 @@ export default function Utilities() {
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedAccount, setExpandedAccount] = useState<number | null>(null);
   const [expandedBill, setExpandedBill] = useState<number | null>(null);
+  const [utilityAccounts, setUtilityAccounts] = useState<any[]>([]);
+  const [utilityBills, setUtilityBills] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
-  // Fake data for utilities
-  const utilityAccounts = [
-    {
-      id: 1,
-      propertyId: 1,
-      propertyName: "Sunset Heights",
-      utilityType: "Electricity",
-      provider: "Pacific Power",
-      accountNumber: "EL-12345-ST",
-      setupDate: "2022-01-15",
-      status: "active",
-      averageCost: 350,
-      nextReading: "2023-08-25",
-      paymentMethod: "Auto-pay",
-      billingAddress: "123 Main St, Anytown, CA 12345",
-      lastBillAmount: 375.82
-    },
-    {
-      id: 2,
-      propertyId: 1,
-      propertyName: "Sunset Heights",
-      utilityType: "Water",
-      provider: "City Water",
-      accountNumber: "WA-67890-ST",
-      setupDate: "2022-01-15",
-      status: "active",
-      averageCost: 120,
-      nextReading: "2023-08-20",
-      paymentMethod: "Manual",
-      billingAddress: "123 Main St, Anytown, CA 12345",
-      lastBillAmount: 105.50
-    },
-    {
-      id: 3,
-      propertyId: 2,
-      propertyName: "Maple Gardens",
-      utilityType: "Gas",
-      provider: "National Gas",
-      accountNumber: "GS-54321-MG",
-      setupDate: "2021-11-10",
-      status: "active",
-      averageCost: 200,
-      nextReading: "2023-08-18",
-      paymentMethod: "Auto-pay",
-      billingAddress: "456 Elm St, Anytown, CA 12345",
-      lastBillAmount: 185.25
-    },
-    {
-      id: 4,
-      propertyId: 3,
-      propertyName: "Urban Lofts",
-      utilityType: "Internet",
-      provider: "SpeedFiber",
-      accountNumber: "IN-98765-UL",
-      setupDate: "2022-03-05",
-      status: "active",
-      averageCost: 89,
-      nextReading: null,
-      paymentMethod: "Auto-pay",
-      billingAddress: "789 Oak Ave, Anytown, CA 12345",
-      lastBillAmount: 89.99
-    }
-  ];
-  
-  const utilityBills = [
-    {
-      id: 1,
-      utilityAccountId: 1,
-      billDate: "2023-07-25",
-      dueDate: "2023-08-15",
-      amount: 375.82,
-      consumption: "1,250 kWh",
-      startDate: "2023-06-25",
-      endDate: "2023-07-25",
-      status: "unpaid",
-      uploadedBill: "bill-el-123456-july.pdf"
-    },
-    {
-      id: 2,
-      utilityAccountId: 1,
-      billDate: "2023-06-25",
-      dueDate: "2023-07-15",
-      amount: 355.50,
-      consumption: "1,185 kWh",
-      startDate: "2023-05-25",
-      endDate: "2023-06-25",
-      status: "paid",
-      paymentDate: "2023-07-10",
-      paymentMethod: "Auto-pay",
-      uploadedBill: "bill-el-123456-june.pdf"
-    },
-    {
-      id: 3,
-      utilityAccountId: 2,
-      billDate: "2023-07-20",
-      dueDate: "2023-08-10",
-      amount: 105.50,
-      consumption: "2,500 gal",
-      startDate: "2023-06-20",
-      endDate: "2023-07-20",
-      status: "unpaid",
-      uploadedBill: "bill-wa-67890-july.pdf"
-    },
-    {
-      id: 4,
-      utilityAccountId: 3,
-      billDate: "2023-07-18",
-      dueDate: "2023-08-08",
-      amount: 185.25,
-      consumption: "125 therms",
-      startDate: "2023-06-18",
-      endDate: "2023-07-18",
-      status: "unpaid",
-      uploadedBill: "bill-gs-54321-july.pdf"
-    },
-    {
-      id: 5,
-      utilityAccountId: 4,
-      billDate: "2023-07-05",
-      dueDate: "2023-07-25",
-      amount: 89.99,
-      consumption: "Unlimited",
-      startDate: "2023-07-05",
-      endDate: "2023-08-05",
-      status: "paid",
-      paymentDate: "2023-07-20",
-      paymentMethod: "Auto-pay",
-      uploadedBill: "bill-in-98765-aug.pdf"
-    }
-  ];
+  // Fetch utility data from the server
+  useEffect(() => {
+    const fetchUtilityData = async () => {
+      try {
+        setLoading(true);
+        // Fetch utility accounts
+        const accountsResponse = await fetch('/api/utility-accounts');
+        if (!accountsResponse.ok) {
+          throw new Error('Failed to fetch utility accounts');
+        }
+        const accountsData = await accountsResponse.json();
+        
+        // Fetch utility bills
+        const billsResponse = await fetch('/api/utility-bills');
+        if (!billsResponse.ok) {
+          throw new Error('Failed to fetch utility bills');
+        }
+        const billsData = await billsResponse.json();
+        
+        setUtilityAccounts(accountsData.utilityAccounts || []);
+        setUtilityBills(billsData.utilityBills || []);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching utility data:', err);
+        setError('Failed to load utility data. Please try again later.');
+        
+        // Fallback to mock data if API fails
+        setUtilityAccounts([
+          {
+            id: 1,
+            propertyId: 1,
+            propertyName: "Sunset Heights",
+            utilityType: "Electricity",
+            provider: "Pacific Power",
+            accountNumber: "EL-12345-ST",
+            setupDate: "2022-01-15",
+            status: "active",
+            averageCost: 350,
+            nextReading: "2023-08-25",
+            paymentMethod: "Auto-pay",
+            billingAddress: "123 Main St, Anytown, CA 12345",
+            lastBillAmount: 375.82
+          },
+          {
+            id: 2,
+            propertyId: 1,
+            propertyName: "Sunset Heights",
+            utilityType: "Water",
+            provider: "City Water",
+            accountNumber: "WA-67890-ST",
+            setupDate: "2022-01-15",
+            status: "active",
+            averageCost: 120,
+            nextReading: "2023-08-20",
+            paymentMethod: "Manual",
+            billingAddress: "123 Main St, Anytown, CA 12345",
+            lastBillAmount: 105.50
+          },
+          {
+            id: 3,
+            propertyId: 2,
+            propertyName: "Maple Gardens",
+            utilityType: "Gas",
+            provider: "National Gas",
+            accountNumber: "GS-54321-MG",
+            setupDate: "2021-11-10",
+            status: "active",
+            averageCost: 200,
+            nextReading: "2023-08-18",
+            paymentMethod: "Auto-pay",
+            billingAddress: "456 Elm St, Anytown, CA 12345",
+            lastBillAmount: 185.25
+          },
+          {
+            id: 4,
+            propertyId: 3,
+            propertyName: "Urban Lofts",
+            utilityType: "Internet",
+            provider: "SpeedFiber",
+            accountNumber: "IN-98765-UL",
+            setupDate: "2022-03-05",
+            status: "active",
+            averageCost: 89,
+            nextReading: null,
+            paymentMethod: "Auto-pay",
+            billingAddress: "789 Oak Ave, Anytown, CA 12345",
+            lastBillAmount: 89.99
+          }
+        ]);
+        
+        setUtilityBills([
+          {
+            id: 1,
+            utilityAccountId: 1,
+            billDate: "2023-07-25",
+            dueDate: "2023-08-15",
+            amount: 375.82,
+            consumption: "1,250 kWh",
+            startDate: "2023-06-25",
+            endDate: "2023-07-25",
+            status: "unpaid",
+            uploadedBill: "bill-el-123456-july.pdf"
+          },
+          {
+            id: 2,
+            utilityAccountId: 1,
+            billDate: "2023-06-25",
+            dueDate: "2023-07-15",
+            amount: 355.50,
+            consumption: "1,185 kWh",
+            startDate: "2023-05-25",
+            endDate: "2023-06-25",
+            status: "paid",
+            paymentDate: "2023-07-10",
+            paymentMethod: "Auto-pay",
+            uploadedBill: "bill-el-123456-june.pdf"
+          },
+          {
+            id: 3,
+            utilityAccountId: 2,
+            billDate: "2023-07-20",
+            dueDate: "2023-08-10",
+            amount: 105.50,
+            consumption: "2,500 gal",
+            startDate: "2023-06-20",
+            endDate: "2023-07-20",
+            status: "unpaid",
+            uploadedBill: "bill-wa-67890-july.pdf"
+          },
+          {
+            id: 4,
+            utilityAccountId: 3,
+            billDate: "2023-07-18",
+            dueDate: "2023-08-08",
+            amount: 185.25,
+            consumption: "125 therms",
+            startDate: "2023-06-18",
+            endDate: "2023-07-18",
+            status: "unpaid",
+            uploadedBill: "bill-gs-54321-july.pdf"
+          },
+          {
+            id: 5,
+            utilityAccountId: 4,
+            billDate: "2023-07-05",
+            dueDate: "2023-07-25",
+            amount: 89.99,
+            consumption: "Unlimited",
+            startDate: "2023-07-05",
+            endDate: "2023-08-05",
+            status: "paid",
+            paymentDate: "2023-07-20",
+            paymentMethod: "Auto-pay",
+            uploadedBill: "bill-in-98765-aug.pdf"
+          }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUtilityData();
+  }, []);
   
   // For display - adds property name to bills
-  const displayUtilityAccounts = utilityAccounts.map(account => account);
+  const displayUtilityAccounts = utilityAccounts;
   
   const displayUtilityBills = utilityBills.map(bill => {
     const account = utilityAccounts.find(acc => acc.id === bill.utilityAccountId);

@@ -16,7 +16,7 @@ import {
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication
   setupAuth(app);
-  
+
   // Register RBAC routes
   app.use('/api/rbac', rbacRoutes);
   // Contacts API endpoints
@@ -1198,7 +1198,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/property-inspections/scheduled', async (req: Request, res: Response) => {
     try {
       const inspections = Array.from(storage.inspections?.values() || []);
-      
+
       // If no inspections are found, use sample data from seed-features
       if (!inspections.length) {
         // Import sample data
@@ -1237,15 +1237,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
             units: ["A1", "A2", "B1", "B2"]
           },
         ];
-        
+
         // Seed the inspections
         for (const inspection of sampleInspections) {
           await storage.createInspection(inspection);
         }
-        
+
         return res.json(sampleInspections);
       }
-      
+
       res.json(inspections);
     } catch (error) {
       console.error('Error retrieving scheduled inspections:', error);
@@ -1256,7 +1256,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/property-inspections/completed', async (req: Request, res: Response) => {
     try {
       const inspections = Array.from(storage.completedInspections?.values() || []);
-      
+
       // If no inspections are found, use sample data
       if (!inspections.length) {
         // Import sample data
@@ -1313,15 +1313,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
             ]
           }
         ];
-        
+
         // Seed the completed inspections
         for (const inspection of sampleCompletedInspections) {
           await storage.createCompletedInspection(inspection);
         }
-        
+
         return res.json(sampleCompletedInspections);
       }
-      
+
       res.json(inspections);
     } catch (error) {
       console.error('Error retrieving completed inspections:', error);
@@ -1389,7 +1389,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const id = parseInt(req.params.id);
       // In a real implementation, fetch document from database
       // Return enhanced mock data for now based on ID
-      
+
       // Sample documents with different statuses for testing
       const documents = {
         1: {
@@ -1411,31 +1411,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
           content: `
             <h1>RESIDENTIAL LEASE AGREEMENT</h1>
             <p>This Residential Lease Agreement ("Agreement") is made and entered into on May 15, 2023, by and between Property Management Inc. ("Landlord") and John Doe ("Tenant").</p>
-            
+
             <h2>1. PROPERTY</h2>
             <p>Landlord hereby leases to Tenant and Tenant hereby leases from Landlord, solely for residential purposes, the premises located at: 123 Main St, Apt 101, Anytown, ST 12345 ("Premises").</p>
-            
+
             <h2>2. TERM</h2>
             <p>The term of this Agreement shall be for a period of 12 months, commencing on June 1, 2023, and ending on May 31, 2024.</p>
-            
+
             <h2>3. RENT</h2>
             <p>Tenant agrees to pay, without demand, to Landlord as rent for the Premises the sum of $1,200.00 per month in advance on the 1st day of each month.</p>
-            
+
             <h2>4. SECURITY DEPOSIT</h2>
             <p>Upon execution of this Agreement, Tenant shall deposit with Landlord the sum of $1,200.00 as a security deposit.</p>
-            
+
             <h2>5. UTILITIES</h2>
             <p>Tenant will be responsible for payment of all utilities and services, except for the following which shall be paid by Landlord: Water and trash collection.</p>
-            
+
             <h2>6. SIGNATURES</h2>
             <p>By signing below, Tenant acknowledges having read and understood all the terms and conditions of this Agreement and agrees to be bound thereby.</p>
-            
+
             <div style="margin-top: 30px;">
               <div style="display: inline-block; min-width: 200px; margin-right: 50px;">
                 <p style="border-bottom: 1px solid #000; min-height: 40px;" class="signature-field" data-field="landlord_signature"></p>
                 <p>Landlord Signature</p>
               </div>
-              
+
               <div style="display: inline-block; min-width: 200px;">
                 <p style="border-bottom: 1px solid #000; min-height: 40px;" class="signature-field" data-field="tenant_signature"></p>
                 <p>Tenant Signature</p>
@@ -1467,28 +1467,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
           content: `
             <h1>VENDOR MAINTENANCE AGREEMENT</h1>
             <p>This Maintenance Agreement ("Agreement") is made and entered into on May 14, 2023, by and between Property Management Inc. ("Client") and ABC Plumbing ("Vendor").</p>
-            
+
             <h2>1. SERVICES</h2>
             <p>Vendor agrees to provide plumbing maintenance and repair services for the following properties: Maple Gardens Apartments located at 456 Oak Ave, Anytown, ST 12345.</p>
-            
+
             <h2>2. TERM</h2>
             <p>The term of this Agreement shall be for a period of 12 months, commencing on June 1, 2023, and ending on May 31, 2024.</p>
-            
+
             <h2>3. COMPENSATION</h2>
             <p>Client agrees to pay Vendor for services at the rate of $85.00 per hour for standard services, and $125.00 per hour for emergency services.</p>
-            
+
             <h2>4. RESPONSE TIMES</h2>
             <p>Vendor agrees to respond to standard service calls within 24 hours and emergency service calls within 4 hours.</p>
-            
+
             <h2>5. SIGNATURES</h2>
             <p>By signing below, both parties acknowledge having read and understood all the terms and conditions of this Agreement and agree to be bound thereby.</p>
-            
+
             <div style="margin-top: 30px;">
               <div style="display: inline-block; min-width: 200px; margin-right: 50px;">
                 <p style="border-bottom: 1px solid #000; min-height: 40px;" class="signature-field" data-field="client_signature"></p>
                 <p>Client Signature</p>
               </div>
-              
+
               <div style="display: inline-block; min-width: 200px;">
                 <p style="border-bottom: 1px solid #000; min-height: 40px;" class="signature-field" data-field="vendor_signature"></p>
                 <p>Vendor Signature</p>
@@ -1519,25 +1519,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
           content: `
             <h1>LEASE RENEWAL AGREEMENT</h1>
             <p>This Lease Renewal Agreement ("Agreement") is made and entered into on May 1, 2023, by and between Property Management Inc. ("Landlord") and Sarah Johnson ("Tenant").</p>
-            
+
             <h2>1. RENEWAL TERM</h2>
             <p>The parties agree to renew the existing lease for the property located at 789 River Rd, Unit 303, Anytown, ST 12345 for an additional period of 12 months, commencing on June 15, 2023, and ending on June 14, 2024.</p>
-            
+
             <h2>2. RENT</h2>
             <p>Tenant agrees to pay, without demand, to Landlord as rent for the Premises the sum of $1,450.00 per month in advance on the 1st day of each month.</p>
-            
+
             <h2>3. DEPOSIT</h2>
             <p>The existing security deposit of $1,400.00 shall continue to be held by Landlord in accordance with the terms of the original lease agreement.</p>
-            
+
             <h2>4. SIGNATURES</h2>
             <p>By signing below, Tenant acknowledges having read and understood all the terms and conditions of this Agreement and agrees to be bound thereby.</p>
-            
+
             <div style="margin-top: 30px;">
               <div style="display: inline-block; min-width: 200px; margin-right: 50px;">
                 <p style="border-bottom: 1px solid #000; min-height: 40px;" class="signature-field" data-field="landlord_signature"></p>
                 <p>Landlord Signature</p>
               </div>
-              
+
               <div style="display: inline-block; min-width: 200px;">
                 <p style="border-bottom: 1px solid #000; min-height: 40px;" class="signature-field" data-field="tenant_signature"></p>
                 <p>Tenant Signature</p>
@@ -1546,7 +1546,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           `,
           signingFields: [
             { id: "tenant_signature", type: "signature", label: "Signature", required: true, signed: true, signedAt: "2023-05-03T14:30:45Z" },
-            { id: "tenant_initials_1", type: "initials", label: "Initials - Page 1", required: true, signed: true, signedAt: "2023-05-03T14:29:20Z" }
+            { id: "tenant_initials_1", type: "initials", label: ""Initials - Page 1", required: true, signed: true, signedAt: "2023-05-03T14:29:20Z" }
           ]
         },
         4: {
@@ -1568,25 +1568,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
           content: `
             <h1>CLEANING SERVICE AGREEMENT</h1>
             <p>This Cleaning Service Agreement ("Agreement") is made and entered into on April 28, 2023, by and between Property Management Inc. ("Client") and CleanPro Services ("Vendor").</p>
-            
+
             <h2>1. SERVICES</h2>
             <p>Vendor agrees to provide weekly cleaning services for common areas at the Urban Lofts property located at 101 Downtown Blvd, Anytown, ST 12345.</p>
-            
+
             <h2>2. TERM</h2>
             <p>The term of this Agreement shall be for a period of 6 months, commencing on May 15, 2023, and ending on November 14, 2023.</p>
-            
+
             <h2>3. COMPENSATION</h2>
             <p>Client agrees to pay Vendor for services at the rate of $250.00 per week, payable on the 1st and 15th of each month.</p>
-            
+
             <h2>4. SIGNATURES</h2>
             <p>By signing below, both parties acknowledge having read and understood all the terms and conditions of this Agreement and agree to be bound thereby.</p>
-            
+
             <div style="margin-top: 30px;">
               <div style="display: inline-block; min-width: 200px; margin-right: 50px;">
                 <p style="border-bottom: 1px solid #000; min-height: 40px;" class="signature-field" data-field="client_signature"></p>
                 <p>Client Signature</p>
               </div>
-              
+
               <div style="display: inline-block; min-width: 200px;">
                 <p style="border-bottom: 1px solid #000; min-height: 40px;" class="signature-field" data-field="vendor_signature"></p>
                 <p>Vendor Signature</p>
@@ -1602,7 +1602,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Get the document based on ID
       const document = documents[id as keyof typeof documents];
-      
+
       if (!document) {
         return res.status(404).json({ error: 'Document not found' });
       }
@@ -1661,23 +1661,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: 'Failed to complete document' });
     }
   });
-  
+
   // Document delivery endpoints
   app.post('/api/document-signing/documents/:id/send', async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id);
       const { method, recipient, message } = req.body;
-      
+
       if (!method || !recipient) {
         return res.status(400).json({ error: 'Missing required fields' });
       }
-      
+
       // In a real implementation, this would:
       // 1. Get the document from database
       // 2. Generate a unique secure link with token
       // 3. Send the document via the specified method
       // 4. Log the delivery for compliance
-      
+
       // For demonstration, return a mock response
       const deliveryRecord = {
         id: Date.now(),
@@ -1695,7 +1695,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           consent: true
         }
       };
-      
+
       res.status(200).json({
         success: true,
         message: `Document sent via ${method} to ${recipient}`,
@@ -1706,16 +1706,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: 'Failed to send document' });
     }
   });
-  
+
   // Document verification endpoint (for UETA/ESIGN compliance)
   app.get('/api/document-signing/verify/:token', async (req: Request, res: Response) => {
     try {
       const { token } = req.params;
-      
+
       // In a real implementation:
       // 1. Verify the token
       // 2. Return the verification details
-      
+
       res.json({
         verified: true,
         documentId: 1, // Example
@@ -1918,6 +1918,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error fetching property appliances:', error);
       res.status(500).json({ error: 'Failed to fetch property appliances' });
+    }
+  });
+  // Utility management endpoints
+  app.get('/api/utility-accounts', async (req: Request, res: Response) => {
+    try {
+      const utilityAccounts = await storage.getUtilityAccounts();
+      res.json(utilityAccounts);
+    } catch (error) {
+      console.error('Error retrieving utility accounts:', error);
+      res.status(500).json({ error: 'Failed to retrieve utility accounts' });
+    }
+  });
+  app.get('/api/utility-bills', async (req: Request, res: Response) => {
+    try {
+      const utilityBills = await storage.getUtilityBills();
+      res.json(utilityBills);
+    } catch (error) {
+      console.error('Error retrieving utility bills:', error);
+      res.status(500).json({ error: 'Failed to retrieve utility bills' });
+    }
+  });
+  // Property inspections endpoints
+  app.get('/api/inspections', async (req: Request, res: Response) => {
+    try {
+      const inspections = await storage.getInspections();
+      res.json(inspections);
+    } catch (error) {
+      console.error('Error retrieving inspections:', error);
+      res.status(500).json({ error: 'Failed to retrieve inspections' });
+    }
+  });
+  app.get('/api/completed-inspections', async (req: Request, res: Response) => {
+    try {
+      const completedInspections = await storage.getCompletedInspections();
+      res.json(completedInspections);
+    } catch (error) {
+      console.error('Error retrieving completed inspections:', error);
+      res.status(500).json({ error: 'Failed to retrieve completed inspections' });
     }
   });
 

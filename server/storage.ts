@@ -107,13 +107,68 @@ export interface IStorage {
   createCompletedInspection(inspection: any): Promise<any>;
   updateCompletedInspection(id: number, inspection: any): Promise<any | undefined>;
   deleteCompletedInspection(id: number): Promise<boolean>;
-  
+
   // Added missing methods
   createUtility(utility: any): Promise<any>;
   createApplication(application: any): Promise<any>;
 }
 
 export class MemStorage implements IStorage {
+  // Maps
+  private properties = new Map<number, any>();
+  private tenants = new Map<number, any>();
+  private leases = new Map<number, any>();
+  private propertyUnits = new Map<number, any>();
+  private companies = new Map<number, any>();
+  private insurances = new Map<number, any>();
+  private contacts = new Map<number, any>();
+  private payments = new Map<number, any>();
+  private vendors = new Map<number, any>();
+  private maintenanceRequests = new Map<number, any>();
+  private appliances = new Map<number, any>();
+  private bankAccounts = new Map<number, any>();
+  private documents = new Map<number, any>();
+  private documentTemplates = new Map<number, any>();
+  private mortgages = new Map<number, any>();
+  private leads = new Map<number, any>();
+  private transactions = new Map<number, any>();
+  private vacancies = new Map<number, any>();
+  private applications = new Map<number, any>();
+  private applicationTemplates = new Map<number, any>(); 
+  private rentalApplications = new Map<number, any>();
+  private utilityAccounts = new Map<number, any>();
+  private utilityBills = new Map<number, any>();
+  private inspections = new Map<number, any>();
+  private completedInspections = new Map<number, any>();
+
+  // Counters for generating IDs
+  private propertyIdCounter = 10000;
+  private tenantIdCounter = 1000;
+  private leaseIdCounter = 1000;
+  private unitIdCounter = 1000;
+  private companyIdCounter = 1000;
+  private insuranceIdCounter = 1000;
+  private contactIdCounter = 1000;
+  private paymentIdCounter = 1000;
+  private vendorIdCounter = 1000;
+  private maintenanceRequestIdCounter = 1000;
+  private applianceIdCounter = 10000;
+  private bankAccountIdCounter = 1000;
+  private documentIdCounter = 1000;
+  private documentTemplateIdCounter = 1000;
+  private mortgageIdCounter = 1000;
+  private leadIdCounter = 1000;
+  private transactionIdCounter = 1000;
+  private vacancyIdCounter = 1000;
+  private applicationIdCounter = 1000;
+  private applicationTemplateIdCounter = 1000;
+  private rentalApplicationIdCounter = 1000;
+  private utilityAccountIdCounter = 1000;
+  private utilityBillIdCounter = 1000;
+  private inspectionIdCounter = 1000;
+  private completedInspectionIdCounter = 1000;
+
+
   // Session store for auth
   public sessionStore: session.Store;
 
@@ -844,7 +899,7 @@ export class MemStorage implements IStorage {
   async deleteCompletedInspection(id: number): Promise<boolean> {
     return this.completedInspections.delete(id);
   }
-  
+
   // Add missing utility function
   async createUtility(utility: any): Promise<any> {
     const id = this.utilityAccountIdCounter++;
@@ -853,12 +908,12 @@ export class MemStorage implements IStorage {
     this.utilityAccounts.set(id, newUtility);
     return newUtility;
   }
-  
+
   // Add missing application function
   async createApplication(application: any): Promise<any> {
     return this.createRentalApplication(application);
   }
-  
+
   // Property inspection methods
   async createPropertyInspection(inspection: any): Promise<any> {
     const id = this.inspectionIdCounter++;
@@ -867,11 +922,11 @@ export class MemStorage implements IStorage {
     this.inspections.set(id, newInspection);
     return newInspection;
   }
-  
+
   async getAllPropertyInspections(): Promise<any[]> {
     return Array.from(this.inspections.values());
   }
-  
+
   async getPropertyInspectionsByProperty(propertyId: number): Promise<any[]> {
     return Array.from(this.inspections.values()).filter(
       (inspection) => inspection.propertyId === propertyId

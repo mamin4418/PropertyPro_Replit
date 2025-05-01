@@ -1,273 +1,182 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { PlusCircle, Calendar, FileText, AlertTriangle, CheckCircle, XCircle, Clock } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useLocation, Link } from 'wouter';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CalendarPlus, FileCheck, ClipboardList, ArrowUpRight } from "lucide-react";
 
-function PropertyInspectionsPage() {
-  const [scheduledInspections, setScheduledInspections] = useState([]);
-  const [completedInspections, setCompletedInspections] = useState([]);
+export default function PropertyInspections() {
+  const [location, navigate] = useLocation();
+  const [scheduledInspections, setScheduledInspections] = useState<any[]>([]);
+  const [completedInspections, setCompletedInspections] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Fetch scheduled inspections
-    fetch('/api/inspections')
-      .then(response => {
-        if (!response.ok) {
+    async function fetchInspections() {
+      try {
+        setLoading(true);
+        // Fetch scheduled inspections
+        const scheduledResponse = await fetch('/api/property-inspections/scheduled');
+        if (!scheduledResponse.ok) {
           throw new Error('Failed to fetch scheduled inspections');
         }
-        return response.json();
-      })
-      .then(data => {
-        console.log('Fetched scheduled inspections:', data);
-        setScheduledInspections(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Error fetching scheduled inspections:', err);
-        setError(err.message);
-        setLoading(false);
-      });
+        const scheduledData = await scheduledResponse.json();
+        setScheduledInspections(scheduledData);
 
-    // Fetch completed inspections
-    fetch('/api/completed-inspections')
-      .then(response => {
-        if (!response.ok) {
+        // Fetch completed inspections
+        const completedResponse = await fetch('/api/property-inspections/completed');
+        if (!completedResponse.ok) {
           throw new Error('Failed to fetch completed inspections');
         }
-        return response.json();
-      })
-      .then(data => {
-        console.log('Fetched completed inspections:', data);
-        setCompletedInspections(data);
-      })
-      .catch(err => {
-        console.error('Error fetching completed inspections:', err);
-      });
+        const completedData = await completedResponse.json();
+        setCompletedInspections(completedData);
+
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching inspections:', err);
+        setError((err as Error).message || 'Failed to load inspections');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchInspections();
   }, []);
 
-  if (loading) {
-    return <div className="flex justify-center items-center min-h-screen">Loading inspections data...</div>;
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-4">
-        <AlertTriangle className="h-12 w-12 text-red-500 mb-4" />
-        <h2 className="text-2xl font-bold mb-2">Error Loading Inspections</h2>
-        <p className="text-gray-600 mb-4">{error}</p>
-        <Button variant="outline" onClick={() => window.location.reload()}>
-          Try Again
-        </Button>
-      </div>
-    );
-  }
-
-  // Default to empty arrays if no data
-  const safeScheduledInspections = scheduledInspections || [];
-  const safeCompletedInspections = completedInspections || [];
-
-  const upcomingInspections = safeScheduledInspections.filter(inspection => {
-    if (!inspection.scheduledDate && !inspection.date) return false;
-    const inspectionDate = new Date(inspection.scheduledDate || inspection.date);
-    const today = new Date();
-    return inspectionDate >= today;
-  });
-
-  const overdueInspections = safeScheduledInspections.filter(inspection => {
-    if (!inspection.scheduledDate && !inspection.date) return false;
-    const inspectionDate = new Date(inspection.scheduledDate || inspection.date);
-    const today = new Date();
-    return inspectionDate < today && (inspection.status !== 'completed');
-  });
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'scheduled':
+        return <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">Scheduled</Badge>;
+      case 'in-progress':
+        return <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">In Progress</Badge>;
+      case 'cancelled':
+        return <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">Cancelled</Badge>;
+      case 'passed':
+        return <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">Passed</Badge>;
+      case 'issues':
+        return <Badge className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300">Issues Found</Badge>;
+      default:
+        return <Badge>{status}</Badge>;
+    }
+  };
 
   return (
-    <div className="container mx-auto p-4 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Property Inspections</h1>
-        <Link to="/schedule-inspection">
-          <Button>
-            <Calendar className="mr-2 h-4 w-4" />
-            Schedule Inspection
-          </Button>
-        </Link>
+    <div className="container mx-auto p-4">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Property Inspections</h1>
+        <Button onClick={() => navigate('/schedule-inspection')}>
+          <CalendarPlus className="mr-2 h-4 w-4" />
+          Schedule Inspection
+        </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle>Upcoming</CardTitle>
-            <CardDescription>Scheduled inspections</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{upcomingInspections.length}</div>
-          </CardContent>
-        </Card>
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+          <p className="font-bold">Error</p>
+          <p>{error}</p>
+        </div>
+      )}
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle>Completed</CardTitle>
-            <CardDescription>Finished inspections</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{safeCompletedInspections.length}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle>Overdue</CardTitle>
-            <CardDescription>Past due inspections</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{overdueInspections.length}</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Tabs defaultValue="scheduled">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="scheduled">Scheduled Inspections</TabsTrigger>
-          <TabsTrigger value="completed">Completed Inspections</TabsTrigger>
+      <Tabs defaultValue="scheduled" className="w-full">
+        <TabsList className="mb-4">
+          <TabsTrigger value="scheduled">Scheduled</TabsTrigger>
+          <TabsTrigger value="completed">Completed</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="scheduled" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Scheduled Inspections</CardTitle>
-              <CardDescription>Upcoming and pending property inspections</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {safeScheduledInspections.length === 0 ? (
-                <div className="text-center py-6">
-                  <p className="text-gray-500">No scheduled inspections found.</p>
-                  <Link to="/schedule-inspection">
-                    <Button variant="outline" className="mt-2">
-                      <Calendar className="mr-2 h-4 w-4" />
-                      Schedule Your First Inspection
+        <TabsContent value="scheduled">
+          {loading ? (
+            <p className="text-center py-8">Loading scheduled inspections...</p>
+          ) : scheduledInspections.length === 0 ? (
+            <Card>
+              <CardContent className="pt-6 text-center">
+                <p className="text-muted-foreground">No scheduled inspections found.</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4">
+              {scheduledInspections.map((inspection) => (
+                <Card key={inspection.id}>
+                  <CardHeader className="pb-2">
+                    <div className="flex justify-between items-center">
+                      <CardTitle>{inspection.propertyName} - {inspection.inspectionType} Inspection</CardTitle>
+                      {getStatusBadge(inspection.status)}
+                    </div>
+                    <CardDescription>
+                      Scheduled for: {new Date(inspection.scheduledDate).toLocaleDateString()} at {inspection.scheduledTime}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-col gap-1">
+                      <div className="text-sm">
+                        <span className="font-medium">Inspector:</span> {inspection.inspector}
+                      </div>
+                      <div className="text-sm">
+                        <span className="font-medium">Units:</span> {inspection.units?.join(', ')}
+                      </div>
+                    </div>
+                  </CardContent>
+                  <CardFooter className="flex justify-end gap-2">
+                    <Button variant="outline" size="sm">
+                      <ClipboardList className="mr-2 h-4 w-4" />
+                      View Details
                     </Button>
-                  </Link>
-                </div>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Property</TableHead>
-                      <TableHead>Inspection Type</TableHead>
-                      <TableHead>Date & Time</TableHead>
-                      <TableHead>Inspector</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {safeScheduledInspections.map((inspection) => {
-                      const inspectionDate = new Date(inspection.scheduledDate || inspection.date);
-                      const today = new Date();
-                      const isOverdue = inspectionDate < today && (inspection.status !== 'completed');
-
-                      return (
-                        <TableRow key={inspection.id}>
-                          <TableCell className="font-medium">{inspection.propertyName || `Property ${inspection.propertyId}`}</TableCell>
-                          <TableCell>{inspection.inspectionType || 'Routine'}</TableCell>
-                          <TableCell>
-                            {inspectionDate.toLocaleDateString()} {inspection.scheduledTime ? `at ${inspection.scheduledTime}` : ''}
-                          </TableCell>
-                          <TableCell>{inspection.inspector}</TableCell>
-                          <TableCell>
-                            {isOverdue ? (
-                              <Badge variant="outline" className="bg-red-100 text-red-800 border-red-200">
-                                <Clock className="h-3 w-3 mr-1" />
-                                Overdue
-                              </Badge>
-                            ) : (
-                              <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-200">
-                                Scheduled
-                              </Badge>
-                            )}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Button variant="ghost" size="sm">
-                              <FileText className="h-4 w-4" />
-                              <span className="sr-only">View</span>
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
+                    <Button size="sm">
+                      <FileCheck className="mr-2 h-4 w-4" />
+                      Complete Inspection
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          )}
         </TabsContent>
 
-        <TabsContent value="completed" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Completed Inspections</CardTitle>
-              <CardDescription>Inspection history and results</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {safeCompletedInspections.length === 0 ? (
-                <div className="text-center py-6">
-                  <p className="text-gray-500">No completed inspections found.</p>
-                </div>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Property</TableHead>
-                      <TableHead>Inspection Type</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Completed By</TableHead>
-                      <TableHead>Result</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {safeCompletedInspections.map((inspection) => (
-                      <TableRow key={inspection.id}>
-                        <TableCell className="font-medium">{inspection.propertyName || `Property ${inspection.propertyId}`}</TableCell>
-                        <TableCell>{inspection.inspectionType || 'Routine'}</TableCell>
-                        <TableCell>{new Date(inspection.inspectionDate || inspection.dateCompleted || inspection.createdAt).toLocaleDateString()}</TableCell>
-                        <TableCell>{inspection.completedBy || inspection.inspector || 'System'}</TableCell>
-                        <TableCell>
-                          {inspection.status === 'passed' ? (
-                            <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">
-                              <CheckCircle className="h-3 w-3 mr-1" />
-                              Passed
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-200">
-                              <XCircle className="h-3 w-3 mr-1" />
-                              {inspection.status || 'Completed'}
-                            </Badge>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end space-x-1">
-                            <Button variant="ghost" size="sm">
-                              <FileText className="h-4 w-4" />
-                              <span className="sr-only">View</span>
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
+        <TabsContent value="completed">
+          {loading ? (
+            <p className="text-center py-8">Loading completed inspections...</p>
+          ) : completedInspections.length === 0 ? (
+            <Card>
+              <CardContent className="pt-6 text-center">
+                <p className="text-muted-foreground">No completed inspections found.</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Property</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Inspector</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Units</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {completedInspections.map((inspection) => (
+                  <TableRow key={inspection.id}>
+                    <TableCell>{inspection.propertyName}</TableCell>
+                    <TableCell>{inspection.inspectionType}</TableCell>
+                    <TableCell>{new Date(inspection.inspectionDate).toLocaleDateString()}</TableCell>
+                    <TableCell>{inspection.completedBy}</TableCell>
+                    <TableCell>{getStatusBadge(inspection.status)}</TableCell>
+                    <TableCell>{inspection.units?.join(', ')}</TableCell>
+                    <TableCell>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <ArrowUpRight className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </TabsContent>
       </Tabs>
     </div>
   );
 }
-
-export default PropertyInspectionsPage;

@@ -1,255 +1,197 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { PlusCircle, FileText, AlertTriangle, CheckCircle } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useLocation, NavigateFunction } from 'wouter';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Plus, Edit, Trash, FileText } from "lucide-react";
 
-function UtilitiesPage() {
-  const [accounts, setAccounts] = useState([]);
-  const [bills, setBills] = useState([]);
+export default function Utilities() {
+  const [location, navigate] = useLocation<string>();
+  const [utilityAccounts, setUtilityAccounts] = useState<any[]>([]);
+  const [utilityBills, setUtilityBills] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Fetch utility accounts
-    fetch('/api/utility-accounts')
-      .then(response => {
-        if (!response.ok) {
+    async function fetchUtilityData() {
+      try {
+        setLoading(true);
+        // Fetch utility accounts
+        const accountsResponse = await fetch('/api/utility-accounts');
+        if (!accountsResponse.ok) {
           throw new Error('Failed to fetch utility accounts');
         }
-        return response.json();
-      })
-      .then(data => {
-        console.log('Fetched utility accounts:', data);
-        setAccounts(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Error fetching accounts:', err);
-        setError(err.message);
-        setLoading(false);
-      });
+        const accountsData = await accountsResponse.json();
+        setUtilityAccounts(accountsData);
 
-    // Fetch utility bills
-    fetch('/api/utility-bills')
-      .then(response => {
-        if (!response.ok) {
+        // Fetch utility bills
+        const billsResponse = await fetch('/api/utility-bills');
+        if (!billsResponse.ok) {
           throw new Error('Failed to fetch utility bills');
         }
-        return response.json();
-      })
-      .then(data => {
-        console.log('Fetched utility bills:', data);
-        setBills(data);
-      })
-      .catch(err => {
-        console.error('Error fetching bills:', err);
-      });
+        const billsData = await billsResponse.json();
+        setUtilityBills(billsData);
+
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching utility data:', err);
+        setError((err as Error).message || 'Failed to load utility data');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchUtilityData();
   }, []);
 
-  if (loading) {
-    return <div className="flex justify-center items-center min-h-screen">Loading utilities data...</div>;
-  }
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'active':
+        return <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">Active</Badge>;
+      case 'inactive':
+        return <Badge className="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300">Inactive</Badge>;
+      case 'paid':
+        return <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">Paid</Badge>;
+      case 'unpaid':
+        return <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">Unpaid</Badge>;
+      case 'overdue':
+        return <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">Overdue</Badge>;
+      default:
+        return <Badge>{status}</Badge>;
+    }
+  };
 
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-4">
-        <AlertTriangle className="h-12 w-12 text-red-500 mb-4" />
-        <h2 className="text-2xl font-bold mb-2">Error Loading Utilities</h2>
-        <p className="text-gray-600 mb-4">{error}</p>
-        <Button variant="outline" onClick={() => window.location.reload()}>
-          Try Again
-        </Button>
-      </div>
-    );
-  }
-
-  const upcomingBills = bills.filter(bill => bill.status === 'unpaid');
+  // Format currency
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount);
+  };
 
   return (
-    <div className="container mx-auto p-4 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Utilities Management</h1>
-        <Link to="/add-utility-account">
-          <Button>
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Add Utility Account
-          </Button>
-        </Link>
+    <div className="container mx-auto p-4">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Utilities Management</h1>
+        <Button onClick={() => navigate('/add-utility-account')}>
+          <Plus className="mr-2 h-4 w-4" />
+          Add Utility Account
+        </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle>Total Accounts</CardTitle>
-            <CardDescription>Active utility accounts</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{accounts.length}</div>
-          </CardContent>
-        </Card>
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+          <p className="font-bold">Error</p>
+          <p>{error}</p>
+        </div>
+      )}
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle>Upcoming Bills</CardTitle>
-            <CardDescription>Bills due in the next 30 days</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{upcomingBills.length}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle>AutoPay Enabled</CardTitle>
-            <CardDescription>Accounts with automatic payments</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{accounts.filter(account => account.autopayEnabled).length}</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Tabs defaultValue="accounts">
-        <TabsList className="grid w-full grid-cols-2">
+      <Tabs defaultValue="accounts" className="w-full">
+        <TabsList className="mb-4">
           <TabsTrigger value="accounts">Utility Accounts</TabsTrigger>
           <TabsTrigger value="bills">Utility Bills</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="accounts" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Utility Accounts</CardTitle>
-              <CardDescription>Manage your property utility services</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {accounts.length === 0 ? (
-                <div className="text-center py-6">
-                  <p className="text-gray-500">No utility accounts found.</p>
-                  <Link to="/add-utility-account">
-                    <Button variant="outline" className="mt-2">
-                      <PlusCircle className="mr-2 h-4 w-4" />
-                      Add Your First Utility Account
-                    </Button>
-                  </Link>
-                </div>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Property</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Provider</TableHead>
-                      <TableHead>Account Number</TableHead>
-                      <TableHead>Billing Cycle</TableHead>
-                      <TableHead>AutoPay</TableHead>
-                      <TableHead>Responsible</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {accounts.map((account) => (
-                      <TableRow key={account.id}>
-                        <TableCell className="font-medium">{account.propertyName || 'Property ' + account.propertyId}</TableCell>
-                        <TableCell>{account.utilityType || account.type}</TableCell>
-                        <TableCell>{account.provider || account.utilityProvider}</TableCell>
-                        <TableCell>{account.accountNumber}</TableCell>
-                        <TableCell>{account.billingCycle || 'Monthly'}</TableCell>
-                        <TableCell>
-                          {account.autopayEnabled ? (
-                            <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">
-                              Enabled
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline" className="bg-gray-100 text-gray-800 border-gray-200">
-                              Disabled
-                            </Badge>
-                          )}
-                        </TableCell>
-                        <TableCell className="capitalize">{account.responsibleParty || 'Owner'}</TableCell>
-                        <TableCell className="text-right">
-                          <Button variant="ghost" size="sm">
-                            <FileText className="h-4 w-4" />
-                            <span className="sr-only">View</span>
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
+        <TabsContent value="accounts">
+          {loading ? (
+            <p className="text-center py-8">Loading utility accounts...</p>
+          ) : utilityAccounts.length === 0 ? (
+            <Card>
+              <CardContent className="pt-6 text-center">
+                <p className="text-muted-foreground">No utility accounts found.</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Provider</TableHead>
+                  <TableHead>Account Number</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Property</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {utilityAccounts.map((account) => (
+                  <TableRow key={account.id}>
+                    <TableCell className="font-medium">{account.utilityProvider || account.provider}</TableCell>
+                    <TableCell>{account.accountNumber}</TableCell>
+                    <TableCell>{account.utilityType || 'Utility'}</TableCell>
+                    <TableCell>{account.propertyName || `Property ID: ${account.propertyId}`}</TableCell>
+                    <TableCell>{getStatusBadge(account.status || 'active')}</TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Trash className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </TabsContent>
 
-        <TabsContent value="bills" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Utility Bills</CardTitle>
-              <CardDescription>Track and manage utility payments</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {bills.length === 0 ? (
-                <div className="text-center py-6">
-                  <p className="text-gray-500">No utility bills found.</p>
-                  <Button variant="outline" className="mt-2">
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Add Utility Bill
-                  </Button>
-                </div>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Property</TableHead>
-                      <TableHead>Amount</TableHead>
-                      <TableHead>Due Date</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {bills.map((bill) => {
-                      // Find the associated account
-                      const account = accounts.find(a => a.id === bill.utilityAccountId);
-                      return (
-                        <TableRow key={bill.id}>
-                          <TableCell className="font-medium">Property {bill.propertyId || account?.propertyId}</TableCell>
-                          <TableCell>${typeof bill.amount === 'number' ? bill.amount.toFixed(2) : bill.amount}</TableCell>
-                          <TableCell>{bill.dueDate ? new Date(bill.dueDate).toLocaleDateString() : 'Unknown'}</TableCell>
-                          <TableCell>
-                            {bill.status === 'paid' ? (
-                              <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">
-                                <CheckCircle className="h-3 w-3 mr-1" />
-                                Paid
-                              </Badge>
-                            ) : (
-                              <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-200">
-                                Unpaid
-                              </Badge>
-                            )}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Button variant="ghost" size="sm">
-                              <FileText className="h-4 w-4" />
-                              <span className="sr-only">View</span>
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
+        <TabsContent value="bills">
+          {loading ? (
+            <p className="text-center py-8">Loading utility bills...</p>
+          ) : utilityBills.length === 0 ? (
+            <Card>
+              <CardContent className="pt-6 text-center">
+                <p className="text-muted-foreground">No utility bills found.</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {utilityBills.map((bill) => (
+                <Card key={bill.id}>
+                  <CardHeader>
+                    <CardTitle>{bill.utilityAccountId ? `Account #${bill.utilityAccountId}` : 'Utility Bill'}</CardTitle>
+                    <CardDescription>
+                      Due: {bill.dueDate ? new Date(bill.dueDate).toLocaleDateString() : 'Not specified'}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Amount:</span>
+                        <span className="font-medium">{formatCurrency(bill.amount)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Status:</span>
+                        <span>{getStatusBadge(bill.status || 'unpaid')}</span>
+                      </div>
+                      {bill.propertyId && (
+                        <div className="flex justify-between">
+                          <span className="text-sm text-muted-foreground">Property:</span>
+                          <span>ID: {bill.propertyId}</span>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                  <CardFooter className="flex justify-end gap-2">
+                    <Button variant="outline" size="sm">
+                      <FileText className="mr-2 h-4 w-4" />
+                      View
+                    </Button>
+                    <Button size="sm">
+                      Mark as Paid
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>
   );
 }
-
-export default UtilitiesPage;

@@ -1546,7 +1546,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           `,
           signingFields: [
             { id: "tenant_signature", type: "signature", label: "Signature", required: true, signed: true, signedAt: "2023-05-03T14:30:45Z" },
-            { id: "tenant_initials_1", type: "initials", label: ""Initials - Page 1", required: true, signed: true, signedAt: "2023-05-03T14:29:20Z" }
+            { id: "tenant_initials_1", type: "initials", label: ""Initials - Page1", required: true, signed: true, signedAt: "2023-05-03T14:29:20Z" }
           ]
         },
         4: {

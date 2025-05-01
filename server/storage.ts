@@ -114,34 +114,30 @@ export interface IStorage {
 }
 
 export class MemStorage implements IStorage {
-  // Maps
+  // Maps to store the data
   private properties = new Map<number, any>();
+  private units = new Map<number, any>();
   private tenants = new Map<number, any>();
-  private leases = new Map<number, any>();
-  private propertyUnits = new Map<number, any>();
-  private companies = new Map<number, any>();
-  private insurances = new Map<number, any>();
   private contacts = new Map<number, any>();
+  private leases = new Map<number, any>();
   private payments = new Map<number, any>();
+  private companies = new Map<number, any>();
   private vendors = new Map<number, any>();
   private maintenanceRequests = new Map<number, any>();
   private appliances = new Map<number, any>();
-  private bankAccounts = new Map<number, any>();
-  private documents = new Map<number, any>();
-  private documentTemplates = new Map<number, any>();
+  private insurances = new Map<number, any>();
   private mortgages = new Map<number, any>();
+  private bankAccounts = new Map<number, any>();
   private leads = new Map<number, any>();
-  private transactions = new Map<number, any>();
   private vacancies = new Map<number, any>();
-  private applications = new Map<number, any>();
-  private applicationTemplates = new Map<number, any>(); 
+  private applicationTemplates = new Map<number, any>();
   private rentalApplications = new Map<number, any>();
   private utilityAccounts = new Map<number, any>();
   private utilityBills = new Map<number, any>();
   private inspections = new Map<number, any>();
   private completedInspections = new Map<number, any>();
 
-  // Counters for generating IDs
+  // Counters for IDs
   private propertyIdCounter = 10000;
   private tenantIdCounter = 1000;
   private leaseIdCounter = 1000;
@@ -163,10 +159,10 @@ export class MemStorage implements IStorage {
   private applicationIdCounter = 1000;
   private applicationTemplateIdCounter = 1000;
   private rentalApplicationIdCounter = 1000;
-  private utilityAccountIdCounter = 1000;
-  private utilityBillIdCounter = 1000;
-  private inspectionIdCounter = 1000;
-  private completedInspectionIdCounter = 1000;
+  private utilityAccountIdCounter = 10000;
+  private utilityBillIdCounter = 10000;
+  private inspectionIdCounter = 10000;
+  private completedInspectionIdCounter = 10000;
 
 
   // Session store for auth
@@ -800,6 +796,7 @@ export class MemStorage implements IStorage {
     return appliance || null;
   }
 
+  // Utility account methods
   async getUtilityAccounts(): Promise<any[]> {
     return Array.from(this.utilityAccounts.values());
   }
@@ -810,21 +807,26 @@ export class MemStorage implements IStorage {
 
   async createUtilityAccount(account: any): Promise<any> {
     const id = this.utilityAccountIdCounter++;
-    this.utilityAccounts.set(id, { ...account, id });
-    return this.utilityAccounts.get(id);
+    const now = new Date();
+    const newAccount = { ...account, id, createdAt: now, updatedAt: now };
+    this.utilityAccounts.set(id, newAccount);
+    return newAccount;
   }
 
   async updateUtilityAccount(id: number, account: any): Promise<any | undefined> {
     const existingAccount = this.utilityAccounts.get(id);
     if (!existingAccount) return undefined;
-    this.utilityAccounts.set(id, { ...existingAccount, ...account });
-    return this.utilityAccounts.get(id);
+
+    const updatedAccount = { ...existingAccount, ...account, updatedAt: new Date() };
+    this.utilityAccounts.set(id, updatedAccount);
+    return updatedAccount;
   }
 
   async deleteUtilityAccount(id: number): Promise<boolean> {
     return this.utilityAccounts.delete(id);
   }
 
+  // Utility bill methods
   async getUtilityBills(): Promise<any[]> {
     return Array.from(this.utilityBills.values());
   }
@@ -835,21 +837,26 @@ export class MemStorage implements IStorage {
 
   async createUtilityBill(bill: any): Promise<any> {
     const id = this.utilityBillIdCounter++;
-    this.utilityBills.set(id, { ...bill, id });
-    return this.utilityBills.get(id);
+    const now = new Date();
+    const newBill = { ...bill, id, createdAt: now, updatedAt: now };
+    this.utilityBills.set(id, newBill);
+    return newBill;
   }
 
   async updateUtilityBill(id: number, bill: any): Promise<any | undefined> {
     const existingBill = this.utilityBills.get(id);
     if (!existingBill) return undefined;
-    this.utilityBills.set(id, { ...existingBill, ...bill });
-    return this.utilityBills.get(id);
+
+    const updatedBill = { ...existingBill, ...bill, updatedAt: new Date() };
+    this.utilityBills.set(id, updatedBill);
+    return updatedBill;
   }
 
   async deleteUtilityBill(id: number): Promise<boolean> {
     return this.utilityBills.delete(id);
   }
 
+  // Property inspection methods
   async getInspections(): Promise<any[]> {
     return Array.from(this.inspections.values());
   }
@@ -860,21 +867,26 @@ export class MemStorage implements IStorage {
 
   async createInspection(inspection: any): Promise<any> {
     const id = this.inspectionIdCounter++;
-    this.inspections.set(id, { ...inspection, id });
-    return this.inspections.get(id);
+    const now = new Date();
+    const newInspection = { ...inspection, id, createdAt: now, updatedAt: now };
+    this.inspections.set(id, newInspection);
+    return newInspection;
   }
 
   async updateInspection(id: number, inspection: any): Promise<any | undefined> {
     const existingInspection = this.inspections.get(id);
     if (!existingInspection) return undefined;
-    this.inspections.set(id, { ...existingInspection, ...inspection });
-    return this.inspections.get(id);
+
+    const updatedInspection = { ...existingInspection, ...inspection, updatedAt: new Date() };
+    this.inspections.set(id, updatedInspection);
+    return updatedInspection;
   }
 
   async deleteInspection(id: number): Promise<boolean> {
     return this.inspections.delete(id);
   }
 
+  // Completed inspection methods
   async getCompletedInspections(): Promise<any[]> {
     return Array.from(this.completedInspections.values());
   }
@@ -885,52 +897,23 @@ export class MemStorage implements IStorage {
 
   async createCompletedInspection(inspection: any): Promise<any> {
     const id = this.completedInspectionIdCounter++;
-    this.completedInspections.set(id, { ...inspection, id });
-    return this.completedInspections.get(id);
+    const now = new Date();
+    const newInspection = { ...inspection, id, createdAt: now, updatedAt: now };
+    this.completedInspections.set(id, newInspection);
+    return newInspection;
   }
 
   async updateCompletedInspection(id: number, inspection: any): Promise<any | undefined> {
     const existingInspection = this.completedInspections.get(id);
     if (!existingInspection) return undefined;
-    this.completedInspections.set(id, { ...existingInspection, ...inspection });
-    return this.completedInspections.get(id);
+
+    const updatedInspection = { ...existingInspection, ...inspection, updatedAt: new Date() };
+    this.completedInspections.set(id, updatedInspection);
+    return updatedInspection;
   }
 
   async deleteCompletedInspection(id: number): Promise<boolean> {
     return this.completedInspections.delete(id);
-  }
-
-  // Add missing utility function
-  async createUtility(utility: any): Promise<any> {
-    const id = this.utilityAccountIdCounter++;
-    const now = new Date();
-    const newUtility = { ...utility, id, createdAt: now, updatedAt: now };
-    this.utilityAccounts.set(id, newUtility);
-    return newUtility;
-  }
-
-  // Add missing application function
-  async createApplication(application: any): Promise<any> {
-    return this.createRentalApplication(application);
-  }
-
-  // Property inspection methods
-  async createPropertyInspection(inspection: any): Promise<any> {
-    const id = this.inspectionIdCounter++;
-    const now = new Date();
-    const newInspection = { ...inspection, id, createdAt: now, updatedAt: now };
-    this.inspections.set(id, newInspection);
-    return newInspection;
-  }
-
-  async getAllPropertyInspections(): Promise<any[]> {
-    return Array.from(this.inspections.values());
-  }
-
-  async getPropertyInspectionsByProperty(propertyId: number): Promise<any[]> {
-    return Array.from(this.inspections.values()).filter(
-      (inspection) => inspection.propertyId === propertyId
-    );
   }
 }
 

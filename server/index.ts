@@ -6,7 +6,7 @@ import { seedUtilitiesAndInspections } from "./seed-features";
 import { Server } from "http";
 import { createServer as createViteServer } from "vite";
 import path from "path";
-import { viteSetup } from "./vite";
+import { setupVite } from "./vite";
 import cors from "cors";
 import dotenv from "dotenv";
 
@@ -32,7 +32,7 @@ async function startServer() {
 
   // In development mode, setup Vite for HMR
   if (process.env.NODE_ENV === "development") {
-    await viteSetup(app);
+    await setupVite(app, server);
   }
 
   // Catch-all route to serve the frontend for all other requests

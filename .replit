@@ -24,7 +24,7 @@ localPort = 5002
 externalPort = 3001
 
 [workflows]
-runButton = "Run Full App"
+runButton = "Fixed Server Start"
 
 [[workflows.workflow]]
 name = "Project"
@@ -277,7 +277,7 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "echo \"Starting server...\""
+args = "echo \"Starting fixed server...\""
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

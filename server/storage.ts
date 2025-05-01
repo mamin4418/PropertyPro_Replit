@@ -112,6 +112,9 @@ export interface IStorage {
   // Added missing methods
   createUtility(utility: any): Promise<any>;
   createApplication(application: any): Promise<any>;
+  getAllUtilityAccounts(): Promise<any[]>;
+  getAllInspections(): Promise<any[]>;
+  getAllCompletedInspections(): Promise<any[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -188,21 +191,21 @@ export class MemStorage implements IStorage {
   public completedInspections: Map<number, any> = new Map();
   public scheduledInspections: Map<number, any> = new Map(); // Added map
 
-  private userIdCounter: number = 1;
-  private contactIdCounter: number = 1;
-  private addressIdCounter: number = 1;
-  private contactAddressIdCounter: number = 1;
-  private applianceIdCounter: number = 1;
-  private rentalApplicationIdCounter: number = 1;
-  private applicationTemplateIdCounter: number = 1;
-  private insuranceIdCounter: number = 1;
-  private mortgageIdCounter: number = 1;
-  private maintenanceRequestIdCounter: number = 1;
-  private utilityAccountIdCounter: number = 1;
-  private utilityBillIdCounter: number = 1;
-  private inspectionIdCounter: number = 1;
-  private completedInspectionIdCounter: number = 1;
-  private scheduledInspectionIdCounter: number = 1; // Added counter
+  private userIdCounter = 1;
+  private contactIdCounter = 1;
+  private addressIdCounter = 1;
+  private contactAddressIdCounter = 1;
+  private applianceIdCounter = 1;
+  private rentalApplicationIdCounter = 1;
+  private applicationTemplateIdCounter = 1;
+  private insuranceIdCounter = 1;
+  private mortgageIdCounter = 1;
+  private maintenanceRequestIdCounter = 1;
+  private utilityAccountIdCounter = 1;
+  private utilityBillIdCounter = 1;
+  private inspectionIdCounter = 1;
+  private completedInspectionIdCounter = 1;
+  private scheduledInspectionIdCounter = 1; // Added counter
 
 
   constructor() {
@@ -850,7 +853,7 @@ export class MemStorage implements IStorage {
   }
 
   async updateUtilityBill(id: number, bill: any): Promise<any | undefined> {
-    const existingBill = this.utilityBills.get(id);
+const existingBill = this.utilityBills.get(id);
     if (!existingBill) return undefined;
 
     const updatedBill = { ...existingBill, ...bill, updatedAt: new Date() };
@@ -964,6 +967,19 @@ export class MemStorage implements IStorage {
   // Add missing application function
   async createApplication(application: any): Promise<any> {
     return this.createRentalApplication(application);
+  }
+
+  // Additional utility methods
+  async getAllUtilityAccounts(): Promise<any[]> {
+    return Array.from(this.utilityAccounts.values());
+  }
+
+  async getAllInspections(): Promise<any[]> {
+    return Array.from(this.inspections.values());
+  }
+
+  async getAllCompletedInspections(): Promise<any[]> {
+    return Array.from(this.completedInspections.values());
   }
 }
 

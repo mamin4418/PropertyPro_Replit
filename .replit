@@ -595,7 +595,7 @@ args = "rm -rf node_modules/.vite"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "echo \"Starting server with fixed code...\""
+args = "echo \"Starting server with fixed API endpoints...\""
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

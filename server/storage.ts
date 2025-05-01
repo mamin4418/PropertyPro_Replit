@@ -122,25 +122,28 @@ export class MemStorage implements IStorage {
   private properties = new Map<number, any>();
   private units = new Map<number, any>();
   private tenants = new Map<number, any>();
-  private contacts = new Map<number, any>();
   private leases = new Map<number, any>();
   private payments = new Map<number, any>();
   private companies = new Map<number, any>();
   private vendors = new Map<number, any>();
   private maintenanceRequests = new Map<number, any>();
-  private appliances = new Map<number, any>();
-  private insurances = new Map<number, any>();
-  private mortgages = new Map<number, any>();
   private bankAccounts = new Map<number, any>();
   private leads = new Map<number, any>();
   private vacancies = new Map<number, any>();
-  private applicationTemplates = new Map<number, any>();
-  private rentalApplications = new Map<number, any>();
-  private utilityAccounts = new Map<number, any>();
-  private utilityBills = new Map<number, any>();
-  private inspections = new Map<number, any>();
-  private completedInspections = new Map<number, any>();
-  private scheduledInspections = new Map<number, any>(); // Added map
+  public users = new Map<number, User>();
+  public contacts = new Map<number, Contact>();
+  public addresses = new Map<number, Address>();
+  public contactAddresses = new Map<string, ContactAddress>();
+  public appliances = new Map<number, Appliance>();
+  public applicationTemplates = new Map<number, ApplicationTemplate>();
+  public rentalApplications = new Map<number, RentalApplication>();
+  public insurances = new Map<number, Insurance>();
+  public mortgages = new Map<number, Mortgage>();
+  public utilityAccounts = new Map<number, any>();
+  public utilityBills = new Map<number, any>();
+  public inspections = new Map<number, any>();
+  public completedInspections = new Map<number, any>();
+  public scheduledInspections = new Map<number, any>();
 
 
   // Counters for IDs

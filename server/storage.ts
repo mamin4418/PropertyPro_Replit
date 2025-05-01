@@ -846,7 +846,7 @@ export class MemStorage implements IStorage {
     const existingAccount = this.utilityAccounts.get(id);
     if (!existingAccount) return undefined;
 
-    const updatedAccount = { ...`...existingAccount, ...account, updatedAt: new Date() };
+    const updatedAccount = { ...existingAccount, ...account, updatedAt: new Date() };
     this.utilityAccounts.set(id, updatedAccount);
     return updatedAccount;
   }

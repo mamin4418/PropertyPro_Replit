@@ -28,7 +28,7 @@ localPort = 5002
 externalPort = 3001
 
 [workflows]
-runButton = "Restart Fixed Server"
+runButton = "Fix and Restart Server"
 
 [[workflows.workflow]]
 name = "Project"
@@ -463,7 +463,7 @@ args = "rm -rf node_modules/.vite"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "echo \"Starting server with fixed code...\""
+args = "echo \"Starting fixed server...\""
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

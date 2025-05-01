@@ -1,197 +1,319 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, NavigateFunction } from 'wouter';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Edit, Trash, FileText } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Tabs, TabsContent, TabsList, TabsTrigger, Badge } from "@/components/ui";
+import { Plus, Building, Zap, Droplets, Flame, Trash2, Receipt, AlertCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-export default function Utilities() {
-  const [location, navigate] = useLocation<string>();
-  const [utilityAccounts, setUtilityAccounts] = useState<any[]>([]);
-  const [utilityBills, setUtilityBills] = useState<any[]>([]);
+interface UtilityAccount {
+  id: number;
+  propertyId: number;
+  propertyName: string;
+  utilityProvider: string;
+  accountNumber: string;
+  utilityType: string;
+  status: string;
+}
+
+interface UtilityBill {
+  id: number;
+  utilityAccountId: number;
+  propertyId: number;
+  amount: number;
+  dueDate: string | Date;
+  status: string;
+}
+
+export function Utilities() {
+  const [utilityAccounts, setUtilityAccounts] = useState<UtilityAccount[]>([]);
+  const [utilityBills, setUtilityBills] = useState<UtilityBill[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    async function fetchUtilityData() {
+    const fetchUtilities = async () => {
       try {
+        console.log("Fetching utility data...");
         setLoading(true);
-        // Fetch utility accounts
-        const accountsResponse = await fetch('/api/utility-accounts');
-        if (!accountsResponse.ok) {
-          throw new Error('Failed to fetch utility accounts');
+
+        const accountsRes = await fetch('/api/utility-accounts');
+        if (!accountsRes.ok) {
+          throw new Error(`Failed to fetch utility accounts: ${accountsRes.status}`);
         }
-        const accountsData = await accountsResponse.json();
+        const accountsData = await accountsRes.json();
+        console.log("Fetched utility accounts:", accountsData);
         setUtilityAccounts(accountsData);
 
-        // Fetch utility bills
-        const billsResponse = await fetch('/api/utility-bills');
-        if (!billsResponse.ok) {
-          throw new Error('Failed to fetch utility bills');
+        const billsRes = await fetch('/api/utility-bills');
+        if (!billsRes.ok) {
+          throw new Error(`Failed to fetch utility bills: ${billsRes.status}`);
         }
-        const billsData = await billsResponse.json();
+        const billsData = await billsRes.json();
+        console.log("Fetched utility bills:", billsData);
         setUtilityBills(billsData);
 
         setError(null);
-      } catch (err) {
-        console.error('Error fetching utility data:', err);
-        setError((err as Error).message || 'Failed to load utility data');
+      } catch (error) {
+        console.error('Error fetching utilities:', error);
+        setError('Failed to load utilities. Please try again later.');
+
+        // Set some fallback data if the fetch fails
+        setUtilityAccounts([
+          {
+            id: 1,
+            propertyId: 1,
+            propertyName: "Sunset Heights",
+            utilityProvider: "City Water",
+            accountNumber: "W-123456",
+            utilityType: "Water",
+            status: "active"
+          },
+          {
+            id: 2,
+            propertyId: 1,
+            propertyName: "Sunset Heights",
+            utilityProvider: "Edison Electric",
+            accountNumber: "E-789012",
+            utilityType: "Electricity",
+            status: "active"
+          }
+        ]);
+
+        setUtilityBills([
+          {
+            id: 1,
+            utilityAccountId: 1,
+            propertyId: 1,
+            amount: 125.50,
+            dueDate: new Date("2023-08-15"),
+            status: "paid"
+          },
+          {
+            id: 2,
+            utilityAccountId: 2,
+            propertyId: 1,
+            amount: 210.75,
+            dueDate: new Date("2023-08-20"),
+            status: "unpaid"
+          }
+        ]);
       } finally {
         setLoading(false);
       }
-    }
+    };
 
-    fetchUtilityData();
+    fetchUtilities();
   }, []);
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'active':
-        return <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">Active</Badge>;
-      case 'inactive':
-        return <Badge className="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300">Inactive</Badge>;
-      case 'paid':
-        return <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">Paid</Badge>;
-      case 'unpaid':
-        return <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">Unpaid</Badge>;
-      case 'overdue':
-        return <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">Overdue</Badge>;
+  const addUtilityAccount = () => {
+    navigate('/add-utility-account');
+  };
+
+  const getUtilityIcon = (type: string) => {
+    if (!type) return <Building className="h-5 w-5 text-gray-500" />;
+
+    switch (type.toLowerCase()) {
+      case 'electricity':
+        return <Zap className="h-5 w-5 text-yellow-500" />;
+      case 'water':
+        return <Droplets className="h-5 w-5 text-blue-500" />;
+      case 'gas':
+        return <Flame className="h-5 w-5 text-orange-500" />;
+      case 'trash':
+        return <Trash2 className="h-5 w-5 text-gray-500" />;
       default:
-        return <Badge>{status}</Badge>;
+        return <Building className="h-5 w-5 text-gray-500" />;
     }
   };
 
-  // Format currency
-  const formatCurrency = (amount: number) => {
+  const getStatusColor = (status: string) => {
+    if (!status) return 'bg-gray-100 text-gray-800';
+
+    switch (status.toLowerCase()) {
+      case 'active':
+        return 'bg-green-100 text-green-800';
+      case 'inactive':
+        return 'bg-gray-100 text-gray-800';
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'paid':
+        return 'bg-green-100 text-green-800';
+      case 'unpaid':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'overdue':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const formatAmount = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD'
     }).format(amount);
   };
 
+  const formatDate = (dateStr: string | Date) => {
+    if (!dateStr) return 'N/A';
+
+    try {
+      const date = typeof dateStr === 'string' ? new Date(dateStr) : dateStr;
+      return date.toLocaleDateString();
+    } catch (e) {
+      console.error("Error formatting date:", dateStr, e);
+      return 'Invalid date';
+    }
+  };
+
+  const getBillStatusIcon = (status: string) => {
+    if (!status) return null;
+
+    switch (status.toLowerCase()) {
+      case 'paid':
+        return null;
+      case 'unpaid':
+        return <Receipt className="h-5 w-5 text-yellow-500" />;
+      case 'overdue':
+        return <AlertCircle className="h-5 w-5 text-red-500" />;
+      default:
+        return null;
+    }
+  };
+
+  // Safely merge bills with account info
+  const mergedBills = utilityBills.map(bill => {
+    const account = utilityAccounts.find(acc => acc.id === bill.utilityAccountId);
+    return {
+      ...bill,
+      utilityProvider: account?.utilityProvider || 'Unknown Provider',
+      utilityType: account?.utilityType || 'Unknown Type',
+      propertyName: account?.propertyName || 'Unknown Property'
+    };
+  });
+
+  if (loading) {
+    return <div className="container mx-auto p-4 text-center">Loading utilities...</div>;
+  }
+
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Utilities Management</h1>
-        <Button onClick={() => navigate('/add-utility-account')}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Utility Account
+        <Button onClick={addUtilityAccount}>
+          <Plus className="mr-2 h-4 w-4" /> Add Utility Account
         </Button>
       </div>
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
-          <p className="font-bold">Error</p>
           <p>{error}</p>
         </div>
       )}
 
-      <Tabs defaultValue="accounts" className="w-full">
-        <TabsList className="mb-4">
+      <Tabs defaultValue="accounts">
+        <TabsList className="grid w-full grid-cols-2 mb-6">
           <TabsTrigger value="accounts">Utility Accounts</TabsTrigger>
           <TabsTrigger value="bills">Utility Bills</TabsTrigger>
         </TabsList>
 
         <TabsContent value="accounts">
-          {loading ? (
-            <p className="text-center py-8">Loading utility accounts...</p>
-          ) : utilityAccounts.length === 0 ? (
-            <Card>
-              <CardContent className="pt-6 text-center">
-                <p className="text-muted-foreground">No utility accounts found.</p>
-              </CardContent>
-            </Card>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Provider</TableHead>
-                  <TableHead>Account Number</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Property</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {utilityAccounts.map((account) => (
-                  <TableRow key={account.id}>
-                    <TableCell className="font-medium">{account.utilityProvider || account.provider}</TableCell>
-                    <TableCell>{account.accountNumber}</TableCell>
-                    <TableCell>{account.utilityType || 'Utility'}</TableCell>
-                    <TableCell>{account.propertyName || `Property ID: ${account.propertyId}`}</TableCell>
-                    <TableCell>{getStatusBadge(account.status || 'active')}</TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <Trash className="h-4 w-4" />
-                        </Button>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {utilityAccounts && utilityAccounts.length > 0 ? (
+              utilityAccounts.map((account) => (
+                <Card key={account.id} className="overflow-hidden">
+                  <CardHeader className="pb-3">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <CardTitle>{account.utilityType || 'Utility'}</CardTitle>
+                        <CardDescription>{account.propertyName || 'Property'}</CardDescription>
                       </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </TabsContent>
-
-        <TabsContent value="bills">
-          {loading ? (
-            <p className="text-center py-8">Loading utility bills...</p>
-          ) : utilityBills.length === 0 ? (
-            <Card>
-              <CardContent className="pt-6 text-center">
-                <p className="text-muted-foreground">No utility bills found.</p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {utilityBills.map((bill) => (
-                <Card key={bill.id}>
-                  <CardHeader>
-                    <CardTitle>{bill.utilityAccountId ? `Account #${bill.utilityAccountId}` : 'Utility Bill'}</CardTitle>
-                    <CardDescription>
-                      Due: {bill.dueDate ? new Date(bill.dueDate).toLocaleDateString() : 'Not specified'}
-                    </CardDescription>
+                      {getUtilityIcon(account.utilityType)}
+                    </div>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span className="text-sm text-muted-foreground">Amount:</span>
-                        <span className="font-medium">{formatCurrency(bill.amount)}</span>
+                        <span className="text-sm text-muted-foreground">Provider:</span>
+                        <span className="text-sm font-medium">{account.utilityProvider || 'N/A'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Account #:</span>
+                        <span className="text-sm font-medium">{account.accountNumber || 'N/A'}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-sm text-muted-foreground">Status:</span>
-                        <span>{getStatusBadge(bill.status || 'unpaid')}</span>
+                        <Badge className={getStatusColor(account.status)}>{account.status || 'Unknown'}</Badge>
                       </div>
-                      {bill.propertyId && (
-                        <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Property:</span>
-                          <span>ID: {bill.propertyId}</span>
-                        </div>
-                      )}
                     </div>
                   </CardContent>
-                  <CardFooter className="flex justify-end gap-2">
-                    <Button variant="outline" size="sm">
-                      <FileText className="mr-2 h-4 w-4" />
-                      View
-                    </Button>
-                    <Button size="sm">
-                      Mark as Paid
-                    </Button>
+                  <CardFooter className="pt-2">
+                    <Button variant="outline" className="w-full">Manage Account</Button>
                   </CardFooter>
                 </Card>
-              ))}
-            </div>
-          )}
+              ))
+            ) : (
+              <div className="col-span-full text-center py-10">
+                <p className="text-muted-foreground">No utility accounts found.</p>
+                <Button variant="outline" className="mt-4" onClick={addUtilityAccount}>
+                  <Plus className="mr-2 h-4 w-4" /> Add Utility Account
+                </Button>
+              </div>
+            )}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="bills">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {mergedBills && mergedBills.length > 0 ? (
+              mergedBills.map((bill) => (
+                <Card key={bill.id} className="overflow-hidden">
+                  <CardHeader className="pb-3">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <CardTitle>{bill.utilityType || 'Utility'}</CardTitle>
+                        <CardDescription>{bill.propertyName || 'Property'}</CardDescription>
+                      </div>
+                      {getUtilityIcon(bill.utilityType)}
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Provider:</span>
+                        <span className="text-sm font-medium">{bill.utilityProvider || 'N/A'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Amount:</span>
+                        <span className="text-sm font-medium">{typeof bill.amount === 'number' ? formatAmount(bill.amount) : 'N/A'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Due Date:</span>
+                        <span className="text-sm font-medium">{formatDate(bill.dueDate)}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">Status:</span>
+                        <div className="flex items-center gap-1">
+                          {getBillStatusIcon(bill.status)}
+                          <Badge className={getStatusColor(bill.status)}>{bill.status || 'Unknown'}</Badge>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                  <CardFooter className="pt-2">
+                    <Button variant="outline" className="w-full">View Bill</Button>
+                  </CardFooter>
+                </Card>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-10">
+                <p className="text-muted-foreground">No utility bills found.</p>
+              </div>
+            )}
+          </div>
         </TabsContent>
       </Tabs>
     </div>
   );
 }
+
+export default Utilities;

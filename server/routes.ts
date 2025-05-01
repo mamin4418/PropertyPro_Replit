@@ -1176,33 +1176,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Utilities API endpoints
   app.get('/api/utilities/accounts', async (req: Request, res: Response) => {
     try {
-      // Return mock data if storage is empty
-      const accounts = Array.from(storage.utilityAccounts?.values() || []);
-      if (!accounts.length) {
-        const mockAccounts = [
-          {
-            id: 1,
-            propertyId: 1,
-            propertyName: "Sunset Heights",
-            utilityProvider: "City Power",
-            accountNumber: "EL-123456",
-            utilityType: "Electricity",
-            status: "active"
-          },
-          {
-            id: 2,
-            propertyId: 1,
-            propertyName: "Sunset Heights",
-            utilityProvider: "City Water",
-            accountNumber: "WT-789012",
-            utilityType: "Water",
-            status: "active"
-          }
-        ];
-        res.json(mockAccounts);
-      } else {
-        res.json(accounts);
-      }
+      const accounts = await storage.getUtilityAccounts();
+      console.log('Fetched utility accounts:', accounts);
+      res.json(accounts || []);
     } catch (error) {
       console.error('Error retrieving utility accounts:', error);
       res.status(500).json({ error: 'Failed to retrieve utility accounts' });
@@ -1989,7 +1965,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Property inspections endpoints
   app.get('/api/property-inspections/scheduled', async (req: Request, res: Response) => {
     try {
-      const inspections = Array.from(storage.inspections?.values() || []);
+      const inspections = await storage.getInspections() || [];
       res.json(inspections);
     } catch (error) {
       console.error('Error retrieving scheduled inspections:', error);
@@ -1999,7 +1975,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/property-inspections/completed', async (req: Request, res: Response) => {
     try {
-      const inspections = Array.from(storage.completedInspections?.values() || []);
+      const inspections = await storage.getCompletedInspections() || [];
       res.json(inspections);
     } catch (error) {
       console.error('Error retrieving completed inspections:', error);

@@ -175,21 +175,7 @@ export class MemStorage implements IStorage {
   // Session store for auth
   public sessionStore: session.Store;
 
-  private userIdCounter = 1;
-  private contactIdCounter = 1;
-  private addressIdCounter = 1;
-  private contactAddressIdCounter = 1;
-  private applianceIdCounter = 1;
-  private rentalApplicationIdCounter = 1;
-  private applicationTemplateIdCounter = 1;
-  private insuranceIdCounter = 1;
-  private mortgageIdCounter = 1;
-  private maintenanceRequestIdCounter = 1;
-  private utilityAccountIdCounter = 1;
-  private utilityBillIdCounter = 1;
-  private inspectionIdCounter = 1;
-  private completedInspectionIdCounter = 1;
-  private scheduledInspectionIdCounter = 1; // Added counter
+  // Counters already defined above
 
 
   constructor() {

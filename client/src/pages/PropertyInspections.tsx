@@ -1,83 +1,21 @@
-
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { useToast } from "@/hooks/use-toast";
-import { 
-  Plus, Search, Filter, Calendar, ClipboardCheck, Check, 
-  X, MoreHorizontal, ChevronDown, ChevronRight, Eye, FileText 
-} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Calendar, CheckCircle, ChevronDown, ChevronRight, ClipboardList, Clock, Filter, Home, Plus, Search, X } from "lucide-react";
 
-const PropertyInspections = () => {
-  const [, navigate] = useLocation();
-  const [selectedProperty, setSelectedProperty] = useState<string>("all");
+function PropertyInspections() {
+  const [_, navigate] = useLocation();
+  const [selectedProperty, setSelectedProperty] = useState("all");
   const [expandedInspection, setExpandedInspection] = useState<number | null>(null);
-  const [scheduledInspections, setScheduledInspections] = useState<any[]>([]);
-  const [completedInspections, setCompletedInspections] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
-  
-  useEffect(() => {
-    const fetchInspectionData = async () => {
-      try {
-        setLoading(true);
-        
-        // Fetch scheduled inspections
-        const scheduledResponse = await fetch('/api/property-inspections/scheduled');
-        if (!scheduledResponse.ok) {
-          throw new Error('Failed to fetch scheduled inspections');
-        }
-        const scheduledData = await scheduledResponse.json();
-        setScheduledInspections(scheduledData);
-        
-        // Fetch completed inspections
-        const completedResponse = await fetch('/api/property-inspections/completed');
-        if (!completedResponse.ok) {
-          throw new Error('Failed to fetch completed inspections');
-        }
-        const completedData = await completedResponse.json();
-        setCompletedInspections(completedData);
-        
-      } catch (error) {
-        console.error('Error fetching inspection data:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load inspection data. Please try again later.",
-          variant: "destructive"
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchInspectionData();
-  }, [toast]);
-  
-  // Use API data, fallback to sample data if API fails
-  const displayScheduledInspections = scheduledInspections.length ? scheduledInspections : [
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Mock scheduled inspections data
+  const displayScheduledInspections = [
     {
       id: 1,
       propertyId: 1,
@@ -112,9 +50,9 @@ const PropertyInspections = () => {
       units: ["A1", "A2", "B1", "B2"]
     },
   ];
-  
-  // Use API data, fallback to sample data if API fails
-  const displayCompletedInspections = completedInspections.length ? completedInspections : [
+
+  // Mock completed inspections data
+  const displayCompletedInspections = [
     {
       id: 4,
       propertyId: 1,
@@ -167,23 +105,23 @@ const PropertyInspections = () => {
       ]
     },
   ];
-  
+
   // Filter inspections based on selected property
-  const filteredScheduled = selectedProperty === "all" 
-    ? displayScheduledInspections 
+  const filteredScheduled = selectedProperty === "all"
+    ? displayScheduledInspections
     : displayScheduledInspections.filter(insp => insp.propertyId.toString() === selectedProperty);
-  
+
   const filteredCompleted = selectedProperty === "all"
     ? displayCompletedInspections
     : displayCompletedInspections.filter(insp => insp.propertyId.toString() === selectedProperty);
-  
+
   // Mock properties for the dropdown
   const properties = [
     { id: 1, name: "Sunset Heights" },
     { id: 2, name: "Maple Gardens" },
     { id: 3, name: "Urban Lofts" },
   ];
-  
+
   // Toggle expanded inspection
   const toggleExpand = (id: number) => {
     if (expandedInspection === id) {
@@ -192,13 +130,13 @@ const PropertyInspections = () => {
       setExpandedInspection(id);
     }
   };
-  
+
   return (
     <div className="container mx-auto p-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
         <div>
           <h1 className="text-2xl font-bold mb-1">Property Inspections</h1>
-          <p className="text-muted-foreground">Schedule and manage property inspections</p>
+          <p className="text-muted-foreground">Schedule and track property inspections</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3">
           <Select value={selectedProperty} onValueChange={setSelectedProperty}>
@@ -219,342 +157,234 @@ const PropertyInspections = () => {
           </Button>
         </div>
       </div>
-      
-      {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Upcoming Inspections</CardTitle>
-            <CardDescription>Next 30 days</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{displayScheduledInspections.length}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Completed Inspections</CardTitle>
-            <CardDescription>Last 30 days</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{displayCompletedInspections.length}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Issues Identified</CardTitle>
-            <CardDescription>Requiring attention</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {displayCompletedInspections.filter(insp => insp.status === "issues").length}
-            </div>
-          </CardContent>
-        </Card>
+
+      {/* Search Bar and Filters */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        <div className="relative flex-1">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Search inspections..."
+            className="pl-8"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <Button variant="outline" size="icon">
+          <Filter className="h-4 w-4" />
+        </Button>
       </div>
-      
-      {/* Tabs for different views */}
-      <Tabs defaultValue="scheduled" className="mb-6">
+
+      {/* Tabs for Scheduled and Completed Inspections */}
+      <Tabs defaultValue="scheduled" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="scheduled">Scheduled</TabsTrigger>
-          <TabsTrigger value="completed">Completed</TabsTrigger>
-          <TabsTrigger value="templates">Inspection Templates</TabsTrigger>
+          <TabsTrigger value="scheduled">
+            <Clock className="mr-2 h-4 w-4" />
+            Scheduled
+          </TabsTrigger>
+          <TabsTrigger value="completed">
+            <CheckCircle className="mr-2 h-4 w-4" />
+            Completed
+          </TabsTrigger>
         </TabsList>
-        
+
         {/* Scheduled Inspections Tab */}
         <TabsContent value="scheduled">
-          <Card>
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-center">
-                <CardTitle>Upcoming Inspections</CardTitle>
-                <div className="flex items-center gap-2">
-                  <div className="relative">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search inspections..."
-                      className="pl-8 w-[200px] md:w-[300px]"
-                    />
-                  </div>
-                  <Button variant="outline" size="icon">
-                    <Filter className="h-4 w-4" />
+          <div className="space-y-4">
+            {filteredScheduled.length === 0 ? (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center p-6 text-center">
+                  <ClipboardList className="h-12 w-12 text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-semibold">No scheduled inspections</h3>
+                  <p className="text-muted-foreground mt-2">
+                    No inspections scheduled for the selected property.
+                  </p>
+                  <Button onClick={() => navigate("/schedule-inspection")} className="mt-4">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Schedule Inspection
                   </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Property</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Date & Time</TableHead>
-                    <TableHead>Units</TableHead>
-                    <TableHead>Inspector</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredScheduled.map((inspection) => (
-                    <TableRow key={inspection.id}>
-                      <TableCell className="font-medium">{inspection.propertyName}</TableCell>
-                      <TableCell>{inspection.inspectionType}</TableCell>
-                      <TableCell>
-                        {inspection.scheduledDate} at {inspection.scheduledTime}
-                      </TableCell>
-                      <TableCell>
-                        {inspection.units.length > 2 
-                          ? `${inspection.units.slice(0, 2).join(", ")} +${inspection.units.length - 2} more`
-                          : inspection.units.join(", ")
-                        }
-                      </TableCell>
-                      <TableCell>{inspection.inspector}</TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => navigate(`/edit-inspection/${inspection.id}`)}>
-                              Edit Details
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => navigate(`/conduct-inspection/${inspection.id}`)}>
-                              Conduct Inspection
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => navigate(`/reschedule-inspection/${inspection.id}`)}>
+                </CardContent>
+              </Card>
+            ) : (
+              filteredScheduled.map((inspection) => (
+                <Card key={inspection.id} className="overflow-hidden">
+                  <div className="p-4 cursor-pointer" onClick={() => toggleExpand(inspection.id)}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <Home className="h-5 w-5 text-muted-foreground mr-2" />
+                        <div>
+                          <h3 className="text-lg font-semibold">{inspection.propertyName}</h3>
+                          <p className="text-sm text-muted-foreground">{inspection.inspectionType} Inspection</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Badge>{inspection.status}</Badge>
+                        {expandedInspection === inspection.id ? (
+                          <ChevronDown className="h-5 w-5" />
+                        ) : (
+                          <ChevronRight className="h-5 w-5" />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {expandedInspection === inspection.id && (
+                    <CardContent className="border-t pt-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <div className="flex items-start mb-2">
+                            <Calendar className="h-4 w-4 text-muted-foreground mt-0.5 mr-2" />
+                            <div>
+                              <p className="text-sm font-medium">Scheduled Date & Time</p>
+                              <p className="text-sm">{inspection.scheduledDate} at {inspection.scheduledTime}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-start mb-2">
+                            <Home className="h-4 w-4 text-muted-foreground mt-0.5 mr-2" />
+                            <div>
+                              <p className="text-sm font-medium">Units to Inspect</p>
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {inspection.units.map((unit, idx) => (
+                                  <Badge key={idx} variant="outline" className="text-xs">
+                                    Unit {unit}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div>
+                          <div className="flex items-start mb-2">
+                            <div className="h-4 w-4 text-muted-foreground mt-0.5 mr-2" />
+                            <div>
+                              <p className="text-sm font-medium">Inspector</p>
+                              <p className="text-sm">{inspection.inspector}</p>
+                            </div>
+                          </div>
+                          <div className="flex justify-end mt-4 space-x-2">
+                            <Button variant="outline" size="sm">
                               Reschedule
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="text-destructive">
-                              Cancel Inspection
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+                            </Button>
+                            <Button size="sm">
+                              Start Inspection
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  )}
+                </Card>
+              ))
+            )}
+          </div>
         </TabsContent>
-        
+
         {/* Completed Inspections Tab */}
         <TabsContent value="completed">
-          <Card>
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-center">
-                <CardTitle>Completed Inspections</CardTitle>
-                <div className="flex items-center gap-2">
-                  <div className="relative">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search reports..."
-                      className="pl-8 w-[200px] md:w-[300px]"
-                    />
+          <div className="space-y-4">
+            {filteredCompleted.length === 0 ? (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center p-6 text-center">
+                  <ClipboardList className="h-12 w-12 text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-semibold">No completed inspections</h3>
+                  <p className="text-muted-foreground mt-2">
+                    No completed inspections for the selected property.
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              filteredCompleted.map((inspection) => (
+                <Card key={inspection.id} className="overflow-hidden">
+                  <div className="p-4 cursor-pointer" onClick={() => toggleExpand(inspection.id)}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <Home className="h-5 w-5 text-muted-foreground mr-2" />
+                        <div>
+                          <h3 className="text-lg font-semibold">{inspection.propertyName}</h3>
+                          <p className="text-sm text-muted-foreground">{inspection.inspectionType} Inspection</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Badge variant={inspection.status === "passed" ? "default" : "destructive"}>
+                          {inspection.status}
+                        </Badge>
+                        {expandedInspection === inspection.id ? (
+                          <ChevronDown className="h-5 w-5" />
+                        ) : (
+                          <ChevronRight className="h-5 w-5" />
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <Select defaultValue="all">
-                    <SelectTrigger className="w-[150px]">
-                      <SelectValue placeholder="Status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Statuses</SelectItem>
-                      <SelectItem value="passed">Passed</SelectItem>
-                      <SelectItem value="issues">With Issues</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {filteredCompleted.map((inspection) => (
-                <Collapsible
-                  key={inspection.id}
-                  open={expandedInspection === inspection.id}
-                  onOpenChange={() => toggleExpand(inspection.id)}
-                  className="mb-4 border rounded-md"
-                >
-                  <CollapsibleTrigger asChild>
-                    <div className="flex items-center justify-between p-4 cursor-pointer hover:bg-secondary/50">
-                      <div className="flex items-center">
-                        {expandedInspection === inspection.id ? 
-                          <ChevronDown className="h-5 w-5 mr-2 text-muted-foreground" /> : 
-                          <ChevronRight className="h-5 w-5 mr-2 text-muted-foreground" />
-                        }
+
+                  {expandedInspection === inspection.id && (
+                    <CardContent className="border-t pt-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <h3 className="font-medium">{inspection.propertyName} - {inspection.inspectionType} Inspection</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {inspection.inspectionDate} • Unit(s): {inspection.units.join(", ")}
-                          </p>
+                          <div className="flex items-start mb-2">
+                            <Calendar className="h-4 w-4 text-muted-foreground mt-0.5 mr-2" />
+                            <div>
+                              <p className="text-sm font-medium">Inspection Date</p>
+                              <p className="text-sm">{inspection.inspectionDate}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-start mb-2">
+                            <Home className="h-4 w-4 text-muted-foreground mt-0.5 mr-2" />
+                            <div>
+                              <p className="text-sm font-medium">Units Inspected</p>
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {inspection.units.map((unit, idx) => (
+                                  <Badge key={idx} variant="outline" className="text-xs">
+                                    Unit {unit}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-start mb-2">
+                            <div className="h-4 w-4 text-muted-foreground mt-0.5 mr-2" />
+                            <div>
+                              <p className="text-sm font-medium">Completed By</p>
+                              <p className="text-sm">{inspection.completedBy}</p>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex items-center">
-                        <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium mr-4 ${
-                          inspection.status === "passed" ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"
-                        }`}>
-                          {inspection.status === "passed" ? "Passed" : "Issues Found"}
-                        </span>
-                        <Button variant="outline" size="sm" onClick={(e) => {
-                          e.stopPropagation();
-                          window.open(inspection.reportLink, '_blank');
-                        }}>
-                          <FileText className="h-4 w-4 mr-2" /> Report
-                        </Button>
-                      </div>
-                    </div>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <div className="p-4 pt-0 border-t">
-                      <h4 className="font-medium mb-2 mt-4">Inspection Findings</h4>
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Item</TableHead>
-                            <TableHead>Condition</TableHead>
-                            <TableHead>Notes</TableHead>
-                            <TableHead>Photos</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {inspection.findings.map((finding, idx) => (
-                            <TableRow key={idx}>
-                              <TableCell className="font-medium">{finding.item}</TableCell>
-                              <TableCell>
-                                <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                                  finding.condition === "Good" ? "bg-green-100 text-green-700" : 
-                                  finding.condition === "Fair" ? "bg-amber-100 text-amber-700" : 
-                                  "bg-red-100 text-red-700"
-                                }`}>
-                                  {finding.condition}
-                                </span>
-                              </TableCell>
-                              <TableCell>{finding.notes}</TableCell>
-                              <TableCell>
-                                {finding.images.length > 0 ? (
-                                  <Button variant="outline" size="sm" onClick={() => console.log("View images")}>
-                                    <Eye className="h-4 w-4 mr-2" /> View {finding.images.length} Photos
-                                  </Button>
-                                ) : (
-                                  <span className="text-muted-foreground text-sm">No photos</span>
-                                )}
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                      
-                      <div className="flex justify-between mt-4">
                         <div>
-                          <p className="text-sm text-muted-foreground">
-                            Completed by: <span className="font-medium">{inspection.completedBy}</span>
-                          </p>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => navigate(`/create-maintenance/${inspection.id}`)}
-                          >
-                            Create Maintenance Request
-                          </Button>
-                          <Button size="sm">
-                            Send to Owner
-                          </Button>
+                          <h4 className="font-medium mb-2">Findings Summary</h4>
+                          <div className="space-y-2">
+                            {inspection.findings.slice(0, 3).map((finding, idx) => (
+                              <div key={idx} className="flex items-start">
+                                <div className={`h-2 w-2 mt-1.5 mr-2 rounded-full ${
+                                  finding.condition === "Good" ? "bg-green-500" :
+                                  finding.condition === "Fair" ? "bg-yellow-500" : "bg-red-500"
+                                }`} />
+                                <div>
+                                  <p className="text-sm font-medium">{finding.item}</p>
+                                  <p className="text-xs text-muted-foreground">{finding.notes}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="flex justify-end mt-4 space-x-2">
+                            <Button variant="outline" size="sm">
+                              Download Report
+                            </Button>
+                            <Button size="sm">
+                              View Full Details
+                            </Button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </CollapsibleContent>
-                </Collapsible>
-              ))}
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        {/* Inspection Templates Tab */}
-        <TabsContent value="templates">
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <div>
-                  <CardTitle>Inspection Templates</CardTitle>
-                  <CardDescription>
-                    Standardized checklists for different types of inspections
-                  </CardDescription>
-                </div>
-                <Button onClick={() => navigate("/create-inspection-template")}>
-                  <Plus className="mr-2 h-4 w-4" /> New Template
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Template Cards */}
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-base">Move-in Inspection</CardTitle>
-                    <CardDescription>For new tenant move-ins</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      42 inspection points covering all areas of the unit
-                    </p>
-                    <div className="flex justify-between">
-                      <Button variant="outline" size="sm" onClick={() => navigate("/edit-inspection-template/1")}>
-                        Edit Template
-                      </Button>
-                      <Button size="sm">
-                        Use Template
-                      </Button>
-                    </div>
-                  </CardContent>
+                    </CardContent>
+                  )}
                 </Card>
-                
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-base">Move-out Inspection</CardTitle>
-                    <CardDescription>For tenant departures</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      45 inspection points with security deposit deduction options
-                    </p>
-                    <div className="flex justify-between">
-                      <Button variant="outline" size="sm" onClick={() => navigate("/edit-inspection-template/2")}>
-                        Edit Template
-                      </Button>
-                      <Button size="sm">
-                        Use Template
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-base">Routine Inspection</CardTitle>
-                    <CardDescription>For regular property checks</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      30 inspection points focusing on maintenance and upkeep
-                    </p>
-                    <div className="flex justify-between">
-                      <Button variant="outline" size="sm" onClick={() => navigate("/edit-inspection-template/3")}>
-                        Edit Template
-                      </Button>
-                      <Button size="sm">
-                        Use Template
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </CardContent>
-          </Card>
+              ))
+            )}
+          </div>
         </TabsContent>
       </Tabs>
     </div>
   );
-};
+}
 
 export default PropertyInspections;

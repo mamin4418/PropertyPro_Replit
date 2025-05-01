@@ -1,200 +1,166 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLocation } from "wouter";
-import { useToast } from "@/hooks/use-toast";
-import { Plus, FileText, Search, Filter, ArrowUpDown, Download, MoreHorizontal } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Bolt, CalendarClock, ChevronDown, ChevronRight, Clock, DollarSign, Download, FileText, Filter, Home, Plus, Search } from "lucide-react";
 
-const UtilityManagement = () => {
-  const [, navigate] = useLocation();
-  const [selectedProperty, setSelectedProperty] = useState<string>("all");
-  const [utilityAccounts, setUtilityAccounts] = useState<any[]>([]);
-  const [utilityBills, setUtilityBills] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
+export default function Utilities() {
+  const [_, navigate] = useLocation();
+  const [selectedProperty, setSelectedProperty] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [expandedAccount, setExpandedAccount] = useState<number | null>(null);
+  const [expandedBill, setExpandedBill] = useState<number | null>(null);
   
-  useEffect(() => {
-    const fetchUtilityData = async () => {
-      try {
-        setLoading(true);
-        
-        // Fetch utility accounts
-        const accountsResponse = await fetch('/api/utilities/accounts');
-        if (!accountsResponse.ok) {
-          throw new Error('Failed to fetch utility accounts');
-        }
-        const accountsData = await accountsResponse.json();
-        setUtilityAccounts(accountsData);
-        
-        // Fetch utility bills
-        const billsResponse = await fetch('/api/utilities/bills');
-        if (!billsResponse.ok) {
-          throw new Error('Failed to fetch utility bills');
-        }
-        const billsData = await billsResponse.json();
-        setUtilityBills(billsData);
-        
-      } catch (error) {
-        console.error('Error fetching utility data:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load utility data. Please try again later.",
-          variant: "destructive"
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchUtilityData();
-  }, [toast]);
-
-  // Use API data, fallback to sample data if API fails
-  const displayUtilityAccounts = utilityAccounts.length ? utilityAccounts : [
+  // Fake data for utilities
+  const utilityAccounts = [
     {
       id: 1,
       propertyId: 1,
       propertyName: "Sunset Heights",
       utilityType: "Electricity",
-      provider: "PowerCo Energy",
-      accountNumber: "EL-12345-789",
-      meterNumber: "MT-98765",
-      billingCycle: "Monthly",
-      averageCost: 450,
-      status: "active"
+      provider: "Pacific Power",
+      accountNumber: "EL-12345-ST",
+      setupDate: "2022-01-15",
+      status: "active",
+      averageCost: 350,
+      nextReading: "2023-08-25",
+      paymentMethod: "Auto-pay",
+      billingAddress: "123 Main St, Anytown, CA 12345",
+      lastBillAmount: 375.82
     },
     {
       id: 2,
       propertyId: 1,
       propertyName: "Sunset Heights",
       utilityType: "Water",
-      provider: "City Water Services",
-      accountNumber: "WT-56789-123",
-      meterNumber: "MT-45678",
-      billingCycle: "Quarterly",
-      averageCost: 320,
-      status: "active"
+      provider: "City Water",
+      accountNumber: "WA-67890-ST",
+      setupDate: "2022-01-15",
+      status: "active",
+      averageCost: 120,
+      nextReading: "2023-08-20",
+      paymentMethod: "Manual",
+      billingAddress: "123 Main St, Anytown, CA 12345",
+      lastBillAmount: 105.50
     },
     {
       id: 3,
       propertyId: 2,
       propertyName: "Maple Gardens",
       utilityType: "Gas",
-      provider: "NaturalGas Co.",
-      accountNumber: "GS-98765-432",
-      meterNumber: "MT-34521",
-      billingCycle: "Monthly",
-      averageCost: 180,
-      status: "active"
+      provider: "National Gas",
+      accountNumber: "GS-54321-MG",
+      setupDate: "2021-11-10",
+      status: "active",
+      averageCost: 200,
+      nextReading: "2023-08-18",
+      paymentMethod: "Auto-pay",
+      billingAddress: "456 Elm St, Anytown, CA 12345",
+      lastBillAmount: 185.25
     },
     {
       id: 4,
       propertyId: 3,
       propertyName: "Urban Lofts",
       utilityType: "Internet",
-      provider: "FastConnect ISP",
-      accountNumber: "IN-54321-987",
-      meterNumber: "N/A",
-      billingCycle: "Monthly",
+      provider: "SpeedFiber",
+      accountNumber: "IN-98765-UL",
+      setupDate: "2022-03-05",
+      status: "active",
       averageCost: 89,
-      status: "active"
-    },
-    {
-      id: 5,
-      propertyId: 2,
-      propertyName: "Maple Gardens",
-      utilityType: "Electricity",
-      provider: "PowerCo Energy",
-      accountNumber: "EL-67890-543",
-      meterNumber: "MT-76543",
-      billingCycle: "Monthly",
-      averageCost: 380,
-      status: "active"
-    },
+      nextReading: null,
+      paymentMethod: "Auto-pay",
+      billingAddress: "789 Oak Ave, Anytown, CA 12345",
+      lastBillAmount: 89.99
+    }
   ];
   
-  // Use API data, fallback to sample data if API fails
-  const displayUtilityBills = utilityBills.length ? utilityBills : [
+  const utilityBills = [
     {
       id: 1,
       utilityAccountId: 1,
-      propertyName: "Sunset Heights",
-      utilityType: "Electricity",
-      billDate: "2023-06-01",
-      dueDate: "2023-06-15",
-      amount: 445.78,
-      consumption: "4,823 kWh",
-      status: "paid",
-      paidDate: "2023-06-10"
+      billDate: "2023-07-25",
+      dueDate: "2023-08-15",
+      amount: 375.82,
+      consumption: "1,250 kWh",
+      startDate: "2023-06-25",
+      endDate: "2023-07-25",
+      status: "unpaid",
+      uploadedBill: "bill-el-123456-july.pdf"
     },
     {
       id: 2,
       utilityAccountId: 1,
-      propertyName: "Sunset Heights",
-      utilityType: "Electricity",
-      billDate: "2023-07-01",
+      billDate: "2023-06-25",
       dueDate: "2023-07-15",
-      amount: 467.92,
-      consumption: "5,102 kWh",
+      amount: 355.50,
+      consumption: "1,185 kWh",
+      startDate: "2023-05-25",
+      endDate: "2023-06-25",
       status: "paid",
-      paidDate: "2023-07-12"
+      paymentDate: "2023-07-10",
+      paymentMethod: "Auto-pay",
+      uploadedBill: "bill-el-123456-june.pdf"
     },
     {
       id: 3,
       utilityAccountId: 2,
-      propertyName: "Sunset Heights",
-      utilityType: "Water",
-      billDate: "2023-06-01",
-      dueDate: "2023-06-30",
-      amount: 315.45,
-      consumption: "28,450 gal",
-      status: "paid",
-      paidDate: "2023-06-25"
+      billDate: "2023-07-20",
+      dueDate: "2023-08-10",
+      amount: 105.50,
+      consumption: "2,500 gal",
+      startDate: "2023-06-20",
+      endDate: "2023-07-20",
+      status: "unpaid",
+      uploadedBill: "bill-wa-67890-july.pdf"
     },
     {
       id: 4,
       utilityAccountId: 3,
-      propertyName: "Maple Gardens",
-      utilityType: "Gas",
-      billDate: "2023-07-01",
-      dueDate: "2023-07-21",
-      amount: 178.32,
-      consumption: "148 therms",
-      status: "due",
-      paidDate: null
+      billDate: "2023-07-18",
+      dueDate: "2023-08-08",
+      amount: 185.25,
+      consumption: "125 therms",
+      startDate: "2023-06-18",
+      endDate: "2023-07-18",
+      status: "unpaid",
+      uploadedBill: "bill-gs-54321-july.pdf"
     },
     {
       id: 5,
-      utilityAccountId: 5,
-      propertyName: "Maple Gardens",
-      utilityType: "Electricity",
-      billDate: "2023-07-01",
+      utilityAccountId: 4,
+      billDate: "2023-07-05",
       dueDate: "2023-07-25",
-      amount: 392.17,
-      consumption: "4,235 kWh",
-      status: "overdue",
-      paidDate: null
-    },
+      amount: 89.99,
+      consumption: "Unlimited",
+      startDate: "2023-07-05",
+      endDate: "2023-08-05",
+      status: "paid",
+      paymentDate: "2023-07-20",
+      paymentMethod: "Auto-pay",
+      uploadedBill: "bill-in-98765-aug.pdf"
+    }
   ];
-
+  
+  // For display - adds property name to bills
+  const displayUtilityAccounts = utilityAccounts.map(account => account);
+  
+  const displayUtilityBills = utilityBills.map(bill => {
+    const account = utilityAccounts.find(acc => acc.id === bill.utilityAccountId);
+    return {
+      ...bill,
+      propertyId: account?.propertyId,
+      propertyName: account?.propertyName,
+      utilityType: account?.utilityType,
+      provider: account?.provider
+    };
+  });
+  
   // Filter utilities based on selected property
   const filteredAccounts = selectedProperty === "all" 
     ? displayUtilityAccounts 
@@ -266,270 +232,260 @@ const UtilityManagement = () => {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Bills Due</CardTitle>
-            <CardDescription>Number of upcoming or overdue bills</CardDescription>
+            <CardDescription>Number of unpaid utility bills</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {displayUtilityBills.filter(bill => bill.status === "due" || bill.status === "overdue").length}
+              {displayUtilityBills.filter(bill => bill.status === "unpaid").length}
             </div>
           </CardContent>
         </Card>
       </div>
       
-      {/* Tabs for different views */}
-      <Tabs defaultValue="accounts" className="mb-6">
+      {/* Search Bar and Filters */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        <div className="relative flex-1">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Search utilities..."
+            className="pl-8"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <Button variant="outline" size="icon">
+          <Filter className="h-4 w-4" />
+        </Button>
+      </div>
+      
+      {/* Tabs for Accounts and Bills */}
+      <Tabs defaultValue="accounts" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="accounts">Utility Accounts</TabsTrigger>
-          <TabsTrigger value="bills">Bills & Payments</TabsTrigger>
-          <TabsTrigger value="consumption">Consumption Analytics</TabsTrigger>
+          <TabsTrigger value="accounts">
+            <Bolt className="mr-2 h-4 w-4" />
+            Utility Accounts
+          </TabsTrigger>
+          <TabsTrigger value="bills">
+            <FileText className="mr-2 h-4 w-4" />
+            Utility Bills
+          </TabsTrigger>
         </TabsList>
         
         {/* Utility Accounts Tab */}
         <TabsContent value="accounts">
-          <Card>
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-center">
-                <CardTitle>Active Utility Accounts</CardTitle>
-                <div className="flex items-center gap-2">
-                  <div className="relative">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search accounts..."
-                      className="pl-8 w-[200px] md:w-[300px]"
-                    />
-                  </div>
-                  <Button variant="outline" size="icon">
-                    <Filter className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Property</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Provider</TableHead>
-                    <TableHead>Account #</TableHead>
-                    <TableHead>Meter #</TableHead>
-                    <TableHead>Billing Cycle</TableHead>
-                    <TableHead>Avg. Cost</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredAccounts.map((account) => (
-                    <TableRow key={account.id}>
-                      <TableCell className="font-medium">{account.propertyName}</TableCell>
-                      <TableCell>{account.utilityType}</TableCell>
-                      <TableCell>{account.provider}</TableCell>
-                      <TableCell>{account.accountNumber}</TableCell>
-                      <TableCell>{account.meterNumber}</TableCell>
-                      <TableCell>{account.billingCycle}</TableCell>
-                      <TableCell>${account.averageCost}</TableCell>
-                      <TableCell>
-                        <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                          account.status === "active" ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"
-                        }`}>
-                          {account.status.charAt(0).toUpperCase() + account.status.slice(1)}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => navigate(`/view-utility-account/${account.id}`)}>
-                              View Details
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => navigate(`/edit-utility-account/${account.id}`)}>
-                              Edit Account
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => navigate(`/add-utility-bill/${account.id}`)}>
-                              Add Bill
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="text-destructive">
-                              Deactivate
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        {/* Bills & Payments Tab */}
-        <TabsContent value="bills">
-          <Card>
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-center">
-                <CardTitle>Recent Utility Bills</CardTitle>
-                <div className="flex items-center gap-2">
-                  <div className="relative">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search bills..."
-                      className="pl-8 w-[200px] md:w-[300px]"
-                    />
-                  </div>
-                  <Button variant="outline" onClick={() => navigate("/add-utility-bill")}>
-                    <Plus className="mr-2 h-4 w-4" /> Add Bill
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Property</TableHead>
-                    <TableHead>Utility Type</TableHead>
-                    <TableHead>Bill Date</TableHead>
-                    <TableHead>Due Date</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Consumption</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredBills.map((bill) => (
-                    <TableRow key={bill.id}>
-                      <TableCell className="font-medium">{bill.propertyName}</TableCell>
-                      <TableCell>{bill.utilityType}</TableCell>
-                      <TableCell>{bill.billDate}</TableCell>
-                      <TableCell>{bill.dueDate}</TableCell>
-                      <TableCell>${bill.amount.toFixed(2)}</TableCell>
-                      <TableCell>{bill.consumption}</TableCell>
-                      <TableCell>
-                        <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                          bill.status === "paid" ? "bg-green-100 text-green-700" : 
-                          bill.status === "due" ? "bg-blue-100 text-blue-700" : 
-                          "bg-red-100 text-red-700"
-                        }`}>
-                          {bill.status.charAt(0).toUpperCase() + bill.status.slice(1)}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => navigate(`/view-utility-bill/${bill.id}`)}>
-                              View Details
-                            </DropdownMenuItem>
-                            {bill.status !== "paid" && (
-                              <DropdownMenuItem onClick={() => navigate(`/pay-utility-bill/${bill.id}`)}>
-                                Mark as Paid
-                              </DropdownMenuItem>
-                            )}
-                            <DropdownMenuItem>
-                              <Download className="mr-2 h-4 w-4" /> Download PDF
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        {/* Consumption Analytics Tab */}
-        <TabsContent value="consumption">
-          <Card>
-            <CardHeader>
-              <CardTitle>Utility Consumption Analytics</CardTitle>
-              <CardDescription>
-                Track and analyze utility consumption patterns across all properties
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex justify-between items-center mb-6">
-                <div className="flex items-center gap-4">
-                  <Select defaultValue="electricity">
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Utility Type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="electricity">Electricity</SelectItem>
-                      <SelectItem value="water">Water</SelectItem>
-                      <SelectItem value="gas">Gas</SelectItem>
-                      <SelectItem value="internet">Internet</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select defaultValue="6">
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Time Period" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="3">Last 3 Months</SelectItem>
-                      <SelectItem value="6">Last 6 Months</SelectItem>
-                      <SelectItem value="12">Last 12 Months</SelectItem>
-                      <SelectItem value="custom">Custom Range</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button variant="outline">
-                  <Download className="mr-2 h-4 w-4" /> Export Data
-                </Button>
-              </div>
-              
-              {/* Placeholder for consumption chart */}
-              <div className="h-80 border border-dashed rounded-md flex items-center justify-center">
-                <div className="text-center">
-                  <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
-                  <h3 className="mt-4 text-lg font-semibold">Consumption Analytics Chart</h3>
-                  <p className="mt-2 text-muted-foreground">
-                    Visualization of consumption patterns over time
+          <div className="space-y-4">
+            {filteredAccounts.length === 0 ? (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center p-6 text-center">
+                  <Bolt className="h-12 w-12 text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-semibold">No utility accounts</h3>
+                  <p className="text-muted-foreground mt-2">
+                    No utility accounts for the selected property.
                   </p>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm">Average Monthly Consumption</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">4,680 kWh</div>
-                    <p className="text-sm text-muted-foreground">
-                      <span className="text-green-600">↓ 3.2%</span> compared to previous period
-                    </p>
-                  </CardContent>
+                  <Button onClick={() => navigate("/add-utility-account")} className="mt-4">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Utility Account
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              filteredAccounts.map((account) => (
+                <Card key={account.id} className="overflow-hidden">
+                  <div 
+                    className="p-4 cursor-pointer" 
+                    onClick={() => setExpandedAccount(expandedAccount === account.id ? null : account.id)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <Bolt className="h-5 w-5 text-muted-foreground mr-2" />
+                        <div>
+                          <h3 className="text-lg font-semibold">{account.utilityType} - {account.provider}</h3>
+                          <p className="text-sm text-muted-foreground">{account.propertyName}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Badge variant={account.status === "active" ? "default" : "secondary"}>
+                          {account.status}
+                        </Badge>
+                        {expandedAccount === account.id ? (
+                          <ChevronDown className="h-5 w-5" />
+                        ) : (
+                          <ChevronRight className="h-5 w-5" />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {expandedAccount === account.id && (
+                    <CardContent className="border-t pt-4 pb-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-3">
+                          <div>
+                            <p className="text-sm font-medium text-muted-foreground">Account Number</p>
+                            <p>{account.accountNumber}</p>
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-muted-foreground">Setup Date</p>
+                            <p>{account.setupDate}</p>
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-muted-foreground">Payment Method</p>
+                            <p>{account.paymentMethod}</p>
+                          </div>
+                        </div>
+                        <div className="space-y-3">
+                          <div>
+                            <p className="text-sm font-medium text-muted-foreground">Last Bill Amount</p>
+                            <p className="font-medium">${account.lastBillAmount.toFixed(2)}</p>
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-muted-foreground">Average Monthly Cost</p>
+                            <p className="font-medium">${account.averageCost.toFixed(2)}</p>
+                          </div>
+                          {account.nextReading && (
+                            <div>
+                              <p className="text-sm font-medium text-muted-foreground">Next Reading</p>
+                              <p>{account.nextReading}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex justify-end mt-4 gap-2">
+                        <Button variant="outline" size="sm">
+                          Edit Account
+                        </Button>
+                        <Button variant="outline" size="sm">
+                          Usage History
+                        </Button>
+                        <Button size="sm" onClick={() => navigate(`/add-utility-bill/${account.id}`)}>
+                          <Plus className="mr-1 h-3 w-3" />
+                          Add Bill
+                        </Button>
+                      </div>
+                    </CardContent>
+                  )}
                 </Card>
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm">Cost per Unit</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">$0.098 / kWh</div>
-                    <p className="text-sm text-muted-foreground">
-                      <span className="text-red-600">↑ 1.5%</span> compared to previous period
-                    </p>
-                  </CardContent>
+              ))
+            )}
+          </div>
+        </TabsContent>
+        
+        {/* Utility Bills Tab */}
+        <TabsContent value="bills">
+          <div className="space-y-4">
+            {filteredBills.length === 0 ? (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center p-6 text-center">
+                  <FileText className="h-12 w-12 text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-semibold">No utility bills</h3>
+                  <p className="text-muted-foreground mt-2">
+                    No utility bills for the selected property.
+                  </p>
+                  <Button className="mt-4">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Utility Bill
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              filteredBills.map((bill) => (
+                <Card key={bill.id} className="overflow-hidden">
+                  <div 
+                    className="p-4 cursor-pointer" 
+                    onClick={() => setExpandedBill(expandedBill === bill.id ? null : bill.id)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <FileText className="h-5 w-5 text-muted-foreground mr-2" />
+                        <div>
+                          <h3 className="text-lg font-semibold">
+                            {bill.utilityType} - {bill.provider}
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            {bill.propertyName} • Bill Date: {bill.billDate}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className="text-right">
+                          <p className="font-medium">${bill.amount.toFixed(2)}</p>
+                          <Badge variant={bill.status === "paid" ? "outline" : "default"}>
+                            {bill.status}
+                          </Badge>
+                        </div>
+                        {expandedBill === bill.id ? (
+                          <ChevronDown className="h-5 w-5" />
+                        ) : (
+                          <ChevronRight className="h-5 w-5" />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {expandedBill === bill.id && (
+                    <CardContent className="border-t pt-4 pb-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-3">
+                          <div>
+                            <p className="text-sm font-medium text-muted-foreground">Bill Date</p>
+                            <p>{bill.billDate}</p>
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-muted-foreground">Due Date</p>
+                            <div className="flex items-center">
+                              <p>{bill.dueDate}</p>
+                              {bill.status === "unpaid" && new Date(bill.dueDate) < new Date() && (
+                                <Badge variant="destructive" className="ml-2">Overdue</Badge>
+                              )}
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-muted-foreground">Service Period</p>
+                            <p>{bill.startDate} to {bill.endDate}</p>
+                          </div>
+                        </div>
+                        <div className="space-y-3">
+                          <div>
+                            <p className="text-sm font-medium text-muted-foreground">Amount</p>
+                            <p className="font-medium">${bill.amount.toFixed(2)}</p>
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-muted-foreground">Consumption</p>
+                            <p>{bill.consumption}</p>
+                          </div>
+                          {bill.status === "paid" && (
+                            <div>
+                              <p className="text-sm font-medium text-muted-foreground">Payment Date</p>
+                              <p>{bill.paymentDate} via {bill.paymentMethod}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex justify-end mt-4 gap-2">
+                        <Button variant="outline" size="sm">
+                          <Download className="mr-1 h-3 w-3" />
+                          Download
+                        </Button>
+                        {bill.status === "unpaid" ? (
+                          <Button size="sm">
+                            <DollarSign className="mr-1 h-3 w-3" />
+                            Record Payment
+                          </Button>
+                        ) : (
+                          <Button variant="outline" size="sm">
+                            View Payment
+                          </Button>
+                        )}
+                      </div>
+                    </CardContent>
+                  )}
                 </Card>
-              </div>
-            </CardContent>
-          </Card>
+              ))
+            )}
+          </div>
         </TabsContent>
       </Tabs>
     </div>
   );
-};
-
-export default UtilityManagement;
+}

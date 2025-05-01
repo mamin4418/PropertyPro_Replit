@@ -591,7 +591,7 @@ async function seedUtilitiesAndInspections() {
   ];
 
   for (const util of utilities) {
-    await storage.createUtility(util);
+    await storage.createUtilityAccount(util);
     console.log(`Created utility record: ${util.utilityType} for property ${util.propertyId}`);
   }
   for (const insp of inspections) {

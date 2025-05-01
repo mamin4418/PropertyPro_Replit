@@ -28,7 +28,7 @@ localPort = 5002
 externalPort = 3001
 
 [workflows]
-runButton = "Fixed Server Start"
+runButton = "Restarted Fixed Server"
 
 [[workflows.workflow]]
 name = "Project"
@@ -278,6 +278,31 @@ args = "NODE_ENV=development tsx server/index.ts"
 name = "Fixed Server Start"
 author = 41484040
 mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Starting fixed server...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "NODE_ENV=development tsx server/index.ts"
+
+[[workflows.workflow]]
+name = "Restarted Fixed Server"
+author = 41484040
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Stopping any running servers...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pkill -f \"tsx server/index.ts\" || true"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "sleep 2"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

@@ -858,6 +858,25 @@ export class MemStorage implements IStorage {
   async createApplication(application: any): Promise<any> {
     return this.createRentalApplication(application);
   }
+  
+  // Property inspection methods
+  async createPropertyInspection(inspection: any): Promise<any> {
+    const id = this.inspectionIdCounter++;
+    const now = new Date();
+    const newInspection = { ...inspection, id, createdAt: now, updatedAt: now };
+    this.inspections.set(id, newInspection);
+    return newInspection;
+  }
+  
+  async getAllPropertyInspections(): Promise<any[]> {
+    return Array.from(this.inspections.values());
+  }
+  
+  async getPropertyInspectionsByProperty(propertyId: number): Promise<any[]> {
+    return Array.from(this.inspections.values()).filter(
+      (inspection) => inspection.propertyId === propertyId
+    );
+  }
 }
 
 export const storage = new MemStorage();

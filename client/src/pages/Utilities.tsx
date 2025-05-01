@@ -1,284 +1,255 @@
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Plus, Zap, FileText, AlertCircle, Clock } from "lucide-react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { PlusCircle, FileText, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
-interface UtilityAccount {
-  id: number;
-  propertyId: number;
-  propertyName?: string;
-  utilityProvider: string;
-  accountNumber: string;
-  serviceType?: string;
-  billingCycle?: string;
-  autoPayEnabled?: boolean;
-  notes?: string;
-  status?: string;
-  paymentMethod?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-interface UtilityBill {
-  id: number;
-  utilityAccountId: number;
-  propertyId: number;
-  amount: number;
-  dueDate: string;
-  startDate?: string;
-  endDate?: string;
-  status?: string;
-  isPaid?: boolean;
-  paidDate?: string;
-  paidAmount?: number;
-  billPdf?: string;
-  notes?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export default function Utilities() {
-  const [accounts, setAccounts] = useState<UtilityAccount[]>([]);
-  const [bills, setBills] = useState<UtilityBill[]>([]);
+function UtilitiesPage() {
+  const [accounts, setAccounts] = useState([]);
+  const [bills, setBills] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    async function fetchUtilities() {
-      try {
-        setLoading(true);
-        // Fetch utility accounts
-        const accountsResponse = await fetch('/api/utilities/accounts');
-        if (!accountsResponse.ok) {
-          throw new Error(`Failed to fetch utility accounts: ${accountsResponse.statusText}`);
+    // Fetch utility accounts
+    fetch('/api/utility-accounts')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch utility accounts');
         }
-        const accountsData = await accountsResponse.json();
-        setAccounts(accountsData);
-
-        // Fetch utility bills
-        const billsResponse = await fetch('/api/utilities/bills');
-        if (!billsResponse.ok) {
-          throw new Error(`Failed to fetch utility bills: ${billsResponse.statusText}`);
-        }
-        const billsData = await billsResponse.json();
-        setBills(billsData);
-
-        setError(null);
-      } catch (err) {
-        console.error('Error fetching utilities:', err);
-        setError('Failed to load utility data. Please try again later.');
-      } finally {
+        return response.json();
+      })
+      .then(data => {
+        console.log('Fetched utility accounts:', data);
+        setAccounts(data);
         setLoading(false);
-      }
-    }
+      })
+      .catch(err => {
+        console.error('Error fetching accounts:', err);
+        setError(err.message);
+        setLoading(false);
+      });
 
-    fetchUtilities();
+    // Fetch utility bills
+    fetch('/api/utility-bills')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch utility bills');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Fetched utility bills:', data);
+        setBills(data);
+      })
+      .catch(err => {
+        console.error('Error fetching bills:', err);
+      });
   }, []);
 
-  // Format currency
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(amount);
-  };
+  if (loading) {
+    return <div className="flex justify-center items-center min-h-screen">Loading utilities data...</div>;
+  }
 
-  // Format date
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    }).format(date);
-  };
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-4">
+        <AlertTriangle className="h-12 w-12 text-red-500 mb-4" />
+        <h2 className="text-2xl font-bold mb-2">Error Loading Utilities</h2>
+        <p className="text-gray-600 mb-4">{error}</p>
+        <Button variant="outline" onClick={() => window.location.reload()}>
+          Try Again
+        </Button>
+      </div>
+    );
+  }
 
-  const getStatusBadge = (status?: string) => {
-    if (!status) return null;
-
-    switch (status.toLowerCase()) {
-      case 'active':
-        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Active</Badge>;
-      case 'inactive':
-        return <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200">Inactive</Badge>;
-      case 'pending':
-        return <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">Pending</Badge>;
-      case 'paid':
-        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Paid</Badge>;
-      case 'unpaid':
-        return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">Unpaid</Badge>;
-      case 'overdue':
-        return <Badge variant="outline" className="bg-red-100 text-red-800 border-red-300">Overdue</Badge>;
-      default:
-        return <Badge variant="outline">{status}</Badge>;
-    }
-  };
+  const upcomingBills = bills.filter(bill => bill.status === 'unpaid');
 
   return (
-    <div className="container mx-auto py-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Utility Management</h1>
+    <div className="container mx-auto p-4 space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">Utilities Management</h1>
         <Link to="/add-utility-account">
           <Button>
-            <Plus className="h-4 w-4 mr-2" />
+            <PlusCircle className="mr-2 h-4 w-4" />
             Add Utility Account
           </Button>
         </Link>
       </div>
 
-      {error && (
-        <div className="bg-red-50 text-red-700 p-4 mb-6 rounded-md border border-red-200">
-          <AlertCircle className="h-5 w-5 inline mr-2" />
-          {error}
-        </div>
-      )}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle>Total Accounts</CardTitle>
+            <CardDescription>Active utility accounts</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">{accounts.length}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle>Upcoming Bills</CardTitle>
+            <CardDescription>Bills due in the next 30 days</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">{upcomingBills.length}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle>AutoPay Enabled</CardTitle>
+            <CardDescription>Accounts with automatic payments</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">{accounts.filter(account => account.autopayEnabled).length}</div>
+          </CardContent>
+        </Card>
+      </div>
 
       <Tabs defaultValue="accounts">
-        <TabsList className="mb-4">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="accounts">Utility Accounts</TabsTrigger>
           <TabsTrigger value="bills">Utility Bills</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="accounts">
-          {loading ? (
-            <div className="text-center p-8">
-              <Clock className="h-8 w-8 mx-auto mb-2 animate-spin text-muted-foreground" />
-              <p>Loading utility accounts...</p>
-            </div>
-          ) : accounts.length === 0 ? (
-            <div className="text-center p-8 border rounded-md bg-muted/20">
-              <Zap className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
-              <h3 className="text-lg font-medium">No utility accounts</h3>
-              <p className="text-muted-foreground mt-1">Add your first utility account to get started</p>
-              <Link to="/add-utility-account" className="mt-4 inline-block">
-                <Button>Add Utility Account</Button>
-              </Link>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {accounts.map((account) => (
-                <Card key={account.id} className="overflow-hidden">
-                  <CardHeader className="bg-muted/30 pb-3">
-                    <div className="flex justify-between items-start">
-                      <CardTitle className="text-base">{account.utilityProvider}</CardTitle>
-                      {getStatusBadge(account.status)}
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pt-4">
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Account #:</span>
-                        <span>{account.accountNumber}</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Property:</span>
-                        <span>{account.propertyName || `Property ${account.propertyId}`}</span>
-                      </div>
-                      {account.serviceType && (
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Service:</span>
-                          <span>{account.serviceType}</span>
-                        </div>
-                      )}
-                      {account.billingCycle && (
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Billing Cycle:</span>
-                          <span>{account.billingCycle}</span>
-                        </div>
-                      )}
-                      {account.autoPayEnabled !== undefined && (
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">AutoPay:</span>
-                          <span>{account.autoPayEnabled ? 'Enabled' : 'Disabled'}</span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="mt-4 pt-4 border-t flex justify-end space-x-2">
-                      <Link to={`/utility-accounts/${account.id}`}>
-                        <Button variant="outline" size="sm">View Details</Button>
-                      </Link>
-                      <Button size="sm">Add Bill</Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+        <TabsContent value="accounts" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Utility Accounts</CardTitle>
+              <CardDescription>Manage your property utility services</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {accounts.length === 0 ? (
+                <div className="text-center py-6">
+                  <p className="text-gray-500">No utility accounts found.</p>
+                  <Link to="/add-utility-account">
+                    <Button variant="outline" className="mt-2">
+                      <PlusCircle className="mr-2 h-4 w-4" />
+                      Add Your First Utility Account
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Property</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Provider</TableHead>
+                      <TableHead>Account Number</TableHead>
+                      <TableHead>Billing Cycle</TableHead>
+                      <TableHead>AutoPay</TableHead>
+                      <TableHead>Responsible</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {accounts.map((account) => (
+                      <TableRow key={account.id}>
+                        <TableCell className="font-medium">{account.propertyName || 'Property ' + account.propertyId}</TableCell>
+                        <TableCell>{account.utilityType || account.type}</TableCell>
+                        <TableCell>{account.provider || account.utilityProvider}</TableCell>
+                        <TableCell>{account.accountNumber}</TableCell>
+                        <TableCell>{account.billingCycle || 'Monthly'}</TableCell>
+                        <TableCell>
+                          {account.autopayEnabled ? (
+                            <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">
+                              Enabled
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="bg-gray-100 text-gray-800 border-gray-200">
+                              Disabled
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell className="capitalize">{account.responsibleParty || 'Owner'}</TableCell>
+                        <TableCell className="text-right">
+                          <Button variant="ghost" size="sm">
+                            <FileText className="h-4 w-4" />
+                            <span className="sr-only">View</span>
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
 
-        <TabsContent value="bills">
-          {loading ? (
-            <div className="text-center p-8">
-              <Clock className="h-8 w-8 mx-auto mb-2 animate-spin text-muted-foreground" />
-              <p>Loading utility bills...</p>
-            </div>
-          ) : bills.length === 0 ? (
-            <div className="text-center p-8 border rounded-md bg-muted/20">
-              <FileText className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
-              <h3 className="text-lg font-medium">No utility bills</h3>
-              <p className="text-muted-foreground mt-1">Add bills to your utility accounts to get started</p>
-              <Button className="mt-4">Add Utility Bill</Button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {bills.map((bill) => {
-                const account = accounts.find(a => a.id === bill.utilityAccountId);
-                const isPastDue = new Date(bill.dueDate) < new Date() && !(bill.isPaid || bill.status === 'paid');
-
-                return (
-                  <Card key={bill.id} className={`overflow-hidden ${isPastDue ? 'border-red-300' : ''}`}>
-                    <CardHeader className={`${isPastDue ? 'bg-red-50' : 'bg-muted/30'} pb-3`}>
-                      <div className="flex justify-between items-start">
-                        <CardTitle className="text-base">
-                          {account ? account.utilityProvider : `Account #${bill.utilityAccountId}`}
-                        </CardTitle>
-                        {bill.status ? getStatusBadge(bill.status) : getStatusBadge(bill.isPaid ? 'paid' : isPastDue ? 'overdue' : 'unpaid')}
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pt-4">
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Amount:</span>
-                          <span className="font-medium">{formatCurrency(bill.amount)}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Due Date:</span>
-                          <span className={isPastDue ? 'text-red-600 font-medium' : ''}>
-                            {formatDate(bill.dueDate)}
-                          </span>
-                        </div>
-                        {bill.startDate && bill.endDate && (
-                          <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Service Period:</span>
-                            <span>{formatDate(bill.startDate)} - {formatDate(bill.endDate)}</span>
-                          </div>
-                        )}
-                        {bill.paidDate && (
-                          <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Paid On:</span>
-                            <span>{formatDate(bill.paidDate)}</span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="mt-4 pt-4 border-t flex justify-end space-x-2">
-                        <Link to={`/utility-bills/${bill.id}`}>
-                          <Button variant="outline" size="sm">View Details</Button>
-                        </Link>
-                        {!(bill.isPaid || bill.status === 'paid') && (
-                          <Button size="sm">Mark as Paid</Button>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          )}
+        <TabsContent value="bills" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Utility Bills</CardTitle>
+              <CardDescription>Track and manage utility payments</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {bills.length === 0 ? (
+                <div className="text-center py-6">
+                  <p className="text-gray-500">No utility bills found.</p>
+                  <Button variant="outline" className="mt-2">
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Add Utility Bill
+                  </Button>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Property</TableHead>
+                      <TableHead>Amount</TableHead>
+                      <TableHead>Due Date</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {bills.map((bill) => {
+                      // Find the associated account
+                      const account = accounts.find(a => a.id === bill.utilityAccountId);
+                      return (
+                        <TableRow key={bill.id}>
+                          <TableCell className="font-medium">Property {bill.propertyId || account?.propertyId}</TableCell>
+                          <TableCell>${typeof bill.amount === 'number' ? bill.amount.toFixed(2) : bill.amount}</TableCell>
+                          <TableCell>{bill.dueDate ? new Date(bill.dueDate).toLocaleDateString() : 'Unknown'}</TableCell>
+                          <TableCell>
+                            {bill.status === 'paid' ? (
+                              <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">
+                                <CheckCircle className="h-3 w-3 mr-1" />
+                                Paid
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-200">
+                                Unpaid
+                              </Badge>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button variant="ghost" size="sm">
+                              <FileText className="h-4 w-4" />
+                              <span className="sr-only">View</span>
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
   );
 }
+
+export default UtilitiesPage;

@@ -51,87 +51,114 @@ async function storeCompletedInspections(inspections: any[]) {
 // Seed utilities and property inspections
 export async function seedUtilitiesAndInspections() {
   try {
+    // Seed utility accounts
+    console.log("Seeding utility accounts and bills...");
+
     // Sample utility accounts
     const utilityAccounts = [
       {
         propertyId: 1,
-        utilityProvider: "City Power & Light",
-        accountNumber: "EL-12345678",
-        serviceType: "Electricity",
+        propertyName: "Sunset Heights",
+        utilityType: "Electricity",
+        provider: "PowerCo Energy",
+        accountNumber: "EL-123456",
+        serviceAddress: "123 Main St, Anytown, CA 91234",
         billingCycle: "Monthly",
-        autoPayEnabled: true,
-        status: "active"
+        autopayEnabled: true,
+        responsibleParty: "owner"
       },
       {
         propertyId: 1,
-        utilityProvider: "Metro Water Services",
-        accountNumber: "WT-87654321",
-        serviceType: "Water",
-        billingCycle: "Quarterly",
-        autoPayEnabled: false,
-        status: "active"
+        propertyName: "Sunset Heights",
+        utilityType: "Water",
+        provider: "City Water Services",
+        accountNumber: "WA-789012",
+        serviceAddress: "123 Main St, Anytown, CA 91234",
+        billingCycle: "Bi-monthly",
+        autopayEnabled: false,
+        responsibleParty: "owner"
       },
       {
         propertyId: 2,
-        utilityProvider: "Natural Gas Co.",
-        accountNumber: "GS-98765432",
-        serviceType: "Gas",
+        propertyName: "Maple Gardens",
+        utilityType: "Gas",
+        provider: "NaturalGas Corp",
+        accountNumber: "GS-345678",
+        serviceAddress: "456 Oak Lane, Anytown, CA 91234",
         billingCycle: "Monthly",
-        autoPayEnabled: true,
-        status: "active"
+        autopayEnabled: true,
+        responsibleParty: "tenant"
+      },
+      {
+        propertyId: 3,
+        propertyName: "Urban Lofts",
+        utilityType: "Internet",
+        provider: "HighSpeed Networks",
+        accountNumber: "IN-901234",
+        serviceAddress: "789 Broadway, Anytown, CA 91234",
+        billingCycle: "Monthly",
+        autopayEnabled: true,
+        responsibleParty: "owner"
       }
     ];
+
+    // Create utility accounts
+    for (const account of utilityAccounts) {
+      await storage.createUtilityAccount(account);
+    }
+
+    console.log("Utility accounts created successfully!");
 
     // Sample utility bills
     const utilityBills = [
       {
         utilityAccountId: 1,
-        propertyId: 1,
-        amount: 157.89,
-        dueDate: new Date("2023-08-15"),
-        startDate: new Date("2023-07-01"),
-        endDate: new Date("2023-07-31"),
+        amount: 145.67,
+        dueDate: "2023-08-15",
+        billingPeriodStart: "2023-07-01",
+        billingPeriodEnd: "2023-07-31",
+        status: "paid",
+        paymentDate: "2023-08-10"
+      },
+      {
+        utilityAccountId: 1,
+        amount: 162.34,
+        dueDate: "2023-09-15",
+        billingPeriodStart: "2023-08-01",
+        billingPeriodEnd: "2023-08-31",
         status: "unpaid"
       },
       {
         utilityAccountId: 2,
-        propertyId: 1,
-        amount: 98.45,
-        dueDate: new Date("2023-08-20"),
-        startDate: new Date("2023-04-01"),
-        endDate: new Date("2023-06-30"),
+        amount: 87.45,
+        dueDate: "2023-09-20",
+        billingPeriodStart: "2023-07-15",
+        billingPeriodEnd: "2023-09-15",
         status: "unpaid"
       },
       {
         utilityAccountId: 3,
-        propertyId: 2,
-        amount: 45.32,
-        dueDate: new Date("2023-08-10"),
-        startDate: new Date("2023-07-01"),
-        endDate: new Date("2023-07-31"),
-        isPaid: true,
-        paidDate: new Date("2023-08-08"),
-        paidAmount: 45.32,
-        status: "paid"
+        amount: 95.22,
+        dueDate: "2023-08-25",
+        billingPeriodStart: "2023-08-01",
+        billingPeriodEnd: "2023-08-31",
+        status: "paid",
+        paymentDate: "2023-08-22"
       }
     ];
 
-    // Clear existing utility accounts before seeding
-    const existingAccounts = await storage.getUtilityAccounts();
-    if (existingAccounts.length === 0) {
-      // Seed utility accounts
-      for (const util of utilityAccounts) {
-        await storage.createUtilityAccount(util);
-      }
-
-      // Seed utility bills
-      for (const bill of utilityBills) {
-        await storage.createUtilityBill(bill);
-      }
+    // Create utility bills
+    for (const bill of utilityBills) {
+      await storage.createUtilityBill(bill);
     }
 
-    // Sample scheduled property inspections
-    const inspections = [
+    console.log("Utility bills created successfully!");
+
+    // Now seed property inspections
+    console.log("Seeding property inspections...");
+
+    // Sample scheduled inspections
+    const scheduledInspections = [
       {
         propertyId: 1,
         propertyName: "Sunset Heights",
@@ -164,7 +191,14 @@ export async function seedUtilitiesAndInspections() {
       }
     ];
 
-    // Sample completed property inspections
+    // Create scheduled inspections
+    for (const inspection of scheduledInspections) {
+      await storage.createInspection(inspection);
+    }
+
+    console.log("Scheduled inspections created successfully!");
+
+    // Sample completed inspections
     const completedInspections = [
       {
         propertyId: 1,
@@ -216,26 +250,15 @@ export async function seedUtilitiesAndInspections() {
       }
     ];
 
-    // Check if inspections already exist
-    const existingInspections = await storage.getInspections();
-    if (existingInspections.length === 0) {
-      // Seed inspections
-      for (const inspection of inspections) {
-        await storage.createInspection(inspection);
-      }
+    // Create completed inspections
+    for (const inspection of completedInspections) {
+      await storage.createCompletedInspection(inspection);
     }
 
-    // Check if completed inspections already exist
-    const existingCompletedInspections = await storage.getCompletedInspections();
-    if (existingCompletedInspections.length === 0) {
-      // Seed completed inspections
-      for (const inspection of completedInspections) {
-        await storage.createCompletedInspection(inspection);
-      }
-    }
+    console.log("Completed inspections created successfully!");
 
-    console.log("Utilities and property inspections data seeded successfully!");
+    console.log("Utilities and Property Inspections seeding completed!");
   } catch (error) {
-    console.error("Error seeding utilities and property inspections data:", error);
+    console.error("Error seeding utilities and inspections:", error);
   }
 }

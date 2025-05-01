@@ -130,15 +130,12 @@ export class MemStorage implements IStorage {
   private bankAccounts = new Map<number, any>();
   private leads = new Map<number, any>();
   private vacancies = new Map<number, any>();
-  public users = new Map<number, User>();
   public contacts = new Map<number, Contact>();
-  public addresses = new Map<number, Address>();
-  public contactAddresses = new Map<string, ContactAddress>();
   public appliances = new Map<number, Appliance>();
-  public applicationTemplates = new Map<number, ApplicationTemplate>();
-  public rentalApplications = new Map<number, RentalApplication>();
   public insurances = new Map<number, Insurance>();
   public mortgages = new Map<number, Mortgage>();
+  public applicationTemplates = new Map<number, ApplicationTemplate>();
+  public rentalApplications = new Map<number, RentalApplication>();
   public utilityAccounts = new Map<number, any>();
   public utilityBills = new Map<number, any>();
   public inspections = new Map<number, any>();
@@ -856,7 +853,7 @@ export class MemStorage implements IStorage {
   }
 
   async updateUtilityBill(id: number, bill: any): Promise<any | undefined> {
-const existingBill = this.utilityBills.get(id);
+    const existingBill = this.utilityBills.get(id);
     if (!existingBill) return undefined;
 
     const updatedBill = { ...existingBill, ...bill, updatedAt: new Date() };

@@ -51,8 +51,53 @@ async function storeCompletedInspections(inspections: any[]) {
 // Seed utilities and property inspections
 export async function seedUtilitiesAndInspections() {
   try {
-    // Seed utility accounts
     console.log("Seeding utility accounts and bills...");
+    
+    // Sample utility accounts
+    const utilityAccounts = [
+      {
+        id: 1,
+        propertyId: 1,
+        propertyName: "Sunset Heights",
+        utilityProvider: "City Power",
+        accountNumber: "EL-123456",
+        utilityType: "Electricity",
+        status: "active"
+      },
+      {
+        id: 2,
+        propertyId: 1,
+        propertyName: "Sunset Heights",
+        utilityProvider: "City Water",
+        accountNumber: "WT-789012",
+        utilityType: "Water",
+        status: "active"
+      }
+    ];
+
+    // Sample utility bills
+    const utilityBills = [
+      {
+        id: 1,
+        utilityAccountId: 1,
+        propertyId: 1,
+        amount: 150.75,
+        dueDate: new Date("2024-02-15"),
+        status: "unpaid"
+      },
+      {
+        id: 2,
+        utilityAccountId: 2,
+        propertyId: 1,
+        amount: 85.50,
+        dueDate: new Date("2024-02-20"),
+        status: "paid"
+      }
+    ];
+
+    // Store the sample data
+    storage.utilityAccounts = new Map(utilityAccounts.map(account => [account.id, account]));
+    storage.utilityBills = new Map(utilityBills.map(bill => [bill.id, bill]));
 
     // Sample utility accounts
     const utilityAccounts = [

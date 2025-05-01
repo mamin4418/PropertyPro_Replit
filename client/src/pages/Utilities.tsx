@@ -35,7 +35,7 @@ export function Utilities() {
         console.log("Fetching utility data...");
         setLoading(true);
 
-        const accountsRes = await fetch('/api/utility-accounts');
+        const accountsRes = await fetch('/api/utilities/accounts');
         if (!accountsRes.ok) {
           throw new Error(`Failed to fetch utility accounts: ${accountsRes.status}`);
         }
@@ -43,7 +43,7 @@ export function Utilities() {
         console.log("Fetched utility accounts:", accountsData);
         setUtilityAccounts(accountsData);
 
-        const billsRes = await fetch('/api/utility-bills');
+        const billsRes = await fetch('/api/utilities/bills');
         if (!billsRes.ok) {
           throw new Error(`Failed to fetch utility bills: ${billsRes.status}`);
         }

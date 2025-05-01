@@ -49,7 +49,7 @@ export function PropertyInspections() {
         setLoading(true);
 
         // Fetch scheduled inspections
-        const scheduledRes = await fetch('/api/inspections');
+        const scheduledRes = await fetch('/api/property-inspections/scheduled');
         if (!scheduledRes.ok) {
           throw new Error(`Failed to fetch scheduled inspections: ${scheduledRes.status}`);
         }
@@ -58,7 +58,7 @@ export function PropertyInspections() {
         setScheduledInspections(scheduledData);
 
         // Fetch completed inspections
-        const completedRes = await fetch('/api/completed-inspections');
+        const completedRes = await fetch('/api/property-inspections/completed');
         if (!completedRes.ok) {
           throw new Error(`Failed to fetch completed inspections: ${completedRes.status}`);
         }

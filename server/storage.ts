@@ -107,7 +107,10 @@ export interface IStorage {
   createCompletedInspection(inspection: any): Promise<any>;
   updateCompletedInspection(id: number, inspection: any): Promise<any | undefined>;
   deleteCompletedInspection(id: number): Promise<boolean>;
-
+  
+  // Added missing methods
+  createUtility(utility: any): Promise<any>;
+  createApplication(application: any): Promise<any>;
 }
 
 export class MemStorage implements IStorage {
@@ -840,6 +843,20 @@ export class MemStorage implements IStorage {
 
   async deleteCompletedInspection(id: number): Promise<boolean> {
     return this.completedInspections.delete(id);
+  }
+  
+  // Add missing utility function
+  async createUtility(utility: any): Promise<any> {
+    const id = this.utilityAccountIdCounter++;
+    const now = new Date();
+    const newUtility = { ...utility, id, createdAt: now, updatedAt: now };
+    this.utilityAccounts.set(id, newUtility);
+    return newUtility;
+  }
+  
+  // Add missing application function
+  async createApplication(application: any): Promise<any> {
+    return this.createRentalApplication(application);
   }
 }
 

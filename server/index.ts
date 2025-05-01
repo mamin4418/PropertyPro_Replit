@@ -1,6 +1,6 @@
 import express from "express";
 import { registerRoutes } from "./routes";
-import { seedData } from "./seed-data";
+import { seedDatabase } from "./seed-data";
 import { seedApplications } from "./seed-applications";
 import { seedUtilitiesAndInspections } from "./seed-features";
 import { Server } from "http";
@@ -26,7 +26,7 @@ async function startServer() {
   const server = await registerRoutes(app);
 
   // Seed data
-  seedData();
+  seedDatabase();
   seedApplications();
   seedUtilitiesAndInspections(); // Add the utilities and property inspections data
 

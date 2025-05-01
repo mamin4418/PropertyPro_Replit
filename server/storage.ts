@@ -107,6 +107,7 @@ export interface IStorage {
   createCompletedInspection(inspection: any): Promise<any>;
   updateCompletedInspection(id: number, inspection: any): Promise<any | undefined>;
   deleteCompletedInspection(id: number): Promise<boolean>;
+  getScheduledInspections(): Promise<any[]>; // Added method
 
   // Added missing methods
   createUtility(utility: any): Promise<any>;
@@ -136,6 +137,8 @@ export class MemStorage implements IStorage {
   private utilityBills = new Map<number, any>();
   private inspections = new Map<number, any>();
   private completedInspections = new Map<number, any>();
+  private scheduledInspections = new Map<number, any>(); // Added map
+
 
   // Counters for IDs
   private propertyIdCounter = 10000;
@@ -163,6 +166,7 @@ export class MemStorage implements IStorage {
   private utilityBillIdCounter = 10000;
   private inspectionIdCounter = 10000;
   private completedInspectionIdCounter = 10000;
+  private scheduledInspectionIdCounter = 10000; // Added counter
 
 
   // Session store for auth
@@ -182,6 +186,7 @@ export class MemStorage implements IStorage {
   public utilityBills: Map<number, any> = new Map();
   public inspections: Map<number, any> = new Map();
   public completedInspections: Map<number, any> = new Map();
+  public scheduledInspections: Map<number, any> = new Map(); // Added map
 
   private userIdCounter: number = 1;
   private contactIdCounter: number = 1;
@@ -197,6 +202,7 @@ export class MemStorage implements IStorage {
   private utilityBillIdCounter: number = 1;
   private inspectionIdCounter: number = 1;
   private completedInspectionIdCounter: number = 1;
+  private scheduledInspectionIdCounter: number = 1; // Added counter
 
 
   constructor() {
@@ -219,6 +225,8 @@ export class MemStorage implements IStorage {
     this.createUtilityBill({propertyId: 1, utilityAccountId: 1, amount: 100, dueDate: new Date()});
     this.createInspection({propertyId: 1, inspector: "John Doe", date: new Date(), notes: "All good"});
     this.createCompletedInspection({propertyId: 1, inspectionId: 1, dateCompleted: new Date(), notes: "Inspection completed successfully"});
+    this.createScheduledInspection({propertyId: 1, inspector: "Jane Doe", scheduledDate: new Date(), notes: "Scheduled for tomorrow"}); //Adding a sample scheduled inspection
+
 
   }
 
@@ -914,6 +922,36 @@ export class MemStorage implements IStorage {
 
   async deleteCompletedInspection(id: number): Promise<boolean> {
     return this.completedInspections.delete(id);
+  }
+
+  // Scheduled inspection methods
+  async getScheduledInspections(): Promise<any[]> {
+    return Array.from(this.scheduledInspections.values());
+  }
+
+  async getScheduledInspection(id: number): Promise<any | undefined> {
+    return this.scheduledInspections.get(id);
+  }
+
+  async createScheduledInspection(inspection: any): Promise<any> {
+    const id = this.scheduledInspectionIdCounter++;
+    const now = new Date();
+    const newInspection = { ...inspection, id, createdAt: now, updatedAt: now };
+    this.scheduledInspections.set(id, newInspection);
+    return newInspection;
+  }
+
+  async updateScheduledInspection(id: number, inspection: any): Promise<any | undefined> {
+    const existingInspection = this.scheduledInspections.get(id);
+    if (!existingInspection) return undefined;
+
+    const updatedInspection = { ...existingInspection, ...inspection, updatedAt: new Date() };
+    this.scheduledInspections.set(id, updatedInspection);
+    return updatedInspection;
+  }
+
+  async deleteScheduledInspection(id: number): Promise<boolean> {
+    return this.scheduledInspections.delete(id);
   }
 
   // Add missing utility function

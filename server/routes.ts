@@ -1546,7 +1546,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           `,
           signingFields: [
             { id: "tenant_signature", type: "signature", label: "Signature", required: true, signed: true, signedAt: "2023-05-03T14:30:45Z" },
-            { id: "tenant_initials_1", type: "initials", label: ""Initials - Page1", required: true, signed: true, signedAt: "2023-05-03T14:29:20Z" }
+            { id: "tenant_initials_1", type: "initials", label:"Initials - Page1", required: true, signed: true, signedAt: "2023-05-03T14:29:20Z" }
           ]
         },
         4: {
@@ -1923,7 +1923,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Utility management endpoints
   app.get('/api/utility-accounts', async (req: Request, res: Response) => {
     try {
-      const utilityAccounts = await storage.getUtilityAccounts();
+      const utilityAccounts = await storage.getUtilityAccounts() || [];
       res.json(utilityAccounts);
     } catch (error) {
       console.error('Error retrieving utility accounts:', error);
@@ -1932,7 +1932,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   app.get('/api/utility-bills', async (req: Request, res: Response) => {
     try {
-      const utilityBills = await storage.getUtilityBills();
+      const utilityBills = await storage.getUtilityBills() || [];
       res.json(utilityBills);
     } catch (error) {
       console.error('Error retrieving utility bills:', error);
@@ -1942,7 +1942,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Property inspections endpoints
   app.get('/api/inspections', async (req: Request, res: Response) => {
     try {
-      const inspections = await storage.getInspections();
+      const inspections = await storage.getInspections() || [];
       res.json(inspections);
     } catch (error) {
       console.error('Error retrieving inspections:', error);
@@ -1951,7 +1951,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   app.get('/api/completed-inspections', async (req: Request, res: Response) => {
     try {
-      const completedInspections = await storage.getCompletedInspections();
+      const completedInspections = await storage.getCompletedInspections() || [];
       res.json(completedInspections);
     } catch (error) {
       console.error('Error retrieving completed inspections:', error);

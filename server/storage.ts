@@ -175,22 +175,6 @@ export class MemStorage implements IStorage {
   // Session store for auth
   public sessionStore: session.Store;
 
-  private users: Map<number, User> = new Map();
-  private contacts: Map<number, Contact> = new Map();
-  private addresses: Map<number, Address> = new Map();
-  private contactAddresses: Map<string, ContactAddress> = new Map(); // key is contactId-addressId
-  private appliances: Map<number, Appliance> = new Map();
-  private rentalApplications: Map<number, RentalApplication> = new Map();
-  private applicationTemplates: Map<number, ApplicationTemplate> = new Map();
-  private insurances: Map<number, Insurance> = new Map();
-  private mortgages: Map<number, Mortgage> = new Map();
-  private maintenanceRequests: Map<number, MaintenanceRequest> = new Map();
-  public utilityAccounts: Map<number, any> = new Map();
-  public utilityBills: Map<number, any> = new Map();
-  public inspections: Map<number, any> = new Map();
-  public completedInspections: Map<number, any> = new Map();
-  public scheduledInspections: Map<number, any> = new Map(); // Added map
-
   private userIdCounter = 1;
   private contactIdCounter = 1;
   private addressIdCounter = 1;

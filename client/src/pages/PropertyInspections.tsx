@@ -1,430 +1,224 @@
-import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
-import { Badge } from "@/components/ui/badge";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, CheckCircle, ChevronDown, ChevronRight, ClipboardList, Clock, Filter, Home, Plus, Search, X } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Plus, CalendarDays, Check, AlertCircle, Clock } from "lucide-react";
+import { Link } from "react-router-dom";
 
-function PropertyInspections() {
-  const [_, navigate] = useLocation();
-  const [selectedProperty, setSelectedProperty] = useState("all");
-  const [expandedInspection, setExpandedInspection] = useState<number | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [scheduledInspections, setScheduledInspections] = useState<any[]>([]);
-  const [completedInspections, setCompletedInspections] = useState<any[]>([]);
+interface Inspection {
+  id: number;
+  propertyId: number;
+  propertyName: string;
+  inspectionType: string;
+  scheduledDate?: string;
+  scheduledTime?: string;
+  inspector: string;
+  status: string;
+  units: string[];
+  inspectionDate?: string;
+  completedBy?: string;
+  reportLink?: string;
+  findings?: Array<{
+    item: string;
+    condition: string;
+    notes: string;
+    images: string[];
+  }>;
+}
+
+export default function PropertyInspections() {
+  const [scheduledInspections, setScheduledInspections] = useState<Inspection[]>([]);
+  const [completedInspections, setCompletedInspections] = useState<Inspection[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch inspections from the server
   useEffect(() => {
-    const fetchInspections = async () => {
+    async function fetchInspections() {
       try {
         setLoading(true);
         // Fetch scheduled inspections
-        const scheduledResponse = await fetch('/api/inspections');
+        const scheduledResponse = await fetch('/api/property-inspections/scheduled');
         if (!scheduledResponse.ok) {
-          throw new Error('Failed to fetch scheduled inspections');
+          throw new Error(`Failed to fetch scheduled inspections: ${scheduledResponse.statusText}`);
         }
         const scheduledData = await scheduledResponse.json();
-        
+        setScheduledInspections(scheduledData);
+
         // Fetch completed inspections
-        const completedResponse = await fetch('/api/completed-inspections');
+        const completedResponse = await fetch('/api/property-inspections/completed');
         if (!completedResponse.ok) {
-          throw new Error('Failed to fetch completed inspections');
+          throw new Error(`Failed to fetch completed inspections: ${completedResponse.statusText}`);
         }
         const completedData = await completedResponse.json();
-        
-        setScheduledInspections(scheduledData.inspections || []);
-        setCompletedInspections(completedData.completedInspections || []);
+        setCompletedInspections(completedData);
+
         setError(null);
       } catch (err) {
         console.error('Error fetching inspections:', err);
-        setError('Failed to load inspections. Please try again later.');
-        
-        // Fallback to mock data if API fails
-        setScheduledInspections([
-          {
-            id: 1,
-            propertyId: 1,
-            propertyName: "Sunset Heights",
-            inspectionType: "Routine",
-            scheduledDate: "2023-08-15",
-            scheduledTime: "10:00 AM",
-            inspector: "David Johnson",
-            status: "scheduled",
-            units: ["101", "102", "103"]
-          },
-          {
-            id: 2,
-            propertyId: 1,
-            propertyName: "Sunset Heights",
-            inspectionType: "Move-out",
-            scheduledDate: "2023-08-10",
-            scheduledTime: "2:00 PM",
-            inspector: "Sarah Williams",
-            status: "scheduled",
-            units: ["305"]
-          },
-          {
-            id: 3,
-            propertyId: 2,
-            propertyName: "Maple Gardens",
-            inspectionType: "Annual",
-            scheduledDate: "2023-08-22",
-            scheduledTime: "9:00 AM",
-            inspector: "Michael Chen",
-            status: "scheduled",
-            units: ["A1", "A2", "B1", "B2"]
-          },
-        ]);
-        
-        setCompletedInspections([
-          {
-            id: 4,
-            propertyId: 1,
-            propertyName: "Sunset Heights",
-            inspectionType: "Move-in",
-            inspectionDate: "2023-07-25",
-            completedBy: "Sarah Williams",
-            status: "passed",
-            units: ["204"],
-            reportLink: "/reports/inspection-4.pdf",
-            findings: [
-              { item: "Walls", condition: "Good", notes: "Freshly painted", images: ["wall1.jpg", "wall2.jpg"] },
-              { item: "Flooring", condition: "Good", notes: "New carpet installed", images: ["floor1.jpg"] },
-              { item: "Kitchen", condition: "Good", notes: "All appliances working", images: ["kitchen1.jpg"] },
-              { item: "Bathroom", condition: "Good", notes: "No leaks or issues found", images: ["bathroom1.jpg"] }
-            ]
-          },
-          {
-            id: 5,
-            propertyId: 3,
-            propertyName: "Urban Lofts",
-            inspectionType: "Maintenance",
-            inspectionDate: "2023-07-20",
-            completedBy: "David Johnson",
-            status: "issues",
-            units: ["2B"],
-            reportLink: "/reports/inspection-5.pdf",
-            findings: [
-              { item: "Walls", condition: "Good", notes: "No issues", images: [] },
-              { item: "Flooring", condition: "Fair", notes: "Some wear in high traffic areas", images: ["floor-wear.jpg"] },
-              { item: "Kitchen", condition: "Poor", notes: "Dishwasher leaking, needs repair", images: ["dishwasher-leak.jpg"] },
-              { item: "Bathroom", condition: "Good", notes: "Recent renovation, all fixtures working", images: [] }
-            ]
-          },
-          {
-            id: 6,
-            propertyId: 2,
-            propertyName: "Maple Gardens",
-            inspectionType: "Routine",
-            inspectionDate: "2023-07-15",
-            completedBy: "Michael Chen",
-            status: "passed",
-            units: ["C3"],
-            reportLink: "/reports/inspection-6.pdf",
-            findings: [
-              { item: "Walls", condition: "Good", notes: "No issues", images: [] },
-              { item: "Flooring", condition: "Good", notes: "No issues", images: [] },
-              { item: "Kitchen", condition: "Good", notes: "All appliances working", images: [] },
-              { item: "Bathroom", condition: "Good", notes: "No leaks or issues found", images: [] }
-            ]
-          },
-        ]);
+        setError('Failed to load inspection data. Please try again later.');
       } finally {
         setLoading(false);
       }
-    };
+    }
 
     fetchInspections();
   }, []);
 
-  // Use the fetched data or fallback to the mock data
-  const displayScheduledInspections = scheduledInspections;
-  const displayCompletedInspections = completedInspections;
-
-  // Filter inspections based on selected property
-  const filteredScheduled = selectedProperty === "all"
-    ? displayScheduledInspections
-    : displayScheduledInspections.filter(insp => insp.propertyId.toString() === selectedProperty);
-
-  const filteredCompleted = selectedProperty === "all"
-    ? displayCompletedInspections
-    : displayCompletedInspections.filter(insp => insp.propertyId.toString() === selectedProperty);
-
-  // Mock properties for the dropdown
-  const properties = [
-    { id: 1, name: "Sunset Heights" },
-    { id: 2, name: "Maple Gardens" },
-    { id: 3, name: "Urban Lofts" },
-  ];
-
-  // Toggle expanded inspection
-  const toggleExpand = (id: number) => {
-    if (expandedInspection === id) {
-      setExpandedInspection(null);
-    } else {
-      setExpandedInspection(id);
+  const getStatusBadge = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'scheduled':
+        return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Scheduled</Badge>;
+      case 'completed':
+        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Completed</Badge>;
+      case 'in progress':
+        return <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">In Progress</Badge>;
+      case 'passed':
+        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Passed</Badge>;
+      case 'issues':
+        return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">Issues Found</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
     }
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
-        <div>
-          <h1 className="text-2xl font-bold mb-1">Property Inspections</h1>
-          <p className="text-muted-foreground">Schedule and track property inspections</p>
-        </div>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Select value={selectedProperty} onValueChange={setSelectedProperty}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Filter by Property" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Properties</SelectItem>
-              {properties.map((property) => (
-                <SelectItem key={property.id} value={property.id.toString()}>
-                  {property.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button onClick={() => navigate("/schedule-inspection")}>
-            <Plus className="mr-2 h-4 w-4" /> Schedule Inspection
+    <div className="container mx-auto py-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Property Inspections</h1>
+        <Link to="/schedule-inspection">
+          <Button>
+            <Plus className="h-4 w-4 mr-2" />
+            Schedule Inspection
           </Button>
-        </div>
+        </Link>
       </div>
 
-      {/* Search Bar and Filters */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Search inspections..."
-            className="pl-8"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+      {error && (
+        <div className="bg-red-50 text-red-700 p-4 mb-6 rounded-md border border-red-200">
+          <AlertCircle className="h-5 w-5 inline mr-2" />
+          {error}
         </div>
-        <Button variant="outline" size="icon">
-          <Filter className="h-4 w-4" />
-        </Button>
-      </div>
+      )}
 
-      {/* Tabs for Scheduled and Completed Inspections */}
-      <Tabs defaultValue="scheduled" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="scheduled">
-            <Clock className="mr-2 h-4 w-4" />
-            Scheduled
-          </TabsTrigger>
-          <TabsTrigger value="completed">
-            <CheckCircle className="mr-2 h-4 w-4" />
-            Completed
-          </TabsTrigger>
+      <Tabs defaultValue="scheduled">
+        <TabsList className="mb-4">
+          <TabsTrigger value="scheduled">Scheduled Inspections</TabsTrigger>
+          <TabsTrigger value="completed">Completed Inspections</TabsTrigger>
         </TabsList>
 
-        {/* Scheduled Inspections Tab */}
         <TabsContent value="scheduled">
-          <div className="space-y-4">
-            {filteredScheduled.length === 0 ? (
-              <Card>
-                <CardContent className="flex flex-col items-center justify-center p-6 text-center">
-                  <ClipboardList className="h-12 w-12 text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold">No scheduled inspections</h3>
-                  <p className="text-muted-foreground mt-2">
-                    No inspections scheduled for the selected property.
-                  </p>
-                  <Button onClick={() => navigate("/schedule-inspection")} className="mt-4">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Schedule Inspection
-                  </Button>
-                </CardContent>
-              </Card>
-            ) : (
-              filteredScheduled.map((inspection) => (
+          {loading ? (
+            <div className="text-center p-8">
+              <Clock className="h-8 w-8 mx-auto mb-2 animate-spin text-muted-foreground" />
+              <p>Loading inspections...</p>
+            </div>
+          ) : scheduledInspections.length === 0 ? (
+            <div className="text-center p-8 border rounded-md bg-muted/20">
+              <CalendarDays className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
+              <h3 className="text-lg font-medium">No scheduled inspections</h3>
+              <p className="text-muted-foreground mt-1">Schedule your first property inspection to get started</p>
+              <Link to="/schedule-inspection" className="mt-4 inline-block">
+                <Button>Schedule Inspection</Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {scheduledInspections.map((inspection) => (
                 <Card key={inspection.id} className="overflow-hidden">
-                  <div className="p-4 cursor-pointer" onClick={() => toggleExpand(inspection.id)}>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <Home className="h-5 w-5 text-muted-foreground mr-2" />
-                        <div>
-                          <h3 className="text-lg font-semibold">{inspection.propertyName}</h3>
-                          <p className="text-sm text-muted-foreground">{inspection.inspectionType} Inspection</p>
-                        </div>
+                  <CardHeader className="bg-muted/30 pb-3">
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-base">{inspection.propertyName}</CardTitle>
+                      {getStatusBadge(inspection.status)}
+                    </div>
+                  </CardHeader>
+                  <CardContent className="pt-4">
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Type:</span>
+                        <span>{inspection.inspectionType}</span>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <Badge>{inspection.status}</Badge>
-                        {expandedInspection === inspection.id ? (
-                          <ChevronDown className="h-5 w-5" />
-                        ) : (
-                          <ChevronRight className="h-5 w-5" />
-                        )}
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Date:</span>
+                        <span>{inspection.scheduledDate}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Time:</span>
+                        <span>{inspection.scheduledTime}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Inspector:</span>
+                        <span>{inspection.inspector}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Units:</span>
+                        <span>{inspection.units.join(", ")}</span>
                       </div>
                     </div>
-                  </div>
-
-                  {expandedInspection === inspection.id && (
-                    <CardContent className="border-t pt-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <div className="flex items-start mb-2">
-                            <Calendar className="h-4 w-4 text-muted-foreground mt-0.5 mr-2" />
-                            <div>
-                              <p className="text-sm font-medium">Scheduled Date & Time</p>
-                              <p className="text-sm">{inspection.scheduledDate} at {inspection.scheduledTime}</p>
-                            </div>
-                          </div>
-                          <div className="flex items-start mb-2">
-                            <Home className="h-4 w-4 text-muted-foreground mt-0.5 mr-2" />
-                            <div>
-                              <p className="text-sm font-medium">Units to Inspect</p>
-                              <div className="flex flex-wrap gap-1 mt-1">
-                                {inspection.units.map((unit, idx) => (
-                                  <Badge key={idx} variant="outline" className="text-xs">
-                                    Unit {unit}
-                                  </Badge>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div>
-                          <div className="flex items-start mb-2">
-                            <div className="h-4 w-4 text-muted-foreground mt-0.5 mr-2" />
-                            <div>
-                              <p className="text-sm font-medium">Inspector</p>
-                              <p className="text-sm">{inspection.inspector}</p>
-                            </div>
-                          </div>
-                          <div className="flex justify-end mt-4 space-x-2">
-                            <Button variant="outline" size="sm">
-                              Reschedule
-                            </Button>
-                            <Button size="sm">
-                              Start Inspection
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  )}
+                    <div className="mt-4 pt-4 border-t flex justify-end space-x-2">
+                      <Button variant="outline" size="sm">Reschedule</Button>
+                      <Button size="sm">Start Inspection</Button>
+                    </div>
+                  </CardContent>
                 </Card>
-              ))
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </TabsContent>
 
-        {/* Completed Inspections Tab */}
         <TabsContent value="completed">
-          <div className="space-y-4">
-            {filteredCompleted.length === 0 ? (
-              <Card>
-                <CardContent className="flex flex-col items-center justify-center p-6 text-center">
-                  <ClipboardList className="h-12 w-12 text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold">No completed inspections</h3>
-                  <p className="text-muted-foreground mt-2">
-                    No completed inspections for the selected property.
-                  </p>
-                </CardContent>
-              </Card>
-            ) : (
-              filteredCompleted.map((inspection) => (
+          {loading ? (
+            <div className="text-center p-8">
+              <Clock className="h-8 w-8 mx-auto mb-2 animate-spin text-muted-foreground" />
+              <p>Loading inspections...</p>
+            </div>
+          ) : completedInspections.length === 0 ? (
+            <div className="text-center p-8 border rounded-md bg-muted/20">
+              <Check className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
+              <h3 className="text-lg font-medium">No completed inspections</h3>
+              <p className="text-muted-foreground mt-1">Completed inspections will appear here</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {completedInspections.map((inspection) => (
                 <Card key={inspection.id} className="overflow-hidden">
-                  <div className="p-4 cursor-pointer" onClick={() => toggleExpand(inspection.id)}>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <Home className="h-5 w-5 text-muted-foreground mr-2" />
-                        <div>
-                          <h3 className="text-lg font-semibold">{inspection.propertyName}</h3>
-                          <p className="text-sm text-muted-foreground">{inspection.inspectionType} Inspection</p>
-                        </div>
+                  <CardHeader className="bg-muted/30 pb-3">
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-base">{inspection.propertyName}</CardTitle>
+                      {getStatusBadge(inspection.status)}
+                    </div>
+                  </CardHeader>
+                  <CardContent className="pt-4">
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Type:</span>
+                        <span>{inspection.inspectionType}</span>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <Badge variant={inspection.status === "passed" ? "default" : "destructive"}>
-                          {inspection.status}
-                        </Badge>
-                        {expandedInspection === inspection.id ? (
-                          <ChevronDown className="h-5 w-5" />
-                        ) : (
-                          <ChevronRight className="h-5 w-5" />
-                        )}
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Date:</span>
+                        <span>{inspection.inspectionDate}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Inspector:</span>
+                        <span>{inspection.completedBy}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Units:</span>
+                        <span>{inspection.units.join(", ")}</span>
                       </div>
                     </div>
-                  </div>
-
-                  {expandedInspection === inspection.id && (
-                    <CardContent className="border-t pt-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <div className="flex items-start mb-2">
-                            <Calendar className="h-4 w-4 text-muted-foreground mt-0.5 mr-2" />
-                            <div>
-                              <p className="text-sm font-medium">Inspection Date</p>
-                              <p className="text-sm">{inspection.inspectionDate}</p>
-                            </div>
-                          </div>
-                          <div className="flex items-start mb-2">
-                            <Home className="h-4 w-4 text-muted-foreground mt-0.5 mr-2" />
-                            <div>
-                              <p className="text-sm font-medium">Units Inspected</p>
-                              <div className="flex flex-wrap gap-1 mt-1">
-                                {inspection.units.map((unit, idx) => (
-                                  <Badge key={idx} variant="outline" className="text-xs">
-                                    Unit {unit}
-                                  </Badge>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-start mb-2">
-                            <div className="h-4 w-4 text-muted-foreground mt-0.5 mr-2" />
-                            <div>
-                              <p className="text-sm font-medium">Completed By</p>
-                              <p className="text-sm">{inspection.completedBy}</p>
-                            </div>
-                          </div>
-                        </div>
-                        <div>
-                          <h4 className="font-medium mb-2">Findings Summary</h4>
-                          <div className="space-y-2">
-                            {inspection.findings.slice(0, 3).map((finding, idx) => (
-                              <div key={idx} className="flex items-start">
-                                <div className={`h-2 w-2 mt-1.5 mr-2 rounded-full ${
-                                  finding.condition === "Good" ? "bg-green-500" :
-                                  finding.condition === "Fair" ? "bg-yellow-500" : "bg-red-500"
-                                }`} />
-                                <div>
-                                  <p className="text-sm font-medium">{finding.item}</p>
-                                  <p className="text-xs text-muted-foreground">{finding.notes}</p>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                          <div className="flex justify-end mt-4 space-x-2">
-                            <Button variant="outline" size="sm">
-                              Download Report
-                            </Button>
-                            <Button size="sm">
-                              View Full Details
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  )}
+                    <div className="mt-4 pt-4 border-t flex justify-end space-x-2">
+                      <Link to={`/inspections/${inspection.id}`}>
+                        <Button size="sm">View Report</Button>
+                      </Link>
+                    </div>
+                  </CardContent>
                 </Card>
-              ))
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>
   );
 }
-
-export default PropertyInspections;

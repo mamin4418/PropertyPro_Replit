@@ -48,142 +48,91 @@ async function storeCompletedInspections(inspections: any[]) {
   }
 }
 
+// Seed utilities and property inspections
 export async function seedUtilitiesAndInspections() {
   try {
-    console.log("Seeding utilities and property inspections data...");
-
     // Sample utility accounts
     const utilityAccounts = [
       {
-        id: 1,
         propertyId: 1,
-        propertyName: "Sunset Heights",
-        utilityType: "Electricity",
-        provider: "PowerCo Energy",
-        accountNumber: "EL-12345-789",
-        meterNumber: "MT-98765",
+        utilityProvider: "City Power & Light",
+        accountNumber: "EL-12345678",
+        serviceType: "Electricity",
         billingCycle: "Monthly",
-        averageCost: 450,
+        autoPayEnabled: true,
         status: "active"
       },
       {
-        id: 2,
         propertyId: 1,
-        propertyName: "Sunset Heights",
-        utilityType: "Water",
-        provider: "City Water Services",
-        accountNumber: "WT-56789-123",
-        meterNumber: "MT-45678",
+        utilityProvider: "Metro Water Services",
+        accountNumber: "WT-87654321",
+        serviceType: "Water",
         billingCycle: "Quarterly",
-        averageCost: 320,
+        autoPayEnabled: false,
         status: "active"
       },
       {
-        id: 3,
         propertyId: 2,
-        propertyName: "Maple Gardens",
-        utilityType: "Gas",
-        provider: "NaturalGas Co.",
-        accountNumber: "GS-98765-432",
-        meterNumber: "MT-34521",
+        utilityProvider: "Natural Gas Co.",
+        accountNumber: "GS-98765432",
+        serviceType: "Gas",
         billingCycle: "Monthly",
-        averageCost: 180,
+        autoPayEnabled: true,
         status: "active"
-      },
-      {
-        id: 4,
-        propertyId: 3,
-        propertyName: "Urban Lofts",
-        utilityType: "Internet",
-        provider: "FastConnect ISP",
-        accountNumber: "IN-54321-987",
-        meterNumber: "N/A",
-        billingCycle: "Monthly",
-        averageCost: 89,
-        status: "active"
-      },
-      {
-        id: 5,
-        propertyId: 2,
-        propertyName: "Maple Gardens",
-        utilityType: "Electricity",
-        provider: "PowerCo Energy",
-        accountNumber: "EL-67890-543",
-        meterNumber: "MT-76543",
-        billingCycle: "Monthly",
-        averageCost: 380,
-        status: "active"
-      },
+      }
     ];
 
     // Sample utility bills
     const utilityBills = [
       {
-        id: 1,
         utilityAccountId: 1,
-        propertyName: "Sunset Heights",
-        utilityType: "Electricity",
-        billDate: "2023-06-01",
-        dueDate: "2023-06-15",
-        amount: 445.78,
-        consumption: "4,823 kWh",
-        status: "paid",
-        paidDate: "2023-06-10"
+        propertyId: 1,
+        amount: 157.89,
+        dueDate: new Date("2023-08-15"),
+        startDate: new Date("2023-07-01"),
+        endDate: new Date("2023-07-31"),
+        status: "unpaid"
       },
       {
-        id: 2,
-        utilityAccountId: 1,
-        propertyName: "Sunset Heights",
-        utilityType: "Electricity",
-        billDate: "2023-07-01",
-        dueDate: "2023-07-15",
-        amount: 467.92,
-        consumption: "5,102 kWh",
-        status: "paid",
-        paidDate: "2023-07-12"
-      },
-      {
-        id: 3,
         utilityAccountId: 2,
-        propertyName: "Sunset Heights",
-        utilityType: "Water",
-        billDate: "2023-06-01",
-        dueDate: "2023-06-30",
-        amount: 315.45,
-        consumption: "28,450 gal",
-        status: "paid",
-        paidDate: "2023-06-25"
+        propertyId: 1,
+        amount: 98.45,
+        dueDate: new Date("2023-08-20"),
+        startDate: new Date("2023-04-01"),
+        endDate: new Date("2023-06-30"),
+        status: "unpaid"
       },
       {
-        id: 4,
         utilityAccountId: 3,
-        propertyName: "Maple Gardens",
-        utilityType: "Gas",
-        billDate: "2023-07-01",
-        dueDate: "2023-07-21",
-        amount: 178.32,
-        consumption: "148 therms",
-        status: "due",
-        paidDate: null
-      },
-      {
-        id: 5,
-        utilityAccountId: 5,
-        propertyName: "Maple Gardens",
-        utilityType: "Electricity",
-        billDate: "2023-07-01",
-        dueDate: "2023-07-25",
-        amount: 392.17,
-        consumption: "4,235 kWh",
-        status: "overdue",
-        paidDate: null
-      },
+        propertyId: 2,
+        amount: 45.32,
+        dueDate: new Date("2023-08-10"),
+        startDate: new Date("2023-07-01"),
+        endDate: new Date("2023-07-31"),
+        isPaid: true,
+        paidDate: new Date("2023-08-08"),
+        paidAmount: 45.32,
+        status: "paid"
+      }
     ];
 
-    // Sample property inspections
+    // Clear existing utility accounts before seeding
+    const existingAccounts = await storage.getUtilityAccounts();
+    if (existingAccounts.length === 0) {
+      // Seed utility accounts
+      for (const util of utilityAccounts) {
+        await storage.createUtilityAccount(util);
+      }
+
+      // Seed utility bills
+      for (const bill of utilityBills) {
+        await storage.createUtilityBill(bill);
+      }
+    }
+
+    // Sample scheduled property inspections
     const inspections = [
       {
-        id: 1,
         propertyId: 1,
         propertyName: "Sunset Heights",
         inspectionType: "Routine",
@@ -194,7 +143,6 @@ export async function seedUtilitiesAndInspections() {
         units: ["101", "102", "103"]
       },
       {
-        id: 2,
         propertyId: 1,
         propertyName: "Sunset Heights",
         inspectionType: "Move-out",
@@ -205,7 +153,6 @@ export async function seedUtilitiesAndInspections() {
         units: ["305"]
       },
       {
-        id: 3,
         propertyId: 2,
         propertyName: "Maple Gardens",
         inspectionType: "Annual",
@@ -214,13 +161,12 @@ export async function seedUtilitiesAndInspections() {
         inspector: "Michael Chen",
         status: "scheduled",
         units: ["A1", "A2", "B1", "B2"]
-      },
+      }
     ];
 
-    // Sample completed inspections
+    // Sample completed property inspections
     const completedInspections = [
       {
-        id: 4,
         propertyId: 1,
         propertyName: "Sunset Heights",
         inspectionType: "Move-in",
@@ -237,7 +183,6 @@ export async function seedUtilitiesAndInspections() {
         ]
       },
       {
-        id: 5,
         propertyId: 3,
         propertyName: "Urban Lofts",
         inspectionType: "Maintenance",
@@ -254,7 +199,6 @@ export async function seedUtilitiesAndInspections() {
         ]
       },
       {
-        id: 6,
         propertyId: 2,
         propertyName: "Maple Gardens",
         inspectionType: "Routine",
@@ -269,18 +213,28 @@ export async function seedUtilitiesAndInspections() {
           { item: "Kitchen", condition: "Good", notes: "All appliances working", images: [] },
           { item: "Bathroom", condition: "Good", notes: "No leaks or issues found", images: [] }
         ]
-      },
+      }
     ];
 
-    // Add data to storage
-    await Promise.all([
-      storeUtilityAccounts(utilityAccounts),
-      storeUtilityBills(utilityBills),
-      storeInspections(inspections),
-      storeCompletedInspections(completedInspections)
-    ]);
+    // Check if inspections already exist
+    const existingInspections = await storage.getInspections();
+    if (existingInspections.length === 0) {
+      // Seed inspections
+      for (const inspection of inspections) {
+        await storage.createInspection(inspection);
+      }
+    }
 
-    console.log("Successfully seeded utilities and property inspections data");
+    // Check if completed inspections already exist
+    const existingCompletedInspections = await storage.getCompletedInspections();
+    if (existingCompletedInspections.length === 0) {
+      // Seed completed inspections
+      for (const inspection of completedInspections) {
+        await storage.createCompletedInspection(inspection);
+      }
+    }
+
+    console.log("Utilities and property inspections data seeded successfully!");
   } catch (error) {
     console.error("Error seeding utilities and property inspections data:", error);
   }

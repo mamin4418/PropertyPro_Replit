@@ -698,14 +698,6 @@ args = "rm -rf node_modules/.vite"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "echo \"Installing dependencies...\""
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npm install react-router-dom --save"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
 args = "echo \"Starting server...\""
 
 [[workflows.workflow.tasks]]

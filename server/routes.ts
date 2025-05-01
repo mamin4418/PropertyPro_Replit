@@ -1944,24 +1944,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   // Utility management endpoints
-  app.get('/api/utility-accounts', async (req: Request, res: Response) => {
-    try {
-      const utilityAccounts = await storage.getUtilityAccounts() || [];
-      res.json(utilityAccounts);
-    } catch (error) {
-      console.error('Error retrieving utility accounts:', error);
-      res.status(500).json({ error: 'Failed to retrieve utility accounts' });
-    }
-  });
-  app.get('/api/utility-bills', async (req: Request, res: Response) => {
-    try {
-      const utilityBills = await storage.getUtilityBills() || [];
-      res.json(utilityBills);
-    } catch (error) {
-      console.error('Error retrieving utility bills:', error);
-      res.status(500).json({ error: 'Failed to retrieve utility bills' });
-    }
-  });
+  // Routes already defined above
   // Property inspections endpoints
   app.get('/api/property-inspections/scheduled', async (req: Request, res: Response) => {
     try {

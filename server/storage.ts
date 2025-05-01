@@ -764,30 +764,7 @@ export class MemStorage implements IStorage {
   }
 
 
-  // Added Appliance methods
-  async getAppliances(): Promise<Appliance[]> {
-    return Array.from(this.appliances.values());
-  }
-
-  async createAppliance(appliance: InsertAppliance): Promise<Appliance> {
-    const id = this.applianceIdCounter++;
-    const now = new Date();
-    const newAppliance: Appliance = { ...appliance, id, createdAt: now, updatedAt: now };
-    this.appliances.set(id, newAppliance);
-    return newAppliance;
-  }
-
-  async updateAppliance(id: number, appliance: Partial<InsertAppliance>): Promise<Appliance | undefined> {
-    const existingAppliance = this.appliances.get(id);
-    if (!existingAppliance) return undefined;
-    const updatedAppliance: Appliance = { ...existingAppliance, ...appliance, updatedAt: new Date() };
-    this.appliances.set(id, updatedAppliance);
-    return updatedAppliance;
-  }
-
-  async deleteAppliance(id: number): Promise<boolean> {
-    return this.appliances.delete(id);
-  }
+  // Main appliance methods already defined above
 
   // Additional methods needed for API endpoints
   async getAllInsurances(): Promise<Insurance[]> {

@@ -79,6 +79,29 @@ export default function Sidebar() {
           Properties
         </SidebarNavItem>
 
+        <div className="pt-2">
+          <h3 className="px-3 text-xs font-semibold text-muted-foreground">Rent</h3>
+          <SidebarNavItem href="/rent/charges" icon={DollarSign} indented>
+            View All Charges
+          </SidebarNavItem>
+          <SidebarNavItem href="/rent/deposits" icon={DollarSign} indented>
+            View Deposits
+          </SidebarNavItem>
+          <SidebarNavItem href="/rent/add-charge" icon={DollarSign} indented>
+            Add Charge or Lease
+          </SidebarNavItem>
+          <SidebarNavItem href="/rent/late-fee-rules" icon={DollarSign} indented>
+            Manage Late Fee Rules
+          </SidebarNavItem>
+          <SidebarNavItem href="/rent/export" icon={DollarSign} indented>
+            Export Charges
+          </SidebarNavItem>
+          <SidebarNavItem href="/rent/roll" icon={DollarSign} indented>
+            View Rent Roll
+          </SidebarNavItem>
+        </div>
+
+
         <SidebarNavItem href="/tenants" icon={Users} indented>
           Tenants
         </SidebarNavItem>

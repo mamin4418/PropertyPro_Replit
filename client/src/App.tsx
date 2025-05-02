@@ -92,6 +92,15 @@ import ReconciliationDashboard from "@/pages/ReconciliationDashboard"; // Added 
 import TransactionRules from "@/pages/TransactionRules"; // Added import
 import { lazy } from 'react';
 
+// Rent Management Components
+import ViewCharges from "./pages/rent/ViewCharges";
+import ViewDeposits from "./pages/rent/ViewDeposits";
+import AddCharge from "./pages/rent/AddCharge";
+import LateFeeRules from "./pages/rent/LateFeeRules";
+import AddLateFeeRule from "./pages/rent/AddLateFeeRule";
+import ExportCharges from "./pages/rent/ExportCharges";
+import RentRoll from "./pages/rent/RentRoll";
+
 
 function AppRoutes() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -274,6 +283,15 @@ function AppRoutes() {
               <Route path="/banking/reconciliation" component={ReconciliationDashboard} />
               <Route path="/banking/transactions/rules" component={TransactionRules} />
               <Route path="/banking/integration" component={BankIntegration} />
+
+              {/* Rent Management Routes */}
+              <Route path="/rent/charges" component={ViewCharges} />
+              <Route path="/rent/deposits" component={ViewDeposits} />
+              <Route path="/rent/add-charge" component={AddCharge} />
+              <Route path="/rent/late-fee-rules" component={LateFeeRules} />
+              <Route path="/rent/late-fee-rules/new" component={AddLateFeeRule} />
+              <Route path="/rent/export" component={ExportCharges} />
+              <Route path="/rent/roll" component={RentRoll} />
 
               <Route path="/" component={Dashboard} />
 

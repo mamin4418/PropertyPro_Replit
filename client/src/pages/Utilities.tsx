@@ -20,7 +20,7 @@ interface UtilityBill {
   utilityAccountId: number;
   propertyId: number;
   amount: number;
-  dueDate: string | Date;
+  dueDate: string;
   status: string;
 }
 
@@ -73,7 +73,7 @@ export function Utilities() {
             utilityAccountId: 1,
             propertyId: 1,
             amount: 125.50,
-            dueDate: new Date("2023-08-15"),
+            dueDate: "2023-08-15",
             status: "paid"
           },
           {
@@ -81,7 +81,7 @@ export function Utilities() {
             utilityAccountId: 2,
             propertyId: 1,
             amount: 210.75,
-            dueDate: new Date("2023-08-20"),
+            dueDate: "2023-08-20",
             status: "unpaid"
           },
           {
@@ -89,33 +89,29 @@ export function Utilities() {
             utilityAccountId: 3,
             propertyId: 2,
             amount: 85.25,
-            dueDate: new Date("2023-08-25"),
+            dueDate: "2023-08-25",
             status: "overdue"
           }
         ];
 
         try {
+          // Attempt to fetch data from API
           const accountsRes = await fetch('/api/utilities/accounts');
-          if (accountsRes.ok) {
-            const accountsData = await accountsRes.json();
-            setUtilityAccounts(accountsData.length > 0 ? accountsData : sampleAccounts);
-          } else {
-            console.warn("Using sample utility accounts due to API error");
-            setUtilityAccounts(sampleAccounts);
-          }
-
           const billsRes = await fetch('/api/utilities/bills');
-          if (billsRes.ok) {
+          
+          if (accountsRes.ok && billsRes.ok) {
+            const accountsData = await accountsRes.json();
             const billsData = await billsRes.json();
+            
+            setUtilityAccounts(accountsData.length > 0 ? accountsData : sampleAccounts);
             setUtilityBills(billsData.length > 0 ? billsData : sampleBills);
           } else {
-            console.warn("Using sample utility bills due to API error");
+            console.warn("API request failed, using sample data");
+            setUtilityAccounts(sampleAccounts);
             setUtilityBills(sampleBills);
           }
-          
-          setError(null);
         } catch (err) {
-          console.warn("Error fetching utilities data, using fallback data", err);
+          console.warn("Error fetching data, using sample data:", err);
           setUtilityAccounts(sampleAccounts);
           setUtilityBills(sampleBills);
         }
@@ -179,12 +175,16 @@ export function Utilities() {
     }).format(amount);
   };
 
-  const formatDate = (dateStr: string | Date) => {
+  const formatDate = (dateStr: string) => {
     if (!dateStr) return 'N/A';
 
     try {
-      const date = typeof dateStr === 'string' ? new Date(dateStr) : dateStr;
-      return date.toLocaleDateString();
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
     } catch (e) {
       console.error("Error formatting date:", dateStr, e);
       return 'Invalid date';

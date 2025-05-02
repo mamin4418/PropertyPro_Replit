@@ -1,302 +1,319 @@
-import { users, type User, type InsertUser, type Contact, type InsertContact, type Address, type InsertAddress, type ContactAddress, type Appliance, type InsertAppliance, type RentalApplication, type InsertRentalApplication, type ApplicationTemplate, type InsertApplicationTemplate, type Insurance, type InsertInsurance, type Mortgage, type InsertMortgage, type MaintenanceRequest, type InsertMaintenanceRequest } from "@shared/schema";
+import fs from "fs";
+import path from "path";
+import { Storage } from "node-storage";
 
-// modify the interface with any CRUD methods
-// you might need
+class PropertyStorage {
+  properties = new Map();
+  tenants = new Map();
+  units = new Map();
+  leases = new Map();
+  rents = new Map();
+  companies = new Map();
+  persons = new Map();
+  contacts = new Map();
+  vendors = new Map();
+  applications = new Map();
+  mortgages = new Map();
+  charges = new Map();
+  maintenance = new Map();
+  appliances = new Map();
+  insurance = new Map();
+  bankAccounts = new Map();
+  payments = new Map();
+  utilityAccounts = new Map();
+  utilityBills = new Map();
+  inspections = new Map();
+  scheduledInspections = new Map();
+  completedInspections = new Map();
+  tasks = new Map();
 
-import session from "express-session";
-import createMemoryStore from "memorystore";
-
-const MemoryStore = createMemoryStore(session);
-
-export interface IStorage {
-  // Session store
-  sessionStore: session.Store;
-
-  // User methods
-  getUser(id: number): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
-
-  // Address methods
-  getAddress(id: number): Promise<Address | undefined>;
-  getAddresses(): Promise<Address[]>;
-  createAddress(address: InsertAddress): Promise<Address>;
-  updateAddress(id: number, address: Partial<InsertAddress>): Promise<Address | undefined>;
-  deleteAddress(id: number): Promise<boolean>;
-
-  // Contact-Address methods
-  getContactAddresses(contactId: number): Promise<(ContactAddress & { address: Address })[]>;
-  addAddressToContact(contactId: number, addressId: number, isPrimary?: boolean): Promise<ContactAddress>;
-  removeAddressFromContact(contactId: number, addressId: number): Promise<boolean>;
-
-  // Contact methods
-  getContact(id: number): Promise<Contact | undefined>;
-  getContacts(): Promise<Contact[]>;
-  getContactsByType(type: string): Promise<Contact[]>;
-  createContact(contact: InsertContact): Promise<Contact>;
-  updateContact(id: number, contact: Partial<InsertContact>): Promise<Contact | undefined>;
-  deleteContact(id: number): Promise<boolean>;
-
-  // Appliance methods
-  getAppliance(id: number): Promise<Appliance | undefined>;
-  getAppliances(): Promise<Appliance[]>;
-  getAppliancesByUnit(unitId: number): Promise<Appliance[]>;
-  createAppliance(appliance: InsertAppliance): Promise<Appliance>;
-  updateAppliance(id: number, appliance: Partial<InsertAppliance>): Promise<Appliance | undefined>;
-  deleteAppliance(id: number): Promise<boolean>;
-
-  // Application methods
-  getRentalApplication(id: number): Promise<RentalApplication | undefined>;
-  getRentalApplications(): Promise<RentalApplication[]>;
-  createRentalApplication(application: InsertRentalApplication): Promise<RentalApplication>;
-  updateRentalApplication(id: number, application: Partial<InsertRentalApplication>): Promise<RentalApplication | undefined>;
-  deleteRentalApplication(id: number): Promise<boolean>;
-
-  // Application Template methods
-  getApplicationTemplate(id: number): Promise<ApplicationTemplate | undefined>;
-  getApplicationTemplates(): Promise<ApplicationTemplate[]>;
-  createApplicationTemplate(template: InsertApplicationTemplate): Promise<ApplicationTemplate>;
-  updateApplicationTemplate(id: number, template: Partial<InsertApplicationTemplate>): Promise<ApplicationTemplate | undefined>;
-  deleteApplicationTemplate(id: number): Promise<boolean>;
-
-  // Insurance methods
-  getInsurance(id: number): Promise<Insurance | undefined>;
-  getInsurancesByProperty(propertyId: number): Promise<Insurance[]>;
-  createInsurance(insurance: InsertInsurance): Promise<Insurance>;
-  updateInsurance(id: number, insurance: Partial<InsertInsurance>): Promise<Insurance | undefined>;
-  deleteInsurance(id: number): Promise<boolean>;
-
-  // Mortgage methods
-  getMortgage(id: number): Promise<Mortgage | undefined>;
-  getMortgagesByProperty(propertyId: number): Promise<Mortgage[]>;
-  createMortgage(mortgage: InsertMortgage): Promise<Mortgage>;
-  updateMortgage(id: number, mortgage: Partial<InsertMortgage>): Promise<Mortgage | undefined>;
-  deleteMortgage(id: number): Promise<boolean>;
-
-  // Maintenance Request methods
-  getAllMaintenanceRequests(): Promise<MaintenanceRequest[]>;
-  getMaintenanceRequest(id: number): Promise<MaintenanceRequest | null>;
-  getMaintenanceRequestsByProperty(propertyId: number): Promise<MaintenanceRequest[]>;
-  createMaintenanceRequest(data: InsertMaintenanceRequest): Promise<MaintenanceRequest>;
-  updateMaintenanceRequest(id: number, data: Partial<InsertMaintenanceRequest>): Promise<MaintenanceRequest | null>;
-  deleteMaintenanceRequest(id: number): Promise<boolean>;
-
-  // Appliance methods added
-  getAppliances(): Promise<Appliance[]>;
-  getAppliance(id: number): Promise<Appliance | undefined>;
-  createAppliance(appliance: InsertAppliance): Promise<Appliance>;
-  updateAppliance(id: number, appliance: Partial<InsertAppliance>): Promise<Appliance | undefined>;
-  deleteAppliance(id: number): Promise<boolean>;
-  getUtilityAccounts(): Promise<any[]>;
-  getUtilityAccount(id: number): Promise<any | undefined>;
-  createUtilityAccount(account: any): Promise<any>;
-  updateUtilityAccount(id: number, account: any): Promise<any | undefined>;
-  deleteUtilityAccount(id: number): Promise<boolean>;
-  getUtilityBills(): Promise<any[]>;
-  getUtilityBill(id: number): Promise<any | undefined>;
-  createUtilityBill(bill: any): Promise<any>;
-  updateUtilityBill(id: number, bill: any): Promise<any | undefined>;
-  deleteUtilityBill(id: number): Promise<boolean>;
-  getInspections():Promise<any[]>;
-  getInspection(id: number): Promise<any | undefined>;
-  createInspection(inspection: any): Promise<any>;
-  updateInspection(id: number, inspection: any): Promise<any | undefined>;
-  deleteInspection(id: number): Promise<boolean>;
-  getCompletedInspections(): Promise<any[]>;
-  getCompletedInspection(id: number): Promise<any | undefined>;
-  createCompletedInspection(inspection: any): Promise<any>;
-  updateCompletedInspection(id: number, inspection: any): Promise<any | undefined>;
-  deleteCompletedInspection(id: number): Promise<boolean>;
-  getScheduledInspections(): Promise<any[]>; // Added method
-
-  // Added missing methods
-  createUtility(utility: any): Promise<any>;
-  createApplication(application: any): Promise<any>;
-  getAllUtilityAccounts(): Promise<any[]>;
-  getAllInspections(): Promise<any[]>;
-  getAllCompletedInspections(): Promise<any[]>;
-}
-
-export class MemStorage implements IStorage {
-  // Maps to store the data
-  private properties = new Map<number, any>();
-  private units = new Map<number, any>();
-  private tenants = new Map<number, any>();
-  private leases = new Map<number, any>();
-  private payments = new Map<number, any>();
-  private companies = new Map<number, any>();
-  private vendors = new Map<number, any>();
-  private maintenanceRequests = new Map<number, any>();
-  private bankAccounts = new Map<number, any>();
-  private leads = new Map<number, any>();
-  private vacancies = new Map<number, any>();
-  public contacts = new Map<number, Contact>();
-  public appliances = new Map<number, Appliance>();
-  public insurances = new Map<number, Insurance>();
-  public mortgages = new Map<number, Mortgage>();
-  public applicationTemplates = new Map<number, ApplicationTemplate>();
-  public rentalApplications = new Map<number, RentalApplication>();
-  public utilityAccounts = new Map<number, any>();
-  public utilityBills = new Map<number, any>();
-  public inspections = new Map<number, any>();
-  public completedInspections = new Map<number, any>();
-  public scheduledInspections = new Map<number, any>();
-
-
-  // Counters for IDs
-  private propertyIdCounter = 10000;
-  private tenantIdCounter = 1000;
-  private leaseIdCounter = 1000;
-  private unitIdCounter = 1000;
-  private companyIdCounter = 1000;
-  private insuranceIdCounter = 1000;
-  private contactIdCounter = 1000;
-  private paymentIdCounter = 1000;
-  private vendorIdCounter = 1000;
-  private maintenanceRequestIdCounter = 1000;
-  private applianceIdCounter = 10000;
-  private bankAccountIdCounter = 1000;
-  private documentIdCounter = 1000;
-  private documentTemplateIdCounter = 1000;
-  private mortgageIdCounter = 1000;
-  private leadIdCounter = 1000;
-  private transactionIdCounter = 1000;
-  private vacancyIdCounter = 1000;
-  private applicationIdCounter = 1000;
-  private applicationTemplateIdCounter = 1000;
-  private rentalApplicationIdCounter = 1000;
-  private utilityAccountIdCounter = 10000;
-  private utilityBillIdCounter = 10000;
-  private inspectionIdCounter = 10000;
-  private completedInspectionIdCounter = 10000;
-  private scheduledInspectionIdCounter = 10000; // Added counter
-
-
-  // Session store for auth
-  public sessionStore: session.Store;
-
-  // Counters already defined above
-
+  propertyIdCounter = 1;
+  tenantIdCounter = 1;
+  unitIdCounter = 1;
+  leaseIdCounter = 1;
+  companyIdCounter = 1;
+  personIdCounter = 1;
+  contactIdCounter = 1;
+  vendorIdCounter = 1;
+  applicationIdCounter = 1;
+  mortgageIdCounter = 1;
+  chargeIdCounter = 1;
+  maintenanceIdCounter = 1;
+  applianceIdCounter = 1;
+  insuranceIdCounter = 1;
+  bankAccountIdCounter = 1;
+  paymentIdCounter = 1;
+  utilityAccountIdCounter = 1;
+  utilityBillIdCounter = 1;
+  inspectionIdCounter = 1;
+  scheduledInspectionIdCounter = 1;
+  completedInspectionIdCounter = 1;
+  taskIdCounter = 1;
 
   constructor() {
-    this.sessionStore = new MemoryStore({
-      checkPeriod: 86400000, // prune expired entries every 24h
-    });
-
-    // Initialize maps
-    this.utilityAccounts = new Map();
-    this.utilityBills = new Map();
-    this.inspections = new Map();
-    this.completedInspections = new Map();
-
-    // Add sample data
-    this.addSampleData();
+    // Initialize empty maps
   }
 
-  addSampleData() {
-    // Initialize maps if they don't exist
-    this.utilityAccounts = new Map();
-    this.utilityBills = new Map();
-    this.inspections = new Map();
-    this.completedInspections = new Map();
-
-    // Add sample utility account
-    this.createUtilityAccount({
-      id: 1,
-      propertyId: 1,
-      propertyName: "Sunset Heights",
-      utilityProvider: "City Power",
-      accountNumber: "EL-123456",
-      utilityType: "Electricity",
-      status: "active"
-    });
-
-    // Add sample utility bill
-    this.createUtilityBill({
-      id: 1,
-      utilityAccountId: 1,
-      propertyId: 1,
-      amount: 150.75,
-      dueDate: new Date("2024-02-15"),
-      status: "unpaid"
-    });
-
-    this.createInsurance({propertyId: 1, insuranceProvider: "Sample Insurer", policyNumber: "12345", policyType: "Homeowners", coverageAmount: 250000, premium: 1000, startDate: new Date()});
-  }
-
-  // User methods
-  async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
-  }
-
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    for (const user of this.users.values()) {
-      if (user.username === username) return user;
+  async set(key: string, value: any): Promise<void> {
+    // Handle different data types appropriately
+    if (key === 'utilityAccounts') {
+      this.utilityAccounts.clear();
+      value.forEach((account: any) => {
+        this.utilityAccounts.set(account.id, account);
+      });
+      this.utilityAccountIdCounter = Math.max(...value.map((a: any) => a.id), 0) + 1;
+    } 
+    else if (key === 'utilityBills') {
+      this.utilityBills.clear();
+      value.forEach((bill: any) => {
+        this.utilityBills.set(bill.id, bill);
+      });
+      this.utilityBillIdCounter = Math.max(...value.map((b: any) => b.id), 0) + 1;
     }
-    return undefined;
+    else if (key === 'scheduledInspections') {
+      this.scheduledInspections.clear();
+      value.forEach((inspection: any) => {
+        this.scheduledInspections.set(inspection.id, inspection);
+      });
+      this.scheduledInspectionIdCounter = Math.max(...value.map((i: any) => i.id), 0) + 1;
+    }
+    else if (key === 'completedInspections') {
+      this.completedInspections.clear();
+      value.forEach((inspection: any) => {
+        this.completedInspections.set(inspection.id, inspection);
+      });
+      this.completedInspectionIdCounter = Math.max(...value.map((i: any) => i.id), 0) + 1;
+    }
+    else if (key === 'tasks') {
+      this.tasks.clear();
+      value.forEach((task: any) => {
+        this.tasks.set(task.id, task);
+      });
+      this.taskIdCounter = Math.max(...value.map((t: any) => t.id), 0) + 1;
+    }
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.userIdCounter++;
-    const user: User = { 
-      id,
-      username: insertUser.username,
-      password: insertUser.password,
-      role: insertUser.role || 'manager', 
-      contactId: insertUser.contactId || null
-    };
-    this.users.set(id, user);
-    return user;
+  async get(key: string): Promise<any> {
+    if (key === 'utilityAccounts') {
+      return Array.from(this.utilityAccounts.values());
+    } 
+    else if (key === 'utilityBills') {
+      return Array.from(this.utilityBills.values());
+    }
+    else if (key === 'scheduledInspections') {
+      return Array.from(this.scheduledInspections.values());
+    }
+    else if (key === 'completedInspections') {
+      return Array.from(this.completedInspections.values());
+    }
+    else if (key === 'tasks') {
+      return Array.from(this.tasks.values());
+    }
+    return null;
+  }
+
+  // Property methods
+  async getProperties(): Promise<any[]> {
+    return Array.from(this.properties.values());
+  }
+
+  async getProperty(id: number): Promise<any | undefined> {
+    return this.properties.get(id);
+  }
+
+  async createProperty(property: any): Promise<any> {
+    const id = this.propertyIdCounter++;
+    const now = new Date();
+    const newProperty = { ...property, id, createdAt: now, updatedAt: now };
+    this.properties.set(id, newProperty);
+    return newProperty;
+  }
+
+  async updateProperty(id: number, property: any): Promise<any | undefined> {
+    const existingProperty = this.properties.get(id);
+    if (!existingProperty) return undefined;
+
+    const updatedProperty = { ...existingProperty, ...property, updatedAt: new Date() };
+    this.properties.set(id, updatedProperty);
+    return updatedProperty;
+  }
+
+  async deleteProperty(id: number): Promise<boolean> {
+    return this.properties.delete(id);
+  }
+
+  // Tenant methods
+  async getTenants(): Promise<any[]> {
+    return Array.from(this.tenants.values());
+  }
+
+  async getTenant(id: number): Promise<any | undefined> {
+    return this.tenants.get(id);
+  }
+
+  async createTenant(tenant: any): Promise<any> {
+    const id = this.tenantIdCounter++;
+    const now = new Date();
+    const newTenant = { ...tenant, id, createdAt: now, updatedAt: now };
+    this.tenants.set(id, newTenant);
+    return newTenant;
+  }
+
+  async updateTenant(id: number, tenant: any): Promise<any | undefined> {
+    const existingTenant = this.tenants.get(id);
+    if (!existingTenant) return undefined;
+
+    const updatedTenant = { ...existingTenant, ...tenant, updatedAt: new Date() };
+    this.tenants.set(id, updatedTenant);
+    return updatedTenant;
+  }
+
+  async deleteTenant(id: number): Promise<boolean> {
+    return this.tenants.delete(id);
+  }
+
+  // Unit methods
+  async getUnits(): Promise<any[]> {
+    return Array.from(this.units.values());
+  }
+
+  async getUnit(id: number): Promise<any | undefined> {
+    return this.units.get(id);
+  }
+
+  async createUnit(unit: any): Promise<any> {
+    const id = this.unitIdCounter++;
+    const now = new Date();
+    const newUnit = { ...unit, id, createdAt: now, updatedAt: now };
+    this.units.set(id, newUnit);
+    return newUnit;
+  }
+
+  async updateUnit(id: number, unit: any): Promise<any | undefined> {
+    const existingUnit = this.units.get(id);
+    if (!existingUnit) return undefined;
+
+    const updatedUnit = { ...existingUnit, ...unit, updatedAt: new Date() };
+    this.units.set(id, updatedUnit);
+    return updatedUnit;
+  }
+
+  async deleteUnit(id: number): Promise<boolean> {
+    return this.units.delete(id);
+  }
+
+  // Lease methods
+  async getLeases(): Promise<any[]> {
+    return Array.from(this.leases.values());
+  }
+
+  async getLease(id: number): Promise<any | undefined> {
+    return this.leases.get(id);
+  }
+
+  async createLease(lease: any): Promise<any> {
+    const id = this.leaseIdCounter++;
+    const now = new Date();
+    const newLease = { ...lease, id, createdAt: now, updatedAt: now };
+    this.leases.set(id, newLease);
+    return newLease;
+  }
+
+  async updateLease(id: number, lease: any): Promise<any | undefined> {
+    const existingLease = this.leases.get(id);
+    if (!existingLease) return undefined;
+
+    const updatedLease = { ...existingLease, ...lease, updatedAt: new Date() };
+    this.leases.set(id, updatedLease);
+    return updatedLease;
+  }
+
+  async deleteLease(id: number): Promise<boolean> {
+    return this.leases.delete(id);
+  }
+
+  // Company methods
+  async getCompanies(): Promise<any[]> {
+    return Array.from(this.companies.values());
+  }
+
+  async getCompany(id: number): Promise<any | undefined> {
+    return this.companies.get(id);
+  }
+
+  async createCompany(company: any): Promise<any> {
+    const id = this.companyIdCounter++;
+    const now = new Date();
+    const newCompany = { ...company, id, createdAt: now, updatedAt: now };
+    this.companies.set(id, newCompany);
+    return newCompany;
+  }
+
+  async updateCompany(id: number, company: any): Promise<any | undefined> {
+    const existingCompany = this.companies.get(id);
+    if (!existingCompany) return undefined;
+
+    const updatedCompany = { ...existingCompany, ...company, updatedAt: new Date() };
+    this.companies.set(id, updatedCompany);
+    return updatedCompany;
+  }
+
+  async deleteCompany(id: number): Promise<boolean> {
+    return this.companies.delete(id);
+  }
+
+  // Person methods
+  async getPersons(): Promise<any[]> {
+    return Array.from(this.persons.values());
+  }
+
+  async getPerson(id: number): Promise<any | undefined> {
+    return this.persons.get(id);
+  }
+
+  async createPerson(person: any): Promise<any> {
+    const id = this.personIdCounter++;
+    const now = new Date();
+    const newPerson = { ...person, id, createdAt: now, updatedAt: now };
+    this.persons.set(id, newPerson);
+    return newPerson;
+  }
+
+  async updatePerson(id: number, person: any): Promise<any | undefined> {
+    const existingPerson = this.persons.get(id);
+    if (!existingPerson) return undefined;
+
+    const updatedPerson = { ...existingPerson, ...person, updatedAt: new Date() };
+    this.persons.set(id, updatedPerson);
+    return updatedPerson;
+  }
+
+  async deletePerson(id: number): Promise<boolean> {
+    return this.persons.delete(id);
   }
 
   // Contact methods
-  async getContact(id: number): Promise<Contact | undefined> {
-    return this.contacts.get(id);
-  }
-
-  async getContacts(): Promise<Contact[]> {
+  async getContacts(): Promise<any[]> {
     return Array.from(this.contacts.values());
   }
 
-  async getContactsByType(type: string): Promise<Contact[]> {
-    return Array.from(this.contacts.values()).filter(
-      (contact) => contact.contactType === type
-    );
+  async getContact(id: number): Promise<any | undefined> {
+    return this.contacts.get(id);
   }
 
-  async createContact(insertContact: InsertContact): Promise<Contact> {
+  async createContact(contact: any): Promise<any> {
     const id = this.contactIdCounter++;
     const now = new Date();
-    const contact: Contact = {
-      id,
-      firstName: insertContact.firstName,
-      lastName: insertContact.lastName,
-      email: insertContact.email || null,
-      phone: insertContact.phone || null,
-      alternatePhone: insertContact.alternatePhone || null,
-      companyName: insertContact.companyName || null,
-      title: insertContact.title || null,
-      website: insertContact.website || null,
-      notes: insertContact.notes || null,
-      contactType: insertContact.contactType,
-      status: insertContact.status || 'active',
-      createdAt: now,
-      updatedAt: now
-    };
-    this.contacts.set(id, contact);
-    return contact;
+    const newContact = { ...contact, id, createdAt: now, updatedAt: now };
+    this.contacts.set(id, newContact);
+    return newContact;
   }
 
-  async updateContact(id: number, updateData: Partial<InsertContact>): Promise<Contact | undefined> {
-    const contact = this.contacts.get(id);
-    if (!contact) {
-      return undefined;
-    }
-    const updatedContact: Contact = {
-      ...contact,
-      ...updateData,
-      updatedAt: new Date()
-    };
+  async updateContact(id: number, contact: any): Promise<any | undefined> {
+    const existingContact = this.contacts.get(id);
+    if (!existingContact) return undefined;
+
+    const updatedContact = { ...existingContact, ...contact, updatedAt: new Date() };
     this.contacts.set(id, updatedContact);
     return updatedContact;
   }
@@ -305,387 +322,88 @@ export class MemStorage implements IStorage {
     return this.contacts.delete(id);
   }
 
-  // Address methods
-  async getAddress(id: number): Promise<Address | undefined> {
-    return this.addresses.get(id);
+  // Vendor methods
+  async getVendors(): Promise<any[]> {
+    return Array.from(this.vendors.values());
   }
 
-  async getAddresses(): Promise<Address[]> {
-    return Array.from(this.addresses.values());
+  async getVendor(id: number): Promise<any | undefined> {
+    return this.vendors.get(id);
   }
 
-  async createAddress(insertAddress: InsertAddress): Promise<Address> {
-    const id = this.addressIdCounter++;
+  async createVendor(vendor: any): Promise<any> {
+    const id = this.vendorIdCounter++;
     const now = new Date();
-    const address: Address = {
-      id,
-      streetAddress: insertAddress.streetAddress,
-      unit: insertAddress.unit || null,
-      city: insertAddress.city,
-      state: insertAddress.state,
-      zipcode: insertAddress.zipcode,
-      country: insertAddress.country || "USA",
-      latitude: insertAddress.latitude || null,
-      longitude: insertAddress.longitude || null,
-      addressType: insertAddress.addressType || null,
-      isDefault: insertAddress.isDefault || false,
-      createdAt: now,
-      updatedAt: now
-    };
-    this.addresses.set(id, address);
-    return address;
+    const newVendor = { ...vendor, id, createdAt: now, updatedAt: now };
+    this.vendors.set(id, newVendor);
+    return newVendor;
   }
 
-  async updateAddress(id: number, updateData: Partial<InsertAddress>): Promise<Address | undefined> {
-    const address = this.addresses.get(id);
-    if (!address) {
-      return undefined;
-    }
-    const updatedAddress: Address = {
-      ...address,
-      ...updateData,
-      updatedAt: new Date()
-    };
-    this.addresses.set(id, updatedAddress);
-    return updatedAddress;
+  async updateVendor(id: number, vendor: any): Promise<any | undefined> {
+    const existingVendor = this.vendors.get(id);
+    if (!existingVendor) return undefined;
+
+    const updatedVendor = { ...existingVendor, ...vendor, updatedAt: new Date() };
+    this.vendors.set(id, updatedVendor);
+    return updatedVendor;
   }
 
-  async deleteAddress(id: number): Promise<boolean> {
-    // First, remove any contact-address relationships
-    for (const [key, contactAddress] of this.contactAddresses.entries()) {
-      if (contactAddress.addressId === id) {
-        this.contactAddresses.delete(key);
-      }
-    }
-    return this.addresses.delete(id);
-  }
-
-  // Contact-Address methods
-  async getContactAddresses(contactId: number): Promise<(ContactAddress & { address: Address })[]> {
-    const relationships = Array.from(this.contactAddresses.values())
-      .filter(rel => rel.contactId === contactId);
-    const result: (ContactAddress & { address: Address })[] = [];
-    for (const relationship of relationships) {
-      const address = this.addresses.get(relationship.addressId);
-      if (address) {
-        result.push({
-          ...relationship,
-          address
-        });
-      }
-    }
-    return result;
-  }
-
-  async addAddressToContact(contactId: number, addressId: number, isPrimary: boolean = false): Promise<ContactAddress> {
-    const contact = this.contacts.get(contactId);
-    const address = this.addresses.get(addressId);
-    if (!contact || !address) {
-      throw new Error('Contact or address does not exist');
-    }
-    const key = `${contactId}-${addressId}`;
-    const now = new Date();
-    if (isPrimary) {
-      for (const [existingKey, existingRel] of this.contactAddresses.entries()) {
-        if (existingRel.contactId === contactId && existingRel.isPrimary) {
-          const updated = { ...existingRel, isPrimary: false, updatedAt: now };
-          this.contactAddresses.set(existingKey, updated);
-        }
-      }
-    }
-    const id = this.contactAddresses.has(key) 
-      ? this.contactAddresses.get(key)!.id
-      : this.contactAddressIdCounter++;
-    const contactAddress: ContactAddress = {
-      id,
-      contactId,
-      addressId,
-      isPrimary,
-      createdAt: now,
-      updatedAt: now
-    };
-    this.contactAddresses.set(key, contactAddress);
-    return contactAddress;
-  }
-
-  async removeAddressFromContact(contactId: number, addressId: number): Promise<boolean> {
-    const key = `${contactId}-${addressId}`;
-    return this.contactAddresses.delete(key);
-  }
-
-  // Appliance methods
-  async getAppliance(id: number): Promise<Appliance | undefined> {
-    return this.appliances.get(id);
-  }
-
-  async getAppliances(): Promise<Appliance[]> {
-    return Array.from(this.appliances.values());
-  }
-
-  async getAppliancesByUnit(unitId: number): Promise<Appliance[]> {
-    return Array.from(this.appliances.values()).filter(
-      (appliance) => appliance.unitId === unitId
-    );
-  }
-
-  async createAppliance(insertAppliance: InsertAppliance): Promise<Appliance> {
-    const id = this.applianceIdCounter++;
-    const now = new Date();
-    const appliance: Appliance = {
-      id,
-      unitId: insertAppliance.unitId,
-      type: insertAppliance.type,
-      make: insertAppliance.make || null,
-      model: insertAppliance.model || null,
-      serialNumber: insertAppliance.serialNumber || null,
-      purchaseDate: insertAppliance.purchaseDate || null,
-      installDate: insertAppliance.installDate || null,
-      lastServiceDate: insertAppliance.lastServiceDate || null,
-      warranty: insertAppliance.warranty || null,
-      notes: insertAppliance.notes || null,
-      images: insertAppliance.images || [],
-      status: insertAppliance.status || 'active',
-      createdAt: now,
-      updatedAt: now
-    };
-    this.appliances.set(id, appliance);
-    return appliance;
-  }
-
-  async updateAppliance(id: number, updateData: Partial<InsertAppliance>): Promise<Appliance | undefined> {
-    const appliance = this.appliances.get(id);
-    if (!appliance) {
-      return undefined;
-    }
-    const updatedAppliance: Appliance = {
-      ...appliance,
-      ...updateData,
-      updatedAt: new Date()
-    };
-    this.appliances.set(id, updatedAppliance);
-    return updatedAppliance;
-  }
-
-  async deleteAppliance(id: number): Promise<boolean> {
-    return this.appliances.delete(id);
+  async deleteVendor(id: number): Promise<boolean> {
+    return this.vendors.delete(id);
   }
 
   // Application methods
-  async getRentalApplication(id: number): Promise<RentalApplication | undefined> {
-    return this.rentalApplications.get(id);
+  async getApplications(): Promise<any[]> {
+    return Array.from(this.applications.values());
   }
 
-  async getRentalApplications(): Promise<RentalApplication[]> {
-    return Array.from(this.rentalApplications.values());
+  async getApplication(id: number): Promise<any | undefined> {
+    return this.applications.get(id);
   }
 
-  async createRentalApplication(insertApplication: InsertRentalApplication): Promise<RentalApplication> {
-    const id = this.rentalApplicationIdCounter++;
+  async createApplication(application: any): Promise<any> {
+    const id = this.applicationIdCounter++;
     const now = new Date();
-    const application: RentalApplication = {
-      id,
-      contactId: insertApplication.contactId,
-      vacancyId: insertApplication.vacancyId || null,
-      leadId: insertApplication.leadId || null,
-      templateId: insertApplication.templateId || null,
-      applicationData: insertApplication.applicationData,
-      desiredMoveInDate: insertApplication.desiredMoveInDate || null,
-      applicationFee: insertApplication.applicationFee || null,
-      applicationFeePaid: insertApplication.applicationFeePaid || false,
-      status: insertApplication.status || 'submitted',
-      submissionDate: now,
-      backgroundCheckAuthorized: insertApplication.backgroundCheckAuthorized || false,
-      backgroundCheckComplete: insertApplication.backgroundCheckComplete || false,
-      creditCheckComplete: insertApplication.creditCheckComplete || false,
-      creditScore: insertApplication.creditScore || null,
-      incomeVerified: insertApplication.incomeVerified || false,
-      rentalHistoryVerified: insertApplication.rentalHistoryVerified || false,
-      employmentVerified: insertApplication.employmentVerified || false,
-      criminalHistoryCheck: insertApplication.criminalHistoryCheck || false,
-      approvedBy: insertApplication.approvedBy || null,
-      approvalDate: insertApplication.approvalDate || null,
-      denialReason: insertApplication.denialReason || null,
-      denialDate: insertApplication.denialDate || null,
-      documents: insertApplication.documents || null,
-      notes: insertApplication.notes || null,
-      createdAt: now,
-      updatedAt: now
-    };
-    this.rentalApplications.set(id, application);
-    return application;
+    const newApplication = { ...application, id, createdAt: now, updatedAt: now };
+    this.applications.set(id, newApplication);
+    return newApplication;
   }
 
-  async updateRentalApplication(id: number, updateData: Partial<InsertRentalApplication>): Promise<RentalApplication | undefined> {
-    const application = this.rentalApplications.get(id);
-    if (!application) {
-      return undefined;
-    }
-    const updatedApplication: RentalApplication = {
-      ...application,
-      ...updateData,
-      updatedAt: new Date()
-    };
-    this.rentalApplications.set(id, updatedApplication);
+  async updateApplication(id: number, application: any): Promise<any | undefined> {
+    const existingApplication = this.applications.get(id);
+    if (!existingApplication) return undefined;
+
+    const updatedApplication = { ...existingApplication, ...application, updatedAt: new Date() };
+    this.applications.set(id, updatedApplication);
     return updatedApplication;
   }
 
-  async deleteRentalApplication(id: number): Promise<boolean> {
-    return this.rentalApplications.delete(id);
-  }
-
-  // Application Template methods
-  async getApplicationTemplate(id: number): Promise<ApplicationTemplate | undefined> {
-    return this.applicationTemplates.get(id);
-  }
-
-  async getApplicationTemplates(): Promise<ApplicationTemplate[]> {
-    return Array.from(this.applicationTemplates.values());
-  }
-
-  async createApplicationTemplate(insertTemplate: InsertApplicationTemplate): Promise<ApplicationTemplate> {
-    const id = this.applicationTemplateIdCounter++;
-    const now = new Date();
-    const template: ApplicationTemplate = {
-      id,
-      name: insertTemplate.name,
-      description: insertTemplate.description || null,
-      isDefault: insertTemplate.isDefault || false,
-      fields: insertTemplate.fields,
-      applicationFee: insertTemplate.applicationFee || null,
-      createdBy: insertTemplate.createdBy || null,
-      createdAt: now,
-      updatedAt: now
-    };
-    this.applicationTemplates.set(id, template);
-    return template;
-  }
-
-  async updateApplicationTemplate(id: number, updateData: Partial<InsertApplicationTemplate>): Promise<ApplicationTemplate | undefined> {
-    const template = this.applicationTemplates.get(id);
-    if (!template) {
-      return undefined;
-    }
-    const updatedTemplate: ApplicationTemplate = {
-      ...template,
-      ...updateData,
-      updatedAt: new Date()
-    };
-    this.applicationTemplates.set(id, updatedTemplate);
-    return updatedTemplate;
-  }
-
-  async deleteApplicationTemplate(id: number): Promise<boolean> {
-    return this.applicationTemplates.delete(id);
-  }
-
-  // Insurance methods
-  async getInsurance(id: number): Promise<Insurance | undefined> {
-    return this.insurances.get(id);
-  }
-
-  async getInsurancesByProperty(propertyId: number): Promise<Insurance[]> {
-    return Array.from(this.insurances.values()).filter(
-      (insurance) => insurance.propertyId === propertyId
-    );
-  }
-
-  async createInsurance(insertInsurance: InsertInsurance): Promise<Insurance> {
-    const id = this.insuranceIdCounter++;
-    const now = new Date();
-    const insurance: Insurance = {
-      id,
-      propertyId: insertInsurance.propertyId,
-      insuranceProvider: insertInsurance.insuranceProvider,
-      policyNumber: insertInsurance.policyNumber,
-      policyType: insertInsurance.policyType,
-      coverageAmount: insertInsurance.coverageAmount,
-      premium: insertInsurance.premium,
-      deductible: insertInsurance.deductible || null,
-      startDate: insertInsurance.startDate,
-      endDate: insertInsurance.endDate || null,
-      contactName: insertInsurance.contactName || null,
-      contactPhone: insertInsurance.contactPhone || null,
-      contactEmail: insertInsurance.contactEmail || null,
-      coverageDetails: insertInsurance.coverageDetails || null,
-      documents: insertInsurance.documents || [],
-      isActive: insertInsurance.isActive !== undefined ? insertInsurance.isActive : true,
-      notes: insertInsurance.notes || null,
-      createdAt: now,
-      updatedAt: now
-    };
-    this.insurances.set(id, insurance);
-    return insurance;
-  }
-
-  async updateInsurance(id: number, updateData: Partial<InsertInsurance>): Promise<Insurance | undefined> {
-    const insurance = this.insurances.get(id);
-    if (!insurance) {
-      return undefined;
-    }
-    const updatedInsurance: Insurance = {
-      ...insurance,
-      ...updateData,
-      updatedAt: new Date()
-    };
-    this.insurances.set(id, updatedInsurance);
-    return updatedInsurance;
-  }
-
-  async deleteInsurance(id: number): Promise<boolean> {
-    return this.insurances.delete(id);
+  async deleteApplication(id: number): Promise<boolean> {
+    return this.applications.delete(id);
   }
 
   // Mortgage methods
-  async getMortgage(id: number): Promise<Mortgage | undefined> {
+  async getMortgages(): Promise<any[]> {
+    return Array.from(this.mortgages.values());
+  }
+
+  async getMortgage(id: number): Promise<any | undefined> {
     return this.mortgages.get(id);
   }
 
-  async getMortgagesByProperty(propertyId: number): Promise<Mortgage[]> {
-    return Array.from(this.mortgages.values()).filter(
-      (mortgage) => mortgage.propertyId === propertyId
-    );
-  }
-
-  async createMortgage(insertMortgage: InsertMortgage): Promise<Mortgage> {
+  async createMortgage(mortgage: any): Promise<any> {
     const id = this.mortgageIdCounter++;
     const now = new Date();
-    const mortgage: Mortgage = {
-      id,
-      propertyId: insertMortgage.propertyId,
-      lender: insertMortgage.lender,
-      loanNumber: insertMortgage.loanNumber,
-      loanType: insertMortgage.loanType,
-      originalAmount: insertMortgage.originalAmount,
-      currentBalance: insertMortgage.currentBalance,
-      interestRate: insertMortgage.interestRate,
-      monthlyPayment: insertMortgage.monthlyPayment,
-      startDate: insertMortgage.startDate,
-      maturityDate: insertMortgage.maturityDate || null,
-      escrowIncluded: insertMortgage.escrowIncluded !== undefined ? insertMortgage.escrowIncluded : false,
-      escrowAmount: insertMortgage.escrowAmount || null,
-      contactName: insertMortgage.contactName || null,
-      contactPhone: insertMortgage.contactPhone || null,
-      contactEmail: insertMortgage.contactEmail || null,
-      documents: insertMortgage.documents || [],
-      isActive: insertMortgage.isActive !== undefined ? insertMortgage.isActive : true,
-      notes: insertMortgage.notes || null,
-      createdAt: now,
-      updatedAt: now
-    };
-    this.mortgages.set(id, mortgage);
-    return mortgage;
+    const newMortgage = { ...mortgage, id, createdAt: now, updatedAt: now };
+    this.mortgages.set(id, newMortgage);
+    return newMortgage;
   }
 
-  async updateMortgage(id: number, updateData: Partial<InsertMortgage>): Promise<Mortgage | undefined> {
-    const mortgage = this.mortgages.get(id);
-    if (!mortgage) {
-      return undefined;
-    }
-    const updatedMortgage: Mortgage = {
-      ...mortgage,
-      ...updateData,
-      updatedAt: new Date()
-    };
+  async updateMortgage(id: number, mortgage: any): Promise<any | undefined> {
+    const existingMortgage = this.mortgages.get(id);
+    if (!existingMortgage) return undefined;
+
+    const updatedMortgage = { ...existingMortgage, ...mortgage, updatedAt: new Date() };
     this.mortgages.set(id, updatedMortgage);
     return updatedMortgage;
   }
@@ -694,85 +412,184 @@ export class MemStorage implements IStorage {
     return this.mortgages.delete(id);
   }
 
-  // Maintenance Request methods
-  async getAllMaintenanceRequests(): Promise<MaintenanceRequest[]> {
-    return Array.from(this.maintenanceRequests.values());
+  // Charge methods
+  async getCharges(): Promise<any[]> {
+    return Array.from(this.charges.values());
   }
 
-  async getMaintenanceRequest(id: number): Promise<MaintenanceRequest | null> {
-    return this.maintenanceRequests.get(id) || null;
+  async getCharge(id: number): Promise<any | undefined> {
+    return this.charges.get(id);
   }
 
-  async getMaintenanceRequestsByProperty(propertyId: number): Promise<MaintenanceRequest[]> {
-    return Array.from(this.maintenanceRequests.values()).filter(m => m.propertyId === propertyId);
-  }
-
-  async createMaintenanceRequest(data: InsertMaintenanceRequest): Promise<MaintenanceRequest> {
-    const id = this.maintenanceRequestIdCounter++;
+  async createCharge(charge: any): Promise<any> {
+    const id = this.chargeIdCounter++;
     const now = new Date();
-    const newRequest: MaintenanceRequest = {
-      id,
-      ...data,
-      createdAt: now,
-      updatedAt: now
-    };
-    this.maintenanceRequests.set(id, newRequest);
+    const newCharge = { ...charge, id, createdAt: now, updatedAt: now };
+    this.charges.set(id, newCharge);
+    return newCharge;
+  }
+
+  async updateCharge(id: number, charge: any): Promise<any | undefined> {
+    const existingCharge = this.charges.get(id);
+    if (!existingCharge) return undefined;
+
+    const updatedCharge = { ...existingCharge, ...charge, updatedAt: new Date() };
+    this.charges.set(id, updatedCharge);
+    return updatedCharge;
+  }
+
+  async deleteCharge(id: number): Promise<boolean> {
+    return this.charges.delete(id);
+  }
+
+  // Maintenance methods
+  async getMaintenanceRequests(): Promise<any[]> {
+    return Array.from(this.maintenance.values());
+  }
+
+  async getMaintenanceRequest(id: number): Promise<any | undefined> {
+    return this.maintenance.get(id);
+  }
+
+  async createMaintenanceRequest(request: any): Promise<any> {
+    const id = this.maintenanceIdCounter++;
+    const now = new Date();
+    const newRequest = { ...request, id, createdAt: now, updatedAt: now };
+    this.maintenance.set(id, newRequest);
     return newRequest;
   }
 
-  async updateMaintenanceRequest(id: number, data: Partial<InsertMaintenanceRequest>): Promise<MaintenanceRequest | null> {
-    const request = this.maintenanceRequests.get(id);
-    if (!request) return null;
-    const updatedRequest: MaintenanceRequest = {
-      ...request,
-      ...data,
-      updatedAt: new Date()
-    };
-    this.maintenanceRequests.set(id, updatedRequest);
+  async updateMaintenanceRequest(id: number, request: any): Promise<any | undefined> {
+    const existingRequest = this.maintenance.get(id);
+    if (!existingRequest) return undefined;
+
+    const updatedRequest = { ...existingRequest, ...request, updatedAt: new Date() };
+    this.maintenance.set(id, updatedRequest);
     return updatedRequest;
   }
 
   async deleteMaintenanceRequest(id: number): Promise<boolean> {
-    return this.maintenanceRequests.delete(id);
+    return this.maintenance.delete(id);
   }
 
-
-  // Main appliance methods already defined above
-
-  // Additional methods needed for API endpoints
-  async getAllInsurances(): Promise<Insurance[]> {
-    return this.getInsurances();
+  // Appliance methods
+  async getAppliances(): Promise<any[]> {
+    return Array.from(this.appliances.values());
   }
 
-  async getInsurances(): Promise<Insurance[]> {
-    return Array.from(this.insurances.values());
+  async getAppliance(id: number): Promise<any | undefined> {
+    return this.appliances.get(id);
   }
 
-  async getInsurancesByPropertyId(propertyId: number): Promise<Insurance[]> {
-    return this.getInsurancesByProperty(propertyId);
+  async createAppliance(appliance: any): Promise<any> {
+    const id = this.applianceIdCounter++;
+    const now = new Date();
+    const newAppliance = { ...appliance, id, createdAt: now, updatedAt: now };
+    this.appliances.set(id, newAppliance);
+    return newAppliance;
   }
 
-  async getAllMortgages(): Promise<Mortgage[]> {
-    return this.getMortgages();
+  async updateAppliance(id: number, appliance: any): Promise<any | undefined> {
+    const existingAppliance = this.appliances.get(id);
+    if (!existingAppliance) return undefined;
+
+    const updatedAppliance = { ...existingAppliance, ...appliance, updatedAt: new Date() };
+    this.appliances.set(id, updatedAppliance);
+    return updatedAppliance;
   }
 
-  async getMortgages(): Promise<Mortgage[]> {
-    return Array.from(this.mortgages.values());
+  async deleteAppliance(id: number): Promise<boolean> {
+    return this.appliances.delete(id);
   }
 
-  async getMortgagesByPropertyId(propertyId: number): Promise<Mortgage[]> {
-    return this.getMortgagesByProperty(propertyId);
+  // Insurance methods
+  async getInsurances(): Promise<any[]> {
+    return Array.from(this.insurance.values());
   }
 
-  async getAllAppliances(): Promise<Appliance[]> {
-    return this.getAppliances();
+  async getInsurance(id: number): Promise<any | undefined> {
+    return this.insurance.get(id);
   }
-  // Get a specific appliance by ID
-  async getAppliance(id: number): Promise<Appliance | null> {
-    const appliances = await this.getAppliances();
-    const appliance = appliances.find(a => a.id === id);
-    console.log(`Fetching appliance with ID ${id}:`, appliance);
-    return appliance || null;
+
+  async createInsurance(insurance: any): Promise<any> {
+    const id = this.insuranceIdCounter++;
+    const now = new Date();
+    const newInsurance = { ...insurance, id, createdAt: now, updatedAt: now };
+    this.insurance.set(id, newInsurance);
+    return newInsurance;
+  }
+
+  async updateInsurance(id: number, insurance: any): Promise<any | undefined> {
+    const existingInsurance = this.insurance.get(id);
+    if (!existingInsurance) return undefined;
+
+    const updatedInsurance = { ...existingInsurance, ...insurance, updatedAt: new Date() };
+    this.insurance.set(id, updatedInsurance);
+    return updatedInsurance;
+  }
+
+  async deleteInsurance(id: number): Promise<boolean> {
+    return this.insurance.delete(id);
+  }
+
+  // Bank Account methods
+  async getBankAccounts(): Promise<any[]> {
+    return Array.from(this.bankAccounts.values());
+  }
+
+  async getBankAccount(id: number): Promise<any | undefined> {
+    return this.bankAccounts.get(id);
+  }
+
+  async createBankAccount(account: any): Promise<any> {
+    const id = this.bankAccountIdCounter++;
+    const now = new Date();
+    const newAccount = { ...account, id, createdAt: now, updatedAt: now };
+    this.bankAccounts.set(id, newAccount);
+    return newAccount;
+  }
+
+  async updateBankAccount(id: number, account: any): Promise<any | undefined> {
+    const existingAccount = this.bankAccounts.get(id);
+    if (!existingAccount) return undefined;
+
+    const updatedAccount = { ...existingAccount, ...account, updatedAt: new Date() };
+    this.bankAccounts.set(id, updatedAccount);
+    return updatedAccount;
+  }
+
+  async deleteBankAccount(id: number): Promise<boolean> {
+    return this.bankAccounts.delete(id);
+  }
+
+  // Payment methods
+  async getPayments(): Promise<any[]> {
+    return Array.from(this.payments.values());
+  }
+
+  async getPayment(id: number): Promise<any | undefined> {
+    return this.payments.get(id);
+  }
+
+  async createPayment(payment: any): Promise<any> {
+    const id = this.paymentIdCounter++;
+    const now = new Date();
+    const newPayment = { ...payment, id, createdAt: now, updatedAt: now };
+    this.payments.set(id, newPayment);
+    return newPayment;
+  }
+
+  async updatePayment(id: number, payment: any): Promise<any | undefined> {
+    const existingPayment = this.payments.get(id);
+    if (!existingPayment) return undefined;
+
+    const updatedPayment = { ...existingPayment, ...payment, updatedAt: new Date() };
+    this.payments.set(id, updatedPayment);
+    return updatedPayment;
+  }
+
+  async deletePayment(id: number): Promise<boolean> {
+    return this.payments.delete(id);
   }
 
   // Utility account methods
@@ -837,120 +654,92 @@ export class MemStorage implements IStorage {
 
   // Property inspection methods
   async getInspections(): Promise<any[]> {
-    return Array.from(this.inspections.values());
+    const scheduled = Array.from(this.scheduledInspections.values());
+    const completed = Array.from(this.completedInspections.values());
+    return [...scheduled, ...completed];
+  }
+
+  async getScheduledInspections(): Promise<any[]> {
+    return Array.from(this.scheduledInspections.values());
+  }
+
+  async getCompletedInspections(): Promise<any[]> {
+    return Array.from(this.completedInspections.values());
   }
 
   async getInspection(id: number): Promise<any | undefined> {
-    return this.inspections.get(id);
+    return this.scheduledInspections.get(id) || this.completedInspections.get(id);
   }
 
   async createInspection(inspection: any): Promise<any> {
     const id = this.inspectionIdCounter++;
     const now = new Date();
     const newInspection = { ...inspection, id, createdAt: now, updatedAt: now };
-    this.inspections.set(id, newInspection);
+
+    if (inspection.status === 'scheduled') {
+      this.scheduledInspections.set(id, newInspection);
+    } else {
+      this.completedInspections.set(id, newInspection);
+    }
+
     return newInspection;
   }
 
   async updateInspection(id: number, inspection: any): Promise<any | undefined> {
-    const existingInspection = this.inspections.get(id);
+    let existingInspection = this.scheduledInspections.get(id) || this.completedInspections.get(id);
     if (!existingInspection) return undefined;
 
     const updatedInspection = { ...existingInspection, ...inspection, updatedAt: new Date() };
-    this.inspections.set(id, updatedInspection);
+
+    // Handle status changes that might move inspection between collections
+    if (existingInspection.status === 'scheduled' && inspection.status !== 'scheduled') {
+      this.scheduledInspections.delete(id);
+      this.completedInspections.set(id, updatedInspection);
+    } else if (existingInspection.status !== 'scheduled' && inspection.status === 'scheduled') {
+      this.completedInspections.delete(id);
+      this.scheduledInspections.set(id, updatedInspection);
+    } else if (existingInspection.status === 'scheduled') {
+      this.scheduledInspections.set(id, updatedInspection);
+    } else {
+      this.completedInspections.set(id, updatedInspection);
+    }
+
     return updatedInspection;
   }
 
   async deleteInspection(id: number): Promise<boolean> {
-    return this.inspections.delete(id);
+    return this.scheduledInspections.delete(id) || this.completedInspections.delete(id);
   }
 
-  // Completed inspection methods
-  async getCompletedInspections(): Promise<any[]> {
-    return Array.from(this.completedInspections.values());
+  // Task methods
+  async getTasks(): Promise<any[]> {
+    return Array.from(this.tasks.values());
   }
 
-  async getCompletedInspection(id: number): Promise<any | undefined> {
-    return this.completedInspections.get(id);
+  async getTask(id: number): Promise<any | undefined> {
+    return this.tasks.get(id);
   }
 
-  async createCompletedInspection(inspection: any): Promise<any> {
-    const id = this.completedInspectionIdCounter++;
+  async createTask(task: any): Promise<any> {
+    const id = this.taskIdCounter++;
     const now = new Date();
-    const newInspection = { ...inspection, id, createdAt: now, updatedAt: now };
-    this.completedInspections.set(id, newInspection);
-    return newInspection;
+    const newTask = { ...task, id, createdAt: now, updatedAt: now };
+    this.tasks.set(id, newTask);
+    return newTask;
   }
 
-  async updateCompletedInspection(id: number, inspection: any): Promise<any | undefined> {
-    const existingInspection = this.completedInspections.get(id);
-    if (!existingInspection) return undefined;
+  async updateTask(id: number, task: any): Promise<any | undefined> {
+    const existingTask = this.tasks.get(id);
+    if (!existingTask) return undefined;
 
-    const updatedInspection = { ...existingInspection, ...inspection, updatedAt: new Date() };
-    this.completedInspections.set(id, updatedInspection);
-    return updatedInspection;
+    const updatedTask = { ...existingTask, ...task, updatedAt: new Date() };
+    this.tasks.set(id, updatedTask);
+    return updatedTask;
   }
 
-  async deleteCompletedInspection(id: number): Promise<boolean> {
-    return this.completedInspections.delete(id);
-  }
-
-  // Scheduled inspection methods
-  async getScheduledInspections(): Promise<any[]> {
-    return Array.from(this.scheduledInspections.values());
-  }
-
-  async getScheduledInspection(id: number): Promise<any | undefined> {
-    return this.scheduledInspections.get(id);
-  }
-
-  async createScheduledInspection(inspection: any): Promise<any> {
-    const id = this.scheduledInspectionIdCounter++;
-    const now = new Date();
-    const newInspection = { ...inspection, id, createdAt: now, updatedAt: now };
-    this.scheduledInspections.set(id, newInspection);
-    return newInspection;
-  }
-
-  async updateScheduledInspection(id: number, inspection: any): Promise<any | undefined> {
-    const existingInspection = this.scheduledInspections.get(id);
-    if (!existingInspection) return undefined;
-
-    const updatedInspection = { ...existingInspection, ...inspection, updatedAt: new Date() };
-    this.scheduledInspections.set(id, updatedInspection);
-    return updatedInspection;
-  }
-
-  async deleteScheduledInspection(id: number): Promise<boolean> {
-    return this.scheduledInspections.delete(id);
-  }
-
-  // Add missing utility function
-  async createUtility(utility: any): Promise<any> {
-    const id = this.utilityAccountIdCounter++;
-    const now = new Date();
-    const newUtility = { ...utility, id, createdAt: now, updatedAt: now };
-    this.utilityAccounts.set(id, newUtility);
-    return newUtility;
-  }
-
-  // Add missing application function
-  async createApplication(application: any): Promise<any> {
-    return this.createRentalApplication(application);
-  }
-
-  // Additional utility methods
-  async getAllUtilityAccounts(): Promise<any[]> {
-    return Array.from(this.utilityAccounts.values());
-  }
-
-  async getAllInspections(): Promise<any[]> {
-    return Array.from(this.inspections.values());
-  }
-
-  async getAllCompletedInspections(): Promise<any[]> {
-    return Array.from(this.completedInspections.values());
+  async deleteTask(id: number): Promise<boolean> {
+    return this.tasks.delete(id);
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new PropertyStorage();

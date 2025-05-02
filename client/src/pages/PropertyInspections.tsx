@@ -118,29 +118,26 @@ export function PropertyInspections() {
         ];
 
         try {
+          // Attempt to fetch from API with error handling
           const scheduledRes = await fetch('/api/property-inspections/scheduled');
-          if (scheduledRes.ok) {
-            const scheduledData = await scheduledRes.json();
-            setScheduledInspections(scheduledData.length > 0 ? scheduledData : sampleScheduled);
-          } else {
-            console.warn("Using sample scheduled inspections due to API error");
-            setScheduledInspections(sampleScheduled);
-          }
-
           const completedRes = await fetch('/api/property-inspections/completed');
-          if (completedRes.ok) {
+          
+          if (scheduledRes.ok && completedRes.ok) {
+            const scheduledData = await scheduledRes.json();
             const completedData = await completedRes.json();
+            
+            setScheduledInspections(scheduledData.length > 0 ? scheduledData : sampleScheduled);
             setCompletedInspections(completedData.length > 0 ? completedData : sampleCompleted);
           } else {
-            console.warn("Using sample completed inspections due to API error");
+            console.warn("API request failed, using sample data");
+            setScheduledInspections(sampleScheduled);
             setCompletedInspections(sampleCompleted);
           }
-          
-          setError(null);
         } catch (err) {
-          console.warn("Error fetching inspections data, using fallback data", err);
+          console.warn("Error fetching inspections, using sample data:", err);
           setScheduledInspections(sampleScheduled);
           setCompletedInspections(sampleCompleted);
+          setError(null); // Clear error since we have fallback data
         }
       } catch (error) {
         console.error('Error in inspections component:', error);

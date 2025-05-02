@@ -23,12 +23,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Calendar, ReceiptText } from "lucide-react";
+import { Calendar, ReceiptText, Copy, Trash2, Calendar as CalendarIcon, Plus, AlertCircle, MoreVertical } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const formSchema = z.object({
   property: z.string().min(1, "Property is required"),
@@ -38,12 +38,14 @@ const formSchema = z.object({
   amount: z.string().min(1, "Amount is required"),
   bookTo: z.string().min(1, "Account is required"),
   dueDate: z.string().min(1, "Due date is required"),
+  totalOccurrences: z.string().optional(),
 });
 
 const AddCharge = () => {
   const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState("lease");
   const [currentStep, setCurrentStep] = useState(1);
+  const [charges, setCharges] = useState<Array<{amount: string, description: string, dueDate: string}>>([]);
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -55,6 +57,7 @@ const AddCharge = () => {
       amount: "",
       bookTo: "Rental Income",
       dueDate: "",
+      totalOccurrences: "1",
     },
   });
 
@@ -77,6 +80,23 @@ const AddCharge = () => {
     { value: "2b", label: "2B" },
     { value: "3c", label: "3C" },
   ];
+
+  const tenants = [
+    { id: 1, name: "Allison Martin", date: "January 31, 2026" }
+  ];
+
+  const handleContinueToDetailsStep = () => {
+    // Create a sample charge for the preview
+    if (currentStep === 3) {
+      // When coming from the tenants step
+      setCharges([{
+        amount: form.getValues("amount") || "200",
+        description: form.getValues("description") || "Utilities",
+        dueDate: "06/01/2025"
+      }]);
+    }
+    setCurrentStep(prev => prev + 1);
+  };
   
   return (
     <div>
@@ -267,12 +287,207 @@ const AddCharge = () => {
           </Card>
         </>
       )}
-      
+
       {currentStep === 3 && (
-        <div className="flex justify-end space-x-4">
-          <Button variant="outline" onClick={() => setCurrentStep(2)}>Back</Button>
-          <Button onClick={() => navigate("/rent/charges")}>Save Charge</Button>
-        </div>
+        <>
+          <div className="mb-6">
+            <div className="flex border-b">
+              <div className="pb-2 px-1 text-muted-foreground">Select unit</div>
+              <div className={`pb-2 px-1 ${currentStep === 3 ? "border-b-2 border-primary font-medium text-primary" : ""}`}>Tenants</div>
+              <div className="pb-2 px-1 text-muted-foreground">Charge details</div>
+              <div className="pb-2 px-1 text-muted-foreground">Edit and save</div>
+            </div>
+          </div>
+          
+          <Card>
+            <CardContent className="pt-6">
+              <h3 className="text-xl font-semibold mb-4">Connect tenants to their charges & request eSignatures</h3>
+              <p className="text-muted-foreground mb-4">Only the tenants listed below will be able to view and pay lease charges now or in the future.</p>
+              
+              <div className="bg-blue-100 rounded-md p-4 mb-6 flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
+                <p className="text-sm text-blue-700">
+                  Click "•••" and select 'Exclude from New Charge' for tenants who are not part of this lease.
+                </p>
+              </div>
+              
+              <div className="space-y-4 mb-6">
+                {tenants.map((tenant) => (
+                  <div key={tenant.id} className="border rounded-md p-4 flex justify-between items-center">
+                    <div>
+                      <p className="font-medium">{tenant.name}</p>
+                      <p className="text-sm text-muted-foreground">{tenant.date}</p>
+                    </div>
+                    <Button variant="ghost" size="icon">
+                      <MoreVertical className="h-5 w-5" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="border border-dashed rounded-md p-4 flex items-center justify-center gap-2 cursor-pointer hover:bg-gray-50 mb-6">
+                <Plus className="h-5 w-5 text-blue-600" />
+                <span className="text-blue-600">Add a New Tenant to 1 Main Street, unit 1A.</span>
+              </div>
+              
+              <div className="flex justify-between">
+                <Button type="button" variant="outline" onClick={() => setCurrentStep(2)}>
+                  Go Back
+                </Button>
+                <Button type="button" onClick={handleContinueToDetailsStep}>
+                  Continue
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </>
+      )}
+
+      {currentStep === 4 && (
+        <>
+          <div className="mb-6">
+            <div className="flex border-b">
+              <div className="pb-2 px-1 text-muted-foreground">Select unit</div>
+              <div className="pb-2 px-1 text-muted-foreground">Tenants</div>
+              <div className={`pb-2 px-1 ${currentStep === 4 ? "border-b-2 border-primary font-medium text-primary" : ""}`}>Charge details</div>
+              <div className="pb-2 px-1 text-muted-foreground">Edit and save</div>
+            </div>
+          </div>
+          
+          <Card>
+            <CardContent className="pt-6">
+              <h3 className="text-xl font-semibold mb-4">Provide charge details</h3>
+              <p className="text-muted-foreground mb-6">Enter the amount due and the number of charges you would like to create.</p>
+              
+              <div className="max-w-md space-y-4 mb-6">
+                <div className="space-y-2">
+                  <FormLabel>Amount:</FormLabel>
+                  <Input
+                    type="number"
+                    placeholder="200"
+                    value={form.getValues("amount")}
+                    onChange={(e) => form.setValue("amount", e.target.value)}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <FormLabel>Total Occurrences:</FormLabel>
+                  <Input
+                    type="number"
+                    placeholder="1"
+                    value={form.getValues("totalOccurrences") || "1"}
+                    onChange={(e) => form.setValue("totalOccurrences", e.target.value)}
+                  />
+                </div>
+              </div>
+              
+              <div className="flex justify-between">
+                <Button type="button" variant="outline" onClick={() => setCurrentStep(3)}>
+                  Go Back
+                </Button>
+                <Button type="button" onClick={() => setCurrentStep(5)}>
+                  Continue
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </>
+      )}
+      
+      {currentStep === 5 && (
+        <>
+          <div className="mb-6">
+            <div className="flex border-b">
+              <div className="pb-2 px-1 text-muted-foreground">Select unit</div>
+              <div className="pb-2 px-1 text-muted-foreground">Tenants</div>
+              <div className="pb-2 px-1 text-muted-foreground">Charge details</div>
+              <div className={`pb-2 px-1 ${currentStep === 5 ? "border-b-2 border-primary font-medium text-primary" : ""}`}>Edit and save</div>
+            </div>
+          </div>
+          
+          <Card>
+            <CardContent className="pt-6">
+              <h3 className="text-xl font-semibold mb-4">Preview and edit charges</h3>
+              <p className="text-muted-foreground mb-6">Edit, delete or duplicate charges if needed.</p>
+              
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Amount</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead>Due Date</TableHead>
+                      <TableHead className="w-[100px]"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {charges.map((charge, index) => (
+                      <TableRow key={index}>
+                        <TableCell>
+                          <Input
+                            type="number"
+                            value={charge.amount}
+                            onChange={(e) => {
+                              const newCharges = [...charges];
+                              newCharges[index].amount = e.target.value;
+                              setCharges(newCharges);
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Input
+                            type="text"
+                            value={charge.description}
+                            onChange={(e) => {
+                              const newCharges = [...charges];
+                              newCharges[index].description = e.target.value;
+                              setCharges(newCharges);
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            <Input
+                              type="text"
+                              value={charge.dueDate}
+                              onChange={(e) => {
+                                const newCharges = [...charges];
+                                newCharges[index].dueDate = e.target.value;
+                                setCharges(newCharges);
+                              }}
+                            />
+                            <Button variant="ghost" size="icon">
+                              <CalendarIcon className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-1">
+                            <Button variant="ghost" size="icon">
+                              <Copy className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="icon">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+              
+              <div className="flex justify-between mt-6">
+                <Button type="button" variant="outline" onClick={() => setCurrentStep(4)}>
+                  Go Back
+                </Button>
+                <Button type="button" onClick={() => navigate("/rent/charges")}>
+                  Save
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </>
       )}
     </div>
   );

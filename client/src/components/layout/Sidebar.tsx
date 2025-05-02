@@ -131,6 +131,22 @@ export default function Sidebar() {
         </SidebarNavItem>
 
         <div className="pt-4 pb-2">
+          <h3 className="px-3 text-xs font-semibold text-muted-foreground">TASKS</h3>
+        </div>
+
+        <SidebarNavItem href="/tasks" icon={ClipboardList}>
+          Tasks
+        </SidebarNavItem>
+        
+        <SidebarNavItem href="/tasks/add" icon={ClipboardList} indented>
+          Add Task
+        </SidebarNavItem>
+        
+        <SidebarNavItem href="/tasks/all" icon={ClipboardList} indented>
+          View All Tasks
+        </SidebarNavItem>
+
+        <div className="pt-4 pb-2">
           <h3 className="px-3 text-xs font-semibold text-muted-foreground">UTILITIES</h3>
         </div>
 

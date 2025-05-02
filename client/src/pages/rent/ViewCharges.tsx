@@ -21,13 +21,13 @@ import { Card } from "@/components/ui/card";
 import { ChevronDown, Download, FilterX } from "lucide-react";
 
 // Simple Breadcrumb Component
-const PageBreadcrumb = ({ items }: { items: { label: string }[] }) => (
+const PageBreadcrumb = ({ items }: { items: { label: string; href?: string }[] }) => (
   <nav className="flex gap-2">
     {items.map((item, index) => (
-      <span key={index} className="text-sm text-gray-500">
+      <a href={item.href} key={index} className="text-sm text-gray-500 underline">
         {item.label}
         {index < items.length - 1 && <span className="mx-1">/</span>}
-      </span>
+      </a>
     ))}
   </nav>
 );
@@ -89,7 +89,7 @@ const ViewCharges = () => {
 
   return (
     <div>
-      <PageBreadcrumb items={[{ label: "Charges" }]} /> {/* Added Breadcrumb */}
+      <PageBreadcrumb items={[{ label: "Rent", href: "/rent/charges" }, { label: "View Charges" }]} />
 
       <div className="mb-6">
         <h2 className="text-2xl font-bold mb-2">Rent Charges</h2>

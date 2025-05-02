@@ -91,6 +91,10 @@ import { ThemeProvider } from "./context/ThemeProvider";
 import ReconciliationDashboard from "@/pages/ReconciliationDashboard"; // Added import
 import TransactionRules from "@/pages/TransactionRules"; // Added import
 import { lazy } from 'react';
+import Tasks from "./pages/tasks/index"; //added import
+import AddTask from "./pages/tasks/AddTask"; //added import
+import ViewTasks from "./pages/tasks/ViewTasks"; //added import
+
 
 // Rent Management Components
 import ViewCharges from "./pages/rent/ViewCharges";
@@ -292,6 +296,10 @@ function AppRoutes() {
               <Route path="/rent/late-fee-rules/new" component={AddLateFeeRule} />
               <Route path="/rent/export" component={ExportCharges} />
               <Route path="/rent/roll" component={RentRoll} />
+
+              <Route path="/tasks" component={Tasks} />
+              <Route path="/tasks/add" component={AddTask} />
+              <Route path="/tasks/all" component={ViewTasks} />
 
               <Route path="/" component={Dashboard} />
 

@@ -1,5 +1,6 @@
 
 import { ReactNode } from 'react';
+import { Link, useLocation } from 'wouter';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,6 +8,7 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { ChevronRight } from 'lucide-react';
 
 interface BreadcrumbItem {
   label: string;
@@ -22,17 +24,19 @@ const PageBreadcrumb = ({ items }: PageBreadcrumbProps) => {
     <Breadcrumb className="mb-6">
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+          <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
         </BreadcrumbItem>
         
         {items.map((item, index) => (
           <div key={index} className="flex items-center">
-            <BreadcrumbSeparator />
+            <BreadcrumbSeparator>
+              <ChevronRight className="h-4 w-4" />
+            </BreadcrumbSeparator>
             <BreadcrumbItem>
               {item.href ? (
                 <BreadcrumbLink href={item.href}>{item.label}</BreadcrumbLink>
               ) : (
-                <BreadcrumbLink>{item.label}</BreadcrumbLink>
+                <span className="text-muted-foreground">{item.label}</span>
               )}
             </BreadcrumbItem>
           </div>

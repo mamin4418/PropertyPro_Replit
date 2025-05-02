@@ -26,9 +26,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Calendar, ReceiptText, Copy, Trash2, Calendar as CalendarIcon, Plus, AlertCircle, MoreVertical } from "lucide-react";
+import { Calendar as CalendarIcon, Copy, Trash2, Plus, AlertCircle, MoreVertical } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 const formSchema = z.object({
   property: z.string().min(1, "Property is required"),
@@ -147,7 +154,23 @@ const AddCharge = () => {
   
   return (
     <div>
-      <div className="mb-6">
+      <div className="mb-4">
+        <Breadcrumb className="mb-6">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/rent/charges">Charges</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink>Add New Charge</BreadcrumbLink>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        
         <h2 className="text-2xl font-bold mb-2">Add New Charge</h2>
         <p className="text-muted-foreground">Create a new rent charge or other fee</p>
       </div>
@@ -156,48 +179,11 @@ const AddCharge = () => {
         <CardContent className="pt-6">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Charge Type Selection */}
-              <div>
-                <h3 className="text-lg font-semibold mb-4">Select the charge type</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                  <div 
-                    className={`border rounded-lg p-6 cursor-pointer transition-colors ${chargeType === "lease" ? "border-primary bg-primary/5" : "hover:border-gray-400"}`}
-                    onClick={() => {
-                      setChargeType("lease");
-                      form.setValue("chargeType", "lease");
-                    }}
-                  >
-                    <div className="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                      <Calendar className="h-8 w-8 text-blue-600" />
-                    </div>
-                    <h4 className="text-center text-lg font-medium mb-1">Lease/Rent</h4>
-                    <p className="text-center text-sm text-muted-foreground">for rent collection</p>
-                  </div>
-                  
-                  <div 
-                    className={`border rounded-lg p-6 cursor-pointer transition-colors ${chargeType === "other" ? "border-primary bg-primary/5" : "hover:border-gray-400"}`}
-                    onClick={() => {
-                      setChargeType("other");
-                      form.setValue("chargeType", "other");
-                    }}
-                  >
-                    <div className="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                      <ReceiptText className="h-8 w-8 text-blue-600" />
-                    </div>
-                    <h4 className="text-center text-lg font-medium mb-1">Other charges</h4>
-                    <p className="text-center text-sm text-muted-foreground">for security deposits, utilities, fees etc.</p>
-                  </div>
-                </div>
-              </div>
-              
-              <Separator />
               
               {/* Property and Unit Selection */}
               <div>
                 <h3 className="text-lg font-semibold mb-4">
-                  {chargeType === "lease" 
-                    ? "Select property and unit for rent collection" 
-                    : "Select property and unit for the charge"}
+                  Select property and unit for the charge
                 </h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -351,7 +337,7 @@ const AddCharge = () => {
                             <FormLabel>Description:</FormLabel>
                             <FormControl>
                               <Input 
-                                placeholder={chargeType === "lease" ? "Rent" : "Utilities"} 
+                                placeholder="Monthly Rent" 
                                 {...field} 
                               />
                             </FormControl>

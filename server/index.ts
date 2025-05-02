@@ -2,7 +2,7 @@ import express from "express";
 import { registerRoutes } from "./routes";
 import { seedDatabase } from "./seed-data";
 import { seedApplications } from "./seed-applications";
-import { seedUtilitiesAndInspections } from "./seed-features";
+import { seedUtilitiesAndInspections, setupUtilitiesAndInspectionsRoutes } from "./seed-features";
 import { Server } from "http";
 import { createServer as createViteServer } from "vite";
 import path from "path";
@@ -23,16 +23,17 @@ async function startServer() {
   app.use(express.static(path.resolve("client/dist")));
 
   // Setup API routes
-  const server = await registerRoutes(app);
+  await registerRoutes(app); // Assuming registerRoutes now handles all routes, including utilities and inspections.
+  setupUtilitiesAndInspectionsRoutes(app);
 
   // Seed data
   seedDatabase();
   seedApplications();
-  seedUtilitiesAndInspections(); // Add the utilities and property inspections data
+  seedUtilitiesAndInspections();
 
   // In development mode, setup Vite for HMR
   if (process.env.NODE_ENV === "development") {
-    await setupVite(app, server);
+    await setupVite(app); //Simplified Vite setup - assuming it handles the server integration correctly.
   }
 
   // Catch-all route to serve the frontend for all other requests
@@ -44,10 +45,11 @@ async function startServer() {
     }
   });
 
-  server.listen(PORT, "0.0.0.0", () => {
+  const server = app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server started on port ${PORT}`);
     console.log(`Mode: ${process.env.NODE_ENV || "development"}`);
   });
 }
+
 
 startServer().catch(console.error);

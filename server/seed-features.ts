@@ -4,6 +4,8 @@ import { storage } from "./storage";
 let utilityAccountCounter = 1;
 let utilityBillCounter = 1;
 let inspectionCounter = 1;
+let scheduledInspectionCounter = 1;
+let completedInspectionCounter = 1;
 
 async function seedUtilitiesAndInspections() {
   try {
@@ -71,7 +73,7 @@ async function seedUtilitiesAndInspections() {
     // Scheduled Inspections Data
     const scheduledInspections = [
       {
-        id: inspectionCounter++,
+        id: scheduledInspectionCounter++,
         propertyId: 1,
         propertyName: "Sunset Heights",
         inspectionType: "Routine",
@@ -82,7 +84,7 @@ async function seedUtilitiesAndInspections() {
         units: ["101", "102", "103"]
       },
       {
-        id: inspectionCounter++,
+        id: scheduledInspectionCounter++,
         propertyId: 1,
         propertyName: "Sunset Heights",
         inspectionType: "Move-out",
@@ -93,7 +95,7 @@ async function seedUtilitiesAndInspections() {
         units: ["305"]
       },
       {
-        id: inspectionCounter++,
+        id: scheduledInspectionCounter++,
         propertyId: 2,
         propertyName: "Maple Gardens",
         inspectionType: "Maintenance",
@@ -108,7 +110,7 @@ async function seedUtilitiesAndInspections() {
     // Completed Inspections Data
     const completedInspections = [
       {
-        id: inspectionCounter++,
+        id: completedInspectionCounter++,
         propertyId: 1,
         propertyName: "Sunset Heights",
         inspectionType: "Move-in",
@@ -122,7 +124,7 @@ async function seedUtilitiesAndInspections() {
         ]
       },
       {
-        id: inspectionCounter++,
+        id: completedInspectionCounter++,
         propertyId: 2,
         propertyName: "Maple Gardens",
         inspectionType: "Routine",

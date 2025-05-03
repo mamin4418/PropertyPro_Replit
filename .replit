@@ -27,8 +27,12 @@ externalPort = 3000
 localPort = 5002
 externalPort = 3001
 
+[[ports]]
+localPort = 24678
+externalPort = 3003
+
 [workflows]
-runButton = "Fix and Restart Dev Server"
+runButton = "Fix API and Restart Server"
 
 [[workflows.workflow]]
 name = "Project"
@@ -806,6 +810,47 @@ args = "tsx server/seed-features.ts"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "echo \"Starting server with fixed pages...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "NODE_ENV=development tsx server/index.ts"
+
+[[workflows.workflow]]
+name = "Fix API and Restart Server"
+author = 41484040
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Stopping any running servers...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pkill -f \"tsx server/index.ts\" || true"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "sleep 2"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Clearing node modules cache...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "rm -rf node_modules/.vite"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Ensuring utilities and inspections API data is properly seeded...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "tsx server/seed-features.ts"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Starting server with fixed API and pages...\""
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

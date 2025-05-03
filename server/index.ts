@@ -23,17 +23,23 @@ async function startServer() {
   app.use(express.static(path.resolve("client/dist")));
 
   // Setup API routes
-  await registerRoutes(app); // Assuming registerRoutes now handles all routes, including utilities and inspections.
+  await registerRoutes(app); 
   setupUtilitiesAndInspectionsRoutes(app);
 
   // Seed data
-  seedDatabase();
-  seedApplications();
-  seedUtilitiesAndInspections();
+  try {
+    seedDatabase();
+    seedApplications();
+    await seedUtilitiesAndInspections(); // Added await to handle potential async operations within seedUtilitiesAndInspections
+  } catch (error) {
+    console.error("Error seeding data:", error);
+    // Consider more robust error handling, like halting server startup or using a process manager.
+  }
+
 
   // In development mode, setup Vite for HMR
   if (process.env.NODE_ENV === "development") {
-    await setupVite(app); //Simplified Vite setup - assuming it handles the server integration correctly.
+    await setupVite(app); 
   }
 
   // Catch-all route to serve the frontend for all other requests

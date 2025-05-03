@@ -654,17 +654,17 @@ class PropertyStorage {
 
   // Property inspection methods
   async getInspections(): Promise<any[]> {
-    const scheduled = Array.from(this.scheduledInspections.values());
-    const completed = Array.from(this.completedInspections.values());
+    const scheduled = Array.from(this.scheduledInspections.values() || []);
+    const completed = Array.from(this.completedInspections.values() || []);
     return [...scheduled, ...completed];
   }
 
   async getScheduledInspections(): Promise<any[]> {
-    return Array.from(this.scheduledInspections.values());
+    return Array.from(this.scheduledInspections.values() || []);
   }
 
   async getCompletedInspections(): Promise<any[]> {
-    return Array.from(this.completedInspections.values());
+    return Array.from(this.completedInspections.values() || []);
   }
 
   async getInspection(id: number): Promise<any | undefined> {

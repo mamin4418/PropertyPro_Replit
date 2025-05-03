@@ -5,6 +5,7 @@ import { storage } from "./storage";
 let utilityAccountCounter = 1;
 let utilityBillCounter = 1;
 let inspectionCounter = 1;
+let inspectionCounter = 1;
 
 async function seedUtilitiesAndInspections() {
   try {
@@ -65,6 +66,78 @@ async function seedUtilitiesAndInspections() {
         propertyId: 2,
         amount: 85.25,
         dueDate: "2023-08-25",
+        status: "overdue"
+      }
+    ];
+    
+    // Scheduled Inspections Data
+    const scheduledInspections = [
+      {
+        id: inspectionCounter++,
+        propertyId: 1,
+        propertyName: "Sunset Heights",
+        inspectionType: "Routine",
+        scheduledDate: "2023-08-15",
+        scheduledTime: "10:00 AM",
+        inspector: "David Johnson",
+        status: "scheduled",
+        units: ["101", "102", "103"]
+      },
+      {
+        id: inspectionCounter++,
+        propertyId: 1,
+        propertyName: "Sunset Heights",
+        inspectionType: "Move-out",
+        scheduledDate: "2023-08-10",
+        scheduledTime: "2:00 PM",
+        inspector: "Sarah Williams",
+        status: "scheduled",
+        units: ["305"]
+      },
+      {
+        id: inspectionCounter++,
+        propertyId: 2,
+        propertyName: "Maple Gardens",
+        inspectionType: "Maintenance",
+        scheduledDate: "2023-08-18",
+        scheduledTime: "11:30 AM",
+        inspector: "Michael Brown",
+        status: "scheduled",
+        units: ["B2", "C1"]
+      }
+    ];
+    
+    // Completed Inspections Data
+    const completedInspections = [
+      {
+        id: inspectionCounter++,
+        propertyId: 1,
+        propertyName: "Sunset Heights",
+        inspectionType: "Move-in",
+        inspectionDate: "2023-07-25",
+        completedBy: "Sarah Williams",
+        status: "passed",
+        units: ["204"],
+        findings: [
+          { item: "Walls", condition: "Good", notes: "Freshly painted" },
+          { item: "Flooring", condition: "Good", notes: "New carpet installed" }
+        ]
+      },
+      {
+        id: inspectionCounter++,
+        propertyId: 2,
+        propertyName: "Maple Gardens",
+        inspectionType: "Routine",
+        inspectionDate: "2023-07-20",
+        completedBy: "David Johnson",
+        status: "issues",
+        units: ["A1"],
+        findings: [
+          { item: "Kitchen Sink", condition: "Fair", notes: "Slight leakage, needs repair" },
+          { item: "Windows", condition: "Good", notes: "All functional" }
+        ]
+      }
+    ];
         status: "overdue"
       }
     ];

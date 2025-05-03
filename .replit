@@ -32,7 +32,7 @@ localPort = 24678
 externalPort = 3003
 
 [workflows]
-runButton = "Fix API and Restart Server"
+runButton = "Fix and Restart Server"
 
 [[workflows.workflow]]
 name = "Project"
@@ -471,7 +471,15 @@ args = "rm -rf node_modules/.vite"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "echo \"Starting fixed server...\""
+args = "echo \"Ensuring utilities and inspections API data is properly seeded...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "tsx server/seed-features.ts"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Starting server with fixed API and pages...\""
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

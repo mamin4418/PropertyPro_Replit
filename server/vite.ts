@@ -20,11 +20,14 @@ export function log(message: string, source = "express") {
 }
 
 export async function setupVite(app: Express) {
-  // Create HTTP server for vite
   const server = createServer(app);
   const serverOptions = {
     middlewareMode: true,
-    hmr: { server },
+    hmr: { 
+      server,
+      port: 24678,
+      host: '0.0.0.0'
+    },
     allowedHosts: true,
   };
 

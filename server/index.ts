@@ -51,9 +51,16 @@ async function startServer() {
     }
   });
 
+  // Create HTTP server
   const server = app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server started on port ${PORT}`);
     console.log(`Mode: ${process.env.NODE_ENV || "development"}`);
+    console.log(`Server accessible at http://0.0.0.0:${PORT}`);
+  });
+  
+  // Add proper error handling
+  server.on('error', (error) => {
+    console.error('Server error:', error);
   });
 }
 

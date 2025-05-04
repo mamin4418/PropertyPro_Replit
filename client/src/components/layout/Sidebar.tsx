@@ -137,16 +137,14 @@ export default function Sidebar() {
         <SidebarNavItem href="/tasks" icon={ClipboardList}>
           Tasks
         </SidebarNavItem>
-        
+
         <SidebarNavItem href="/tasks/add" icon={ClipboardList} indented>
           Add Task
         </SidebarNavItem>
-        
+
         <SidebarNavItem href="/tasks/all" icon={ClipboardList} indented>
           View All Tasks
         </SidebarNavItem>
-
-        {/* Utilities and Property Inspections sections removed */}
 
 
         <div className="pt-4 pb-2">
@@ -214,7 +212,6 @@ export default function Sidebar() {
         </SidebarNavItem>
       </nav>
 
-      {/* Login/logout section removed */}
     </div>
   );
 }

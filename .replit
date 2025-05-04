@@ -1551,3 +1551,32 @@ args = "echo \"Starting server with fixed HMR configuration...\""
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "NODE_ENV=development VITE_ALLOW_DOMAIN=e0033227-daf3-45d2-a781-e5c7d237cf96-00-3uegealjevmva.kirk.replit.dev tsx server/index.ts"
+
+[[workflows.workflow]]
+name = "Capture Screenshots"
+author = 41484040
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Installing required packages...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm install puppeteer express jszip"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Running screenshot capture script...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node capture-screenshots.js"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Starting download server...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node screenshot-server.js"

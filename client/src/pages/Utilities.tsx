@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Tabs, TabsContent, TabsList, TabsTrigger, Badge } from "@/components/ui";
 import { Plus, Building, Zap, Droplets, Flame, Trash2, Receipt, AlertCircle } from "lucide-react";
@@ -229,8 +230,8 @@ export function Utilities() {
     <div className="container mx-auto p-4">
       <PageBreadcrumb
         items={[
-          { label: 'Dashboard', link: '/' },
-          { label: 'Utilities Management', link: '/utilities' }
+          { label: 'Dashboard', href: '/' },
+          { label: 'Utilities Management', href: '/utilities' }
         ]}
       />
 

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui";
 import { Clipboard, Calendar, CheckCircle, AlertCircle, Plus } from "lucide-react";
@@ -191,8 +192,8 @@ export function PropertyInspections() {
     <div className="container mx-auto p-4">
       <PageBreadcrumb
         items={[
-          { label: 'Dashboard', link: '/' },
-          { label: 'Property Inspections', link: '/property-inspections' }
+          { label: 'Dashboard', href: '/' },
+          { label: 'Property Inspections', href: '/property-inspections' }
         ]}
       />
 

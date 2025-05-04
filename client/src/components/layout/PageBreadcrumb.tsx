@@ -13,6 +13,7 @@ import { ChevronRight } from 'lucide-react';
 interface BreadcrumbItem {
   label: string;
   href?: string;
+  link?: string;
 }
 
 interface PageBreadcrumbProps {
@@ -33,8 +34,8 @@ const PageBreadcrumb = ({ items }: PageBreadcrumbProps) => {
               <ChevronRight className="h-4 w-4" />
             </BreadcrumbSeparator>
             <BreadcrumbItem>
-              {item.href ? (
-                <BreadcrumbLink href={item.href}>{item.label}</BreadcrumbLink>
+              {item.href || item.link ? (
+                <BreadcrumbLink href={item.href || item.link || "#"}>{item.label}</BreadcrumbLink>
               ) : (
                 <span className="text-muted-foreground">{item.label}</span>
               )}

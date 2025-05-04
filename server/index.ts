@@ -62,22 +62,48 @@ async function startServer() {
   const server = httpServer || createServer(app);
   
   server.listen(PORT, "0.0.0.0", () => {
+    console.log(`\n======================================`);
     console.log(`Server started on port ${PORT}`);
     console.log(`Mode: ${process.env.NODE_ENV || "development"}`);
-    console.log(`Server accessible at http://0.0.0.0:${PORT}`);
     
     // Check if running in Replit environment
     if (process.env.REPL_ID) {
-      console.log(`\n======= ACCESS INFORMATION FOR @mamin4418 =======`);
-      console.log(`Your application is available at: https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`);
-      console.log(`Make sure to click the 'Run' button to start the server`);
-      console.log(`================================================\n`);
+      console.log(`\n📱 ACCESS YOUR APPLICATION:`);
+      console.log(`1. Direct URL: https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`);
+      console.log(`2. Replit Preview: Click the "webview" tab above`);
+      console.log(`3. Fallback URL: https://${process.env.REPL_ID}.id.repl.co`);
+      console.log(`\nMake sure to keep this server running to maintain access`);
+    } else {
+      console.log(`Server accessible at http://0.0.0.0:${PORT}`);
+    }
+    console.log(`======================================\n`);
+  });
+  
+  // Add comprehensive error handling
+  server.on('error', (error) => {
+    console.error('Server error:', error);
+    if (error.code === 'EADDRINUSE') {
+      console.error(`Port ${PORT} is already in use. Try a different port or restart the Repl.`);
     }
   });
   
-  // Add proper error handling
-  server.on('error', (error) => {
-    console.error('Server error:', error);
+  // Handle process termination gracefully
+  process.on('SIGTERM', () => {
+    console.log('SIGTERM received, shutting down gracefully');
+    server.close(() => {
+      console.log('Server closed');
+      process.exit(0);
+    });
+  });
+  
+  process.on('uncaughtException', (error) => {
+    console.error('Uncaught exception:', error);
+    // Keep the server running despite uncaught exceptions
+  });
+  
+  process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    // Keep the server running despite unhandled promise rejections
   });
 
   // Handle WebSocket upgrade events

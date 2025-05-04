@@ -32,7 +32,7 @@ localPort = 24678
 externalPort = 3003
 
 [workflows]
-runButton = "Restart with Rewritten Pages"
+runButton = "Restart with Simplified Code"
 
 [[workflows.workflow]]
 name = "Project"
@@ -1089,6 +1089,39 @@ args = "rm -rf node_modules/.vite"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "echo \"Starting server with completely rewritten utility and inspection pages...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "NODE_ENV=development tsx server/index.ts"
+
+[[workflows.workflow]]
+name = "Restart with Simplified Code"
+author = 41484040
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Stopping any running servers...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pkill -f \"tsx server/index.ts\" || true"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "sleep 2"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Clearing node modules cache...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "rm -rf node_modules/.vite"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Starting server with simplified components...\""
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

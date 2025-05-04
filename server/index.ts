@@ -65,6 +65,7 @@ async function startServer() {
     console.log(`Server started on port ${PORT}`);
     console.log(`Mode: ${process.env.NODE_ENV || "development"}`);
     console.log(`Server accessible at http://0.0.0.0:${PORT}`);
+    console.log(`For Replit use the URL shown above the editor window (with port ${PORT})`);
   });
   
   // Add proper error handling

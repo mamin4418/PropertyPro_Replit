@@ -20,7 +20,7 @@ localPort = 24678
 externalPort = 80
 
 [workflows]
-runButton = "Capture and Serve Screenshots"
+runButton = "Start Server and Access App"
 
 [[workflows.workflow]]
 name = "Project"
@@ -1637,3 +1637,61 @@ args = "echo \"Starting download server...\""
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "node screenshot-server.js"
+
+[[workflows.workflow]]
+name = "Start Server and Access App"
+author = 41484040
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Stopping any running servers...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pkill -f \"tsx server/index.ts\" || true"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pkill -f \"node screenshot-server.js\" || true"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "sleep 2"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Clearing node modules cache...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "rm -rf node_modules/.vite"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Starting application server...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "NODE_ENV=development PORT=3000 tsx server/index.ts"
+
+[[workflows.workflow]]
+name = "Save Attached Assets"
+author = 41484040
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Saving attached assets for easier access...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node save-assets.js"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Starting simple HTTP server to serve assets...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx http-server -p 3333 ./saved_assets"

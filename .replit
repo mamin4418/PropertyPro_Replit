@@ -20,7 +20,7 @@ localPort = 24678
 externalPort = 80
 
 [workflows]
-runButton = "Access Application"
+runButton = "View All Assets"
 
 [[workflows.workflow]]
 name = "Project"
@@ -1728,3 +1728,89 @@ args = "echo \"Starting server on port 3000...\""
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "NODE_ENV=development PORT=3000 tsx server/index.ts"
+
+[[workflows.workflow]]
+name = "Save and View Assets"
+author = 41484040
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Stopping any running servers...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pkill -f \"tsx server/index.ts\" || true"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pkill -f \"http-server\" || true"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "sleep 2"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Saving attached assets for easier access...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node save-assets.js"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Starting HTTP server to serve assets on port 3333...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Assets will be available at: http://0.0.0.0:3333\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx http-server ./ -p 3333 --cors -o assets-index.html"
+
+[[workflows.workflow]]
+name = "View All Assets"
+author = 41484040
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Stopping any running servers...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pkill -f \"tsx server/index.ts\" || true"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pkill -f \"node serve-assets.js\" || true"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pkill -f \"http-server\" || true"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "sleep 2"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Starting asset server on port 3333...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Installing express if needed...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm install express --no-save"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Running asset server...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node serve-assets.js"

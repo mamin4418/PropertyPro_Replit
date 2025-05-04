@@ -20,7 +20,7 @@ localPort = 24678
 externalPort = 80
 
 [workflows]
-runButton = "Fix HMR and Restart"
+runButton = "Fix and Restart Dev Server"
 
 [[workflows.workflow]]
 name = "Project"

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui";
 import { Clipboard, Calendar, CheckCircle, AlertCircle, Plus } from "lucide-react";
@@ -48,7 +47,7 @@ export function PropertyInspections() {
     const fetchInspections = async () => {
       try {
         setLoading(true);
-        
+
         // Sample data as fallback
         const sampleScheduled = [
           {
@@ -121,11 +120,11 @@ export function PropertyInspections() {
           // Attempt to fetch from API with error handling
           const scheduledRes = await fetch('/api/property-inspections/scheduled');
           const completedRes = await fetch('/api/property-inspections/completed');
-          
+
           if (scheduledRes.ok && completedRes.ok) {
             const scheduledData = await scheduledRes.json();
             const completedData = await completedRes.json();
-            
+
             setScheduledInspections(scheduledData.length > 0 ? scheduledData : sampleScheduled);
             setCompletedInspections(completedData.length > 0 ? completedData : sampleCompleted);
           } else {
@@ -196,7 +195,7 @@ export function PropertyInspections() {
           { label: 'Property Inspections', link: '/property-inspections' }
         ]}
       />
-      
+
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Property Inspections</h1>
         <Button onClick={handleScheduleInspection}>

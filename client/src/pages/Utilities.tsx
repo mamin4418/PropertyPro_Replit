@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Tabs, TabsContent, TabsList, TabsTrigger, Badge } from "@/components/ui";
 import { Plus, Building, Zap, Droplets, Flame, Trash2, Receipt, AlertCircle } from "lucide-react";
@@ -38,7 +37,7 @@ export function Utilities() {
     const fetchUtilities = async () => {
       try {
         setLoading(true);
-        
+
         // Sample data as fallback
         const sampleAccounts = [
           {
@@ -101,11 +100,11 @@ export function Utilities() {
           // Attempt to fetch from API with error handling
           const accountsRes = await fetch('/api/utilities/accounts');
           const billsRes = await fetch('/api/utilities/bills');
-          
+
           if (accountsRes.ok && billsRes.ok) {
             const accountsData = await accountsRes.json();
             const billsData = await billsRes.json();
-            
+
             setUtilityAccounts(accountsData.length > 0 ? accountsData : sampleAccounts);
             setUtilityBills(billsData.length > 0 ? billsData : sampleBills);
           } else {
@@ -234,7 +233,7 @@ export function Utilities() {
           { label: 'Utilities Management', link: '/utilities' }
         ]}
       />
-      
+
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Utilities Management</h1>
         <Button onClick={addUtilityAccount}>

@@ -1,10 +1,11 @@
 
 import React, { useState, useEffect } from "react";
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Tabs, TabsContent, TabsList, TabsTrigger, Badge } from "@/components/ui";
-import { Plus, Building, Zap, Droplets, Flame, Trash2, Receipt, AlertCircle } from "lucide-react";
+import { Plus, Building, Zap, Droplets, Flame, Trash2, Receipt, AlertCircle, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import PageBreadcrumb from "@/components/layout/PageBreadcrumb";
 
+// Define interface types for utilities data
 interface UtilityAccount {
   id: number;
   propertyId: number;
@@ -27,78 +28,80 @@ interface UtilityBill {
   status: string;
 }
 
-export function Utilities() {
+// Sample data for fallback
+const sampleAccounts: UtilityAccount[] = [
+  {
+    id: 1,
+    propertyId: 1,
+    propertyName: "Sunset Heights",
+    utilityProvider: "City Water",
+    accountNumber: "W-123456",
+    utilityType: "Water",
+    status: "active"
+  },
+  {
+    id: 2,
+    propertyId: 1,
+    propertyName: "Sunset Heights",
+    utilityProvider: "Edison Electric",
+    accountNumber: "E-789012",
+    utilityType: "Electricity",
+    status: "active"
+  },
+  {
+    id: 3,
+    propertyId: 2,
+    propertyName: "Maple Gardens",
+    utilityProvider: "Natural Gas Co",
+    accountNumber: "G-345678",
+    utilityType: "Gas",
+    status: "active"
+  }
+];
+
+const sampleBills: UtilityBill[] = [
+  {
+    id: 1,
+    utilityAccountId: 1,
+    propertyId: 1,
+    amount: 125.50,
+    dueDate: "2023-08-15",
+    status: "paid"
+  },
+  {
+    id: 2,
+    utilityAccountId: 2,
+    propertyId: 1,
+    amount: 210.75,
+    dueDate: "2023-08-20",
+    status: "unpaid"
+  },
+  {
+    id: 3,
+    utilityAccountId: 3,
+    propertyId: 2,
+    amount: 85.25,
+    dueDate: "2023-08-25",
+    status: "overdue"
+  }
+];
+
+const Utilities: React.FC = () => {
   const [utilityAccounts, setUtilityAccounts] = useState<UtilityAccount[]>([]);
   const [utilityBills, setUtilityBills] = useState<UtilityBill[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("accounts");
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUtilities = async () => {
       try {
         setLoading(true);
+        setError(null);
 
-        // Sample data as fallback
-        const sampleAccounts = [
-          {
-            id: 1,
-            propertyId: 1,
-            propertyName: "Sunset Heights",
-            utilityProvider: "City Water",
-            accountNumber: "W-123456",
-            utilityType: "Water",
-            status: "active"
-          },
-          {
-            id: 2,
-            propertyId: 1,
-            propertyName: "Sunset Heights",
-            utilityProvider: "Edison Electric",
-            accountNumber: "E-789012",
-            utilityType: "Electricity",
-            status: "active"
-          },
-          {
-            id: 3,
-            propertyId: 2,
-            propertyName: "Maple Gardens",
-            utilityProvider: "Natural Gas Co",
-            accountNumber: "G-345678",
-            utilityType: "Gas",
-            status: "active"
-          }
-        ];
-
-        const sampleBills = [
-          {
-            id: 1,
-            utilityAccountId: 1,
-            propertyId: 1,
-            amount: 125.50,
-            dueDate: "2023-08-15",
-            status: "paid"
-          },
-          {
-            id: 2,
-            utilityAccountId: 2,
-            propertyId: 1,
-            amount: 210.75,
-            dueDate: "2023-08-20",
-            status: "unpaid"
-          },
-          {
-            id: 3,
-            utilityAccountId: 3,
-            propertyId: 2,
-            amount: 85.25,
-            dueDate: "2023-08-25",
-            status: "overdue"
-          }
-        ];
-
+        // First try to fetch from API
         try {
-          // Attempt to fetch from API with error handling
           const accountsRes = await fetch('/api/utilities/accounts');
           const billsRes = await fetch('/api/utilities/bills');
 
@@ -106,23 +109,26 @@ export function Utilities() {
             const accountsData = await accountsRes.json();
             const billsData = await billsRes.json();
 
+            // Use API data if available, otherwise fallback to sample data
             setUtilityAccounts(accountsData.length > 0 ? accountsData : sampleAccounts);
             setUtilityBills(billsData.length > 0 ? billsData : sampleBills);
           } else {
-            console.warn("API request failed, using sample data");
+            // If API request failed, use sample data
+            console.log("API request failed, using sample data");
             setUtilityAccounts(sampleAccounts);
             setUtilityBills(sampleBills);
-            setError(null); // Clear error since we have fallback data
           }
         } catch (err) {
-          console.warn("Error fetching data, using sample data:", err);
+          console.log("Error fetching data, using sample data:", err);
           setUtilityAccounts(sampleAccounts);
           setUtilityBills(sampleBills);
-          setError(null); // Clear error since we have fallback data
         }
       } catch (error) {
         console.error('Error in utilities component:', error);
         setError('An error occurred while loading utilities data.');
+        // Ensure we still have fallback data
+        setUtilityAccounts(sampleAccounts);
+        setUtilityBills(sampleBills);
       } finally {
         setLoading(false);
       }
@@ -131,6 +137,7 @@ export function Utilities() {
     fetchUtilities();
   }, []);
 
+  // Handlers and utility functions
   const addUtilityAccount = () => {
     navigate('/add-utility-account');
   };
@@ -222,19 +229,33 @@ export function Utilities() {
     };
   });
 
+  // Loading state
   if (loading) {
-    return <div className="container mx-auto p-4 text-center">Loading utilities...</div>;
+    return (
+      <div className="container mx-auto p-4 text-center">
+        <p className="text-lg">Loading utilities...</p>
+      </div>
+    );
   }
 
   return (
     <div className="container mx-auto p-4">
-      <PageBreadcrumb
-        items={[
-          { label: 'Dashboard', href: '/' },
-          { label: 'Utilities Management', href: '/utilities' }
-        ]}
-      />
+      {/* Breadcrumb navigation */}
+      <div className="mb-4">
+        <nav className="flex" aria-label="Breadcrumb">
+          <ol className="flex items-center space-x-2">
+            <li>
+              <a href="/" className="text-sm text-blue-600 hover:underline">Dashboard</a>
+            </li>
+            <li className="flex items-center">
+              <ChevronRight className="h-4 w-4 text-gray-400" />
+              <span className="ml-2 text-sm text-gray-700">Utilities Management</span>
+            </li>
+          </ol>
+        </nav>
+      </div>
 
+      {/* Header section */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Utilities Management</h1>
         <Button onClick={addUtilityAccount}>
@@ -242,18 +263,26 @@ export function Utilities() {
         </Button>
       </div>
 
+      {/* Error message if applicable */}
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
           <p>{error}</p>
         </div>
       )}
 
-      <Tabs defaultValue="accounts">
+      {/* Tabs for accounts and bills */}
+      <Tabs 
+        defaultValue="accounts" 
+        value={activeTab} 
+        onValueChange={setActiveTab}
+        className="w-full"
+      >
         <TabsList className="grid w-full grid-cols-2 mb-6">
           <TabsTrigger value="accounts">Utility Accounts</TabsTrigger>
           <TabsTrigger value="bills">Utility Bills</TabsTrigger>
         </TabsList>
 
+        {/* Utility Accounts Tab */}
         <TabsContent value="accounts">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {utilityAccounts && utilityAccounts.length > 0 ? (
@@ -300,6 +329,7 @@ export function Utilities() {
           </div>
         </TabsContent>
 
+        {/* Utility Bills Tab */}
         <TabsContent value="bills">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {mergedBills && mergedBills.length > 0 ? (
@@ -352,6 +382,6 @@ export function Utilities() {
       </Tabs>
     </div>
   );
-}
+};
 
 export default Utilities;

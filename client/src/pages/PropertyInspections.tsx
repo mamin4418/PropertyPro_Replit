@@ -1,10 +1,10 @@
 
 import React, { useState, useEffect } from "react";
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui";
-import { Clipboard, Calendar, CheckCircle, AlertCircle, Plus } from "lucide-react";
+import { Clipboard, Calendar, CheckCircle, AlertCircle, Plus, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import PageBreadcrumb from "@/components/layout/PageBreadcrumb";
 
+// Interface definitions
 interface Finding {
   item: string;
   condition: string;
@@ -37,88 +37,90 @@ interface ScheduledInspection {
   units: string[];
 }
 
-export function PropertyInspections() {
+// Sample data for fallback
+const sampleScheduled: ScheduledInspection[] = [
+  {
+    id: 1,
+    propertyId: 1,
+    propertyName: "Sunset Heights",
+    inspectionType: "Routine",
+    scheduledDate: "2023-08-15",
+    scheduledTime: "10:00 AM",
+    inspector: "David Johnson",
+    status: "scheduled",
+    units: ["101", "102", "103"]
+  },
+  {
+    id: 2,
+    propertyId: 1,
+    propertyName: "Sunset Heights",
+    inspectionType: "Move-out",
+    scheduledDate: "2023-08-10",
+    scheduledTime: "2:00 PM",
+    inspector: "Sarah Williams",
+    status: "scheduled",
+    units: ["305"]
+  },
+  {
+    id: 3,
+    propertyId: 2,
+    propertyName: "Maple Gardens",
+    inspectionType: "Maintenance",
+    scheduledDate: "2023-08-18",
+    scheduledTime: "11:30 AM",
+    inspector: "Michael Brown",
+    status: "scheduled",
+    units: ["B2", "C1"]
+  }
+];
+
+const sampleCompleted: CompletedInspection[] = [
+  {
+    id: 4,
+    propertyId: 1,
+    propertyName: "Sunset Heights",
+    inspectionType: "Move-in",
+    inspectionDate: "2023-07-25",
+    completedBy: "Sarah Williams",
+    status: "passed",
+    units: ["204"],
+    findings: [
+      { item: "Walls", condition: "Good", notes: "Freshly painted" },
+      { item: "Flooring", condition: "Good", notes: "New carpet installed" }
+    ]
+  },
+  {
+    id: 5,
+    propertyId: 2,
+    propertyName: "Maple Gardens",
+    inspectionType: "Routine",
+    inspectionDate: "2023-07-20",
+    completedBy: "David Johnson",
+    status: "issues",
+    units: ["A1"],
+    findings: [
+      { item: "Kitchen Sink", condition: "Fair", notes: "Slight leakage, needs repair" },
+      { item: "Windows", condition: "Good", notes: "All functional" }
+    ]
+  }
+];
+
+const PropertyInspections: React.FC = () => {
   const [scheduledInspections, setScheduledInspections] = useState<ScheduledInspection[]>([]);
   const [completedInspections, setCompletedInspections] = useState<CompletedInspection[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("scheduled");
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchInspections = async () => {
       try {
         setLoading(true);
+        setError(null);
 
-        // Sample data as fallback
-        const sampleScheduled = [
-          {
-            id: 1,
-            propertyId: 1,
-            propertyName: "Sunset Heights",
-            inspectionType: "Routine",
-            scheduledDate: "2023-08-15",
-            scheduledTime: "10:00 AM",
-            inspector: "David Johnson",
-            status: "scheduled",
-            units: ["101", "102", "103"]
-          },
-          {
-            id: 2,
-            propertyId: 1,
-            propertyName: "Sunset Heights",
-            inspectionType: "Move-out",
-            scheduledDate: "2023-08-10",
-            scheduledTime: "2:00 PM",
-            inspector: "Sarah Williams",
-            status: "scheduled",
-            units: ["305"]
-          },
-          {
-            id: 3,
-            propertyId: 2,
-            propertyName: "Maple Gardens",
-            inspectionType: "Maintenance",
-            scheduledDate: "2023-08-18",
-            scheduledTime: "11:30 AM",
-            inspector: "Michael Brown",
-            status: "scheduled",
-            units: ["B2", "C1"]
-          }
-        ];
-
-        const sampleCompleted = [
-          {
-            id: 4,
-            propertyId: 1,
-            propertyName: "Sunset Heights",
-            inspectionType: "Move-in",
-            inspectionDate: "2023-07-25",
-            completedBy: "Sarah Williams",
-            status: "passed",
-            units: ["204"],
-            findings: [
-              { item: "Walls", condition: "Good", notes: "Freshly painted" },
-              { item: "Flooring", condition: "Good", notes: "New carpet installed" }
-            ]
-          },
-          {
-            id: 5,
-            propertyId: 2,
-            propertyName: "Maple Gardens",
-            inspectionType: "Routine",
-            inspectionDate: "2023-07-20",
-            completedBy: "David Johnson",
-            status: "issues",
-            units: ["A1"],
-            findings: [
-              { item: "Kitchen Sink", condition: "Fair", notes: "Slight leakage, needs repair" },
-              { item: "Windows", condition: "Good", notes: "All functional" }
-            ]
-          }
-        ];
-
+        // Try to fetch from API
         try {
-          // Attempt to fetch from API with error handling
           const scheduledRes = await fetch('/api/property-inspections/scheduled');
           const completedRes = await fetch('/api/property-inspections/completed');
 
@@ -126,23 +128,26 @@ export function PropertyInspections() {
             const scheduledData = await scheduledRes.json();
             const completedData = await completedRes.json();
 
+            // Use API data if available, otherwise fallback to sample data
             setScheduledInspections(scheduledData.length > 0 ? scheduledData : sampleScheduled);
             setCompletedInspections(completedData.length > 0 ? completedData : sampleCompleted);
           } else {
-            console.warn("API request failed, using sample data");
+            console.log("API request failed, using sample data");
             setScheduledInspections(sampleScheduled);
             setCompletedInspections(sampleCompleted);
-            setError(null); // Clear error since we have fallback data
           }
         } catch (err) {
-          console.warn("Error fetching inspections, using sample data:", err);
+          console.log("Error fetching inspections, using sample data:", err);
           setScheduledInspections(sampleScheduled);
           setCompletedInspections(sampleCompleted);
-          setError(null); // Clear error since we have fallback data
         }
       } catch (error) {
         console.error('Error in inspections component:', error);
         setError('An error occurred while loading inspections data.');
+        
+        // Ensure we still have fallback data
+        setScheduledInspections(sampleScheduled);
+        setCompletedInspections(sampleCompleted);
       } finally {
         setLoading(false);
       }
@@ -184,19 +189,33 @@ export function PropertyInspections() {
     }
   };
 
+  // Loading state
   if (loading) {
-    return <div className="container mx-auto p-4 text-center">Loading property inspections...</div>;
+    return (
+      <div className="container mx-auto p-4 text-center">
+        <p className="text-lg">Loading property inspections...</p>
+      </div>
+    );
   }
 
   return (
     <div className="container mx-auto p-4">
-      <PageBreadcrumb
-        items={[
-          { label: 'Dashboard', href: '/' },
-          { label: 'Property Inspections', href: '/property-inspections' }
-        ]}
-      />
+      {/* Simple breadcrumb navigation */}
+      <div className="mb-4">
+        <nav className="flex" aria-label="Breadcrumb">
+          <ol className="flex items-center space-x-2">
+            <li>
+              <a href="/" className="text-sm text-blue-600 hover:underline">Dashboard</a>
+            </li>
+            <li className="flex items-center">
+              <ChevronRight className="h-4 w-4 text-gray-400" />
+              <span className="ml-2 text-sm text-gray-700">Property Inspections</span>
+            </li>
+          </ol>
+        </nav>
+      </div>
 
+      {/* Header section */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Property Inspections</h1>
         <Button onClick={handleScheduleInspection}>
@@ -204,18 +223,26 @@ export function PropertyInspections() {
         </Button>
       </div>
 
+      {/* Error message if applicable */}
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
           <p>{error}</p>
         </div>
       )}
 
-      <Tabs defaultValue="scheduled">
+      {/* Tabs for scheduled and completed inspections */}
+      <Tabs 
+        defaultValue="scheduled" 
+        value={activeTab} 
+        onValueChange={setActiveTab}
+        className="w-full"
+      >
         <TabsList className="grid w-full grid-cols-2 mb-6">
           <TabsTrigger value="scheduled">Scheduled Inspections</TabsTrigger>
           <TabsTrigger value="completed">Completed Inspections</TabsTrigger>
         </TabsList>
 
+        {/* Scheduled Inspections Tab */}
         <TabsContent value="scheduled">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {scheduledInspections && scheduledInspections.length > 0 ? (
@@ -269,6 +296,7 @@ export function PropertyInspections() {
           </div>
         </TabsContent>
 
+        {/* Completed Inspections Tab */}
         <TabsContent value="completed">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {completedInspections && completedInspections.length > 0 ? (
@@ -333,6 +361,6 @@ export function PropertyInspections() {
       </Tabs>
     </div>
   );
-}
+};
 
 export default PropertyInspections;

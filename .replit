@@ -9,7 +9,7 @@ packages = ["unzip"]
 [deployment]
 deploymentTarget = "autoscale"
 build = ["npm", "run", "build"]
-run = ["npm", "run", "start"]
+run = ["sh", "-c", "NODE_ENV=production PORT=3000 tsx server/index.ts"]
 
 [[ports]]
 localPort = 3000
@@ -20,7 +20,7 @@ localPort = 24678
 externalPort = 80
 
 [workflows]
-runButton = "Fix and Restart Dev Server"
+runButton = "Access Application"
 
 [[workflows.workflow]]
 name = "Project"
@@ -1695,3 +1695,36 @@ args = "echo \"Starting simple HTTP server to serve assets...\""
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npx http-server -p 3333 ./saved_assets"
+
+[[workflows.workflow]]
+name = "Access Application"
+author = 41484040
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Stopping any running servers...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pkill -f \"tsx server/index.ts\" || true"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "sleep 2"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Clearing node modules cache...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "rm -rf node_modules/.vite"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Starting server on port 3000...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "NODE_ENV=development PORT=3000 tsx server/index.ts"

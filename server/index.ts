@@ -65,7 +65,14 @@ async function startServer() {
     console.log(`Server started on port ${PORT}`);
     console.log(`Mode: ${process.env.NODE_ENV || "development"}`);
     console.log(`Server accessible at http://0.0.0.0:${PORT}`);
-    console.log(`For Replit use the URL shown above the editor window (with port ${PORT})`);
+    
+    // Check if running in Replit environment
+    if (process.env.REPL_ID) {
+      console.log(`\n======= ACCESS INFORMATION FOR @mamin4418 =======`);
+      console.log(`Your application is available at: https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`);
+      console.log(`Make sure to click the 'Run' button to start the server`);
+      console.log(`================================================\n`);
+    }
   });
   
   // Add proper error handling

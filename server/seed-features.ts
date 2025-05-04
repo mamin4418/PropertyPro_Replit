@@ -1,9 +1,9 @@
+
 import { storage } from "./storage";
 
 // Utility and Property Inspection Sample Data
 let utilityAccountCounter = 1;
 let utilityBillCounter = 1;
-let inspectionCounter = 1;
 let scheduledInspectionCounter = 1;
 let completedInspectionCounter = 1;
 

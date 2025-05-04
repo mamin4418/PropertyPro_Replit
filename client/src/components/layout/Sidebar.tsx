@@ -146,22 +146,7 @@ export default function Sidebar() {
           View All Tasks
         </SidebarNavItem>
 
-        <div className="pt-4 pb-2">
-          <h3 className="px-3 text-xs font-semibold text-muted-foreground">UTILITIES</h3>
-        </div>
-
-        <SidebarNavItem href="/utilities" icon={Zap}>
-          Utilities
-        </SidebarNavItem>
-
-
-        <div className="pt-4 pb-2">
-          <h3 className="px-3 text-xs font-semibold text-muted-foreground">PROPERTY INSPECTIONS</h3>
-        </div>
-
-        <SidebarNavItem href="/property-inspections" icon={ClipboardCheck}>
-          Inspections
-        </SidebarNavItem>
+        {/* Utilities and Property Inspections sections removed */}
 
 
         <div className="pt-4 pb-2">

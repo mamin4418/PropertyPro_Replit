@@ -20,7 +20,7 @@ localPort = 24678
 externalPort = 80
 
 [workflows]
-runButton = "Fix and Restart Server"
+runButton = "Fix HMR and Restart"
 
 [[workflows.workflow]]
 name = "Project"
@@ -1518,3 +1518,36 @@ args = "echo \"Starting server with fixed configuration...\""
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "NODE_ENV=development NODE_OPTIONS=\"--max-old-space-size=2048\" tsx server/index.ts"
+
+[[workflows.workflow]]
+name = "Fix HMR and Restart"
+author = 41484040
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Stopping any running servers...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pkill -f \"tsx server/index.ts\" || true"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "sleep 2"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Clearing node modules cache...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "rm -rf node_modules/.vite"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Starting server with fixed HMR configuration...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "NODE_ENV=development VITE_ALLOW_DOMAIN=e0033227-daf3-45d2-a781-e5c7d237cf96-00-3uegealjevmva.kirk.replit.dev tsx server/index.ts"

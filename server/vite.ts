@@ -39,7 +39,7 @@ export async function setupVite(app: Express) {
         clientPort: 24678
       }
     },
-    allowedHosts: 'all'
+    allowedHosts: ['e0033227-daf3-45d2-a781-e5c7d237cf96-00-3uegealjevmva.kirk.replit.dev', '.replit.dev']
   };
 
   const vite = await createViteServer({

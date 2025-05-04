@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui";
 import { Clipboard, Calendar, CheckCircle, AlertCircle, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { PageBreadcrumb } from "@/components/layout/PageBreadcrumb";
+import PageBreadcrumb from "@/components/layout/PageBreadcrumb";
 
 interface Finding {
   item: string;

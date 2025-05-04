@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Tabs, TabsContent, TabsList, TabsTrigger, Badge } from "@/components/ui";
 import { Plus, Building, Zap, Droplets, Flame, Trash2, Receipt, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { PageBreadcrumb } from "@/components/layout/PageBreadcrumb";
+import PageBreadcrumb from "@/components/layout/PageBreadcrumb";
 
 interface UtilityAccount {
   id: number;

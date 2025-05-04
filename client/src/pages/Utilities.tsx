@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Button, Card, CardContent, CardHeader, CardTitle, Tabs, TabsContent, TabsList, TabsTrigger, Badge } from "@/components/ui";
 import { Building, Zap, Droplets, Flame, ChevronRight } from "lucide-react";
 
-// Simple interface for utility data
+// Simple interfaces for utility data
 interface UtilityAccount {
   id: number;
   propertyName: string;

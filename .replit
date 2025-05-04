@@ -1154,7 +1154,7 @@ args = "rm -rf node_modules/.vite"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "echo \"Starting server with simplified components...\""
+args = "echo \"Running server with completely simplified pages...\""
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

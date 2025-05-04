@@ -1,10 +1,7 @@
 
 import { storage } from "./storage";
 
-// Utility and Property Inspection Sample Data
-let utilityAccountCounter = 1;
-let utilityBillCounter = 1;
-let scheduledInspectionCounter = 1;
+// Empty seed features file - sections removed
 let completedInspectionCounter = 1;
 
 async function seedUtilitiesAndInspections() {

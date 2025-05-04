@@ -51,7 +51,7 @@ async function startServer() {
     }
   });
 
-  // Create HTTP server
+  // Create HTTP server with enhanced protocol support
   const server = app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server started on port ${PORT}`);
     console.log(`Mode: ${process.env.NODE_ENV || "development"}`);
@@ -61,6 +61,16 @@ async function startServer() {
   // Add proper error handling
   server.on('error', (error) => {
     console.error('Server error:', error);
+  });
+  
+  // Set proper headers for protocol support
+  app.use((req, res, next) => {
+    // Allow all request types and protocols
+    res.setHeader('Upgrade-Insecure-Requests', '1');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Accept-Encoding', 'gzip, deflate, br');
+    next();
   });
 }
 

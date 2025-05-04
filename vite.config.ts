@@ -1,3 +1,4 @@
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
@@ -28,4 +29,16 @@ export default defineConfig({
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
   },
+  server: {
+    host: '0.0.0.0',
+    cors: true,
+    hmr: {
+      host: 'e0033227-daf3-45d2-a781-e5c7d237cf96-00-3uegealjevmva.kirk.replit.dev',
+      clientPort: 443,
+      protocol: 'wss'
+    },
+    watch: {
+      usePolling: true
+    }
+  }
 });

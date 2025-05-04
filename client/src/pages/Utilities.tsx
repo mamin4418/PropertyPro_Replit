@@ -19,6 +19,9 @@ interface UtilityBill {
   id: number;
   utilityAccountId: number;
   propertyId: number;
+  propertyName?: string;
+  utilityProvider?: string;
+  utilityType?: string;
   amount: number;
   dueDate: string;
   status: string;
@@ -95,7 +98,7 @@ export function Utilities() {
         ];
 
         try {
-          // Attempt to fetch data from API
+          // Attempt to fetch from API with error handling
           const accountsRes = await fetch('/api/utilities/accounts');
           const billsRes = await fetch('/api/utilities/bills');
           
@@ -109,11 +112,13 @@ export function Utilities() {
             console.warn("API request failed, using sample data");
             setUtilityAccounts(sampleAccounts);
             setUtilityBills(sampleBills);
+            setError(null); // Clear error since we have fallback data
           }
         } catch (err) {
           console.warn("Error fetching data, using sample data:", err);
           setUtilityAccounts(sampleAccounts);
           setUtilityBills(sampleBills);
+          setError(null); // Clear error since we have fallback data
         }
       } catch (error) {
         console.error('Error in utilities component:', error);

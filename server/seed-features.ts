@@ -195,6 +195,7 @@ function setupUtilitiesAndInspectionsRoutes(app) {
   });
 }
 
+// Run seed function if this file is executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
   seedUtilitiesAndInspections()
     .then(() => console.log("Utilities and inspections seeding completed successfully"))

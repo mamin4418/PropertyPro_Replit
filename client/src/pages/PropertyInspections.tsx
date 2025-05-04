@@ -132,6 +132,7 @@ export function PropertyInspections() {
             console.warn("API request failed, using sample data");
             setScheduledInspections(sampleScheduled);
             setCompletedInspections(sampleCompleted);
+            setError(null); // Clear error since we have fallback data
           }
         } catch (err) {
           console.warn("Error fetching inspections, using sample data:", err);

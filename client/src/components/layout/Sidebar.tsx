@@ -229,22 +229,7 @@ export default function Sidebar() {
         </SidebarNavItem>
       </nav>
 
-      <div className="p-4 border-t flex flex-col gap-4">
-        {user ? (
-          <button
-            onClick={() => logout()}
-            className="flex items-center py-2 px-3 rounded-md hover:bg-secondary"
-          >
-            <LogOut className="h-5 w-5 mr-3" />
-            <span>Logout</span>
-          </button>
-        ) : (
-          <div className="flex items-center py-2 px-3 rounded-md hover:bg-secondary" onClick={() => window.location.href = "/auth"}>
-              <LogOut className="h-5 w-5 mr-3" />
-              <span>Login</span>
-          </div>
-        )}
-      </div>
+      {/* Login/logout section removed */}
     </div>
   );
 }

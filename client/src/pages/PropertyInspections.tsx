@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { Button, Card, CardContent, CardHeader, CardTitle, Tabs, TabsContent, TabsList, TabsTrigger, Badge } from "@/components/ui";
-import { Clipboard, Calendar, CheckCircle, AlertCircle, Plus, ChevronRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
-// Simple interface definitions
+import React, { useState } from "react";
+import { Button, Card, CardContent, CardHeader, CardTitle, Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui";
+import { Clipboard, Calendar, CheckCircle, AlertCircle, ChevronRight } from "lucide-react";
+
+// Simple interfaces for static data
 interface ScheduledInspection {
   id: number;
   propertyName: string;
@@ -26,7 +26,7 @@ interface CompletedInspection {
   findings?: Array<{ item: string; condition: string; notes: string }>;
 }
 
-// Sample data
+// Static data to avoid API dependencies
 const scheduledInspections: ScheduledInspection[] = [
   {
     id: 1,
@@ -91,9 +91,8 @@ const completedInspections: CompletedInspection[] = [
 
 const PropertyInspections: React.FC = () => {
   const [activeTab, setActiveTab] = useState("scheduled");
-  const navigate = useNavigate();
 
-  // Simple utility functions
+  // Utility functions
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case 'scheduled':
@@ -125,7 +124,7 @@ const PropertyInspections: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4">
-      {/* Simple breadcrumb navigation */}
+      {/* Simple breadcrumb */}
       <div className="mb-4">
         <nav className="flex" aria-label="Breadcrumb">
           <ol className="flex items-center space-x-2">
@@ -140,15 +139,13 @@ const PropertyInspections: React.FC = () => {
         </nav>
       </div>
 
-      {/* Header section */}
+      {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Property Inspections</h1>
-        <Button onClick={() => navigate('/schedule-inspection')}>
-          <Plus className="mr-2 h-4 w-4" /> Schedule Inspection
-        </Button>
+        <Button>Schedule Inspection</Button>
       </div>
 
-      {/* Tabs for scheduled and completed inspections */}
+      {/* Tabs */}
       <Tabs 
         defaultValue="scheduled" 
         value={activeTab} 

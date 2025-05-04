@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { Button, Card, CardContent, CardHeader, CardTitle, Tabs, TabsContent, TabsList, TabsTrigger, Badge } from "@/components/ui";
-import { Plus, Building, Zap, Droplets, Flame, Home, ChevronRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
-// Define simplified interface types
+import React, { useState } from "react";
+import { Button, Card, CardContent, CardHeader, CardTitle, Tabs, TabsContent, TabsList, TabsTrigger, Badge } from "@/components/ui";
+import { Building, Zap, Droplets, Flame, ChevronRight } from "lucide-react";
+
+// Simple interface for utility data
 interface UtilityAccount {
   id: number;
   propertyName: string;
@@ -23,7 +23,7 @@ interface UtilityBill {
   status: string;
 }
 
-// Sample data
+// Static sample data to avoid API dependencies
 const sampleAccounts: UtilityAccount[] = [
   {
     id: 1,
@@ -83,9 +83,8 @@ const sampleBills: UtilityBill[] = [
 
 const Utilities: React.FC = () => {
   const [activeTab, setActiveTab] = useState("accounts");
-  const navigate = useNavigate();
 
-  // Simple utility functions
+  // Utility functions
   const getUtilityIcon = (type: string) => {
     switch (type?.toLowerCase()) {
       case 'electricity':
@@ -119,7 +118,7 @@ const Utilities: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4">
-      {/* Simple breadcrumb navigation */}
+      {/* Simple breadcrumb */}
       <div className="mb-4">
         <nav className="flex" aria-label="Breadcrumb">
           <ol className="flex items-center space-x-2">
@@ -134,15 +133,13 @@ const Utilities: React.FC = () => {
         </nav>
       </div>
 
-      {/* Header section */}
+      {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Utilities Management</h1>
-        <Button onClick={() => navigate('/add-utility-account')}>
-          <Plus className="mr-2 h-4 w-4" /> Add Utility Account
-        </Button>
+        <Button>Add Utility Account</Button>
       </div>
 
-      {/* Tabs for accounts and bills */}
+      {/* Tabs */}
       <Tabs 
         defaultValue="accounts" 
         value={activeTab} 
@@ -154,7 +151,7 @@ const Utilities: React.FC = () => {
           <TabsTrigger value="bills">Utility Bills</TabsTrigger>
         </TabsList>
 
-        {/* Utility Accounts Tab */}
+        {/* Accounts Tab */}
         <TabsContent value="accounts">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {sampleAccounts.map((account) => (
@@ -190,7 +187,7 @@ const Utilities: React.FC = () => {
           </div>
         </TabsContent>
 
-        {/* Utility Bills Tab */}
+        {/* Bills Tab */}
         <TabsContent value="bills">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {sampleBills.map((bill) => (

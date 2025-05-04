@@ -53,7 +53,7 @@ async function captureScreenshots() {
     
     try {
       console.log(`Capturing ${route}...`);
-      await page.goto(`http://localhost:3000${route}`, { waitUntil: 'networkidle2', timeout: 30000 });
+      await page.goto(`http://localhost:3000${route}`, { waitUntil: 'networkidle2', timeout: 60000 });
       
       // Wait a bit for any animations to complete
       await page.waitForTimeout(1000);

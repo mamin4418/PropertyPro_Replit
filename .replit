@@ -20,7 +20,7 @@ localPort = 24678
 externalPort = 80
 
 [workflows]
-runButton = "Fix and Restart Dev Server"
+runButton = "Capture and Serve Screenshots"
 
 [[workflows.workflow]]
 name = "Project"
@@ -1564,6 +1564,63 @@ args = "echo \"Installing required packages...\""
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm install puppeteer express jszip"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Running screenshot capture script...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node capture-screenshots.js"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Starting download server...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node screenshot-server.js"
+
+[[workflows.workflow]]
+name = "Capture and Serve Screenshots"
+author = 41484040
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Stopping any running servers...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pkill -f \"tsx server/index.ts\" || true"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pkill -f \"node screenshot-server.js\" || true"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "sleep 2"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Installing required packages...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm install puppeteer express jszip"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Starting property management system server...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "NODE_ENV=development tsx server/index.ts &"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "sleep 10"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

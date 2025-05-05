@@ -9,19 +9,19 @@ import path from "path";
 import { setupVite } from "./vite";
 import cors from "cors";
 import dotenv from "dotenv";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 
+// Create __dirname equivalent for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 async function startServer() {
   const app = express();
-
-  // Create __dirname equivalent for ES modules
-  import { fileURLToPath } from 'url';
-  import { dirname } from 'path';
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = dirname(__filename);
   
   // Middleware
   app.use(cors());

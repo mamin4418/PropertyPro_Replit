@@ -21,6 +21,12 @@ async function startServer() {
   app.use(cors());
   app.use(express.json());
   
+  // Create __dirname equivalent for ES modules
+  import { fileURLToPath } from 'url';
+  import { dirname } from 'path';
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
+  
   // Properly serve static files from client/dist
   const staticPath = path.resolve(__dirname, "../client/dist");
   console.log(`Serving static files from: ${staticPath}`);

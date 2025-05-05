@@ -20,7 +20,7 @@ localPort = 24678
 externalPort = 80
 
 [workflows]
-runButton = "Fix and Restart Dev Server"
+runButton = "Run Production Server"
 
 [[workflows.workflow]]
 name = "Project"
@@ -1887,7 +1887,7 @@ args = "rm -rf node_modules/.vite"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "echo \"Starting server in production mode with static file serving...\""
+args = "echo \"Starting server in production mode...\""
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

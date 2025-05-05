@@ -66,8 +66,15 @@ async function startServer() {
     } else {
       // Use correct absolute path for serving index.html
       const indexPath = path.resolve(__dirname, "../client/dist/index.html");
-      console.log(`Serving SPA from: ${indexPath}`);
-      res.sendFile(indexPath);
+      console.log(`Serving SPA from: ${indexPath} for route: ${req.originalUrl}`);
+      
+      // Check if the file exists before sending
+      if (require('fs').existsSync(indexPath)) {
+        res.sendFile(indexPath);
+      } else {
+        console.error(`Error: index.html not found at path: ${indexPath}`);
+        res.status(404).send('Frontend files not found. Make sure the build was completed successfully.');
+      }
     }
   });
 

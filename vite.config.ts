@@ -1,10 +1,13 @@
 // vite.config.ts
 import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  root: 'client', // Set the root to the client directory where index.html is located
+  root: 'client', // Explicitly set the root to the client directory
+  plugins: [react()], // Add React plugin for TypeScript/JSX support
   build: {
-    outDir: '../dist', // Output the build files to the root-level dist directory
+    outDir: '../dist', // Output to root-level dist directory
+    emptyOutDir: true, // Clear the dist directory before building
   },
   server: {
     host: '0.0.0.0',
@@ -17,6 +20,7 @@ export default defineConfig({
       usePolling: true,
     },
     cors: true,
-    // Note: allowedHosts is not a valid Vite option; use hmr.host or other CORS settings instead
   },
+  // Add logging for debugging
+  logLevel: 'info',
 });

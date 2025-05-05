@@ -20,7 +20,11 @@ async function startServer() {
   // Middleware
   app.use(cors());
   app.use(express.json());
-  app.use(express.static(path.resolve("client/dist")));
+  
+  // Properly serve static files from client/dist
+  const staticPath = path.resolve(__dirname, "../client/dist");
+  console.log(`Serving static files from: ${staticPath}`);
+  app.use(express.static(staticPath));
   
   // Set proper headers for protocol support
   app.use((req, res, next) => {
@@ -54,7 +58,10 @@ async function startServer() {
     if (process.env.NODE_ENV === "development") {
       res.redirect(`http://localhost:${PORT}${req.originalUrl}`);
     } else {
-      res.sendFile(path.resolve("client/dist/index.html"));
+      // Use correct absolute path for serving index.html
+      const indexPath = path.resolve(__dirname, "../client/dist/index.html");
+      console.log(`Serving SPA from: ${indexPath}`);
+      res.sendFile(indexPath);
     }
   });
 

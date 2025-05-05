@@ -1887,7 +1887,7 @@ args = "rm -rf node_modules/.vite"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "echo \"Starting server in production mode (no Vite)...\""
+args = "echo \"Starting server in production mode with static file serving...\""
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

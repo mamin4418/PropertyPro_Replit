@@ -83,11 +83,15 @@ async function startServer() {
       return res.redirect(`http://localhost:${PORT}${req.originalUrl}`);
     } else {
       // In production, serve the static files
-      // Try client/dist first, then fallback to dist
+      // Try client/dist first, then client/public, then fallback to dist
       let indexPath = path.resolve(__dirname, "../client/dist/index.html");
+      let publicPath = path.resolve(__dirname, "../client/public/index.html");
       let fallbackPath = path.resolve(__dirname, "../dist/index.html");
       
       console.log(`Production mode: Attempting to serve SPA from: ${indexPath} for route: ${req.originalUrl}`);
+      console.log(`Current directory: ${__dirname}`);
+      console.log(`Available files in client: ${fs.existsSync(path.resolve(__dirname, "../client")) ? 
+        fs.readdirSync(path.resolve(__dirname, "../client")).join(", ") : "client dir not found"}`);
       
       const fs = require('fs');
       
@@ -96,6 +100,9 @@ async function startServer() {
         if (fs.existsSync(indexPath)) {
           console.log(`Serving index.html from: ${indexPath}`);
           return res.sendFile(indexPath);
+        } else if (fs.existsSync(publicPath)) {
+          console.log(`Serving from public path: ${publicPath}`);
+          return res.sendFile(publicPath);
         } else if (fs.existsSync(fallbackPath)) {
           console.log(`Falling back to: ${fallbackPath}`);
           return res.sendFile(fallbackPath);

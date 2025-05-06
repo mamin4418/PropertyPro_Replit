@@ -88,13 +88,12 @@ import ViewTransaction from "@/pages/ViewTransaction";
 import MatchTransaction from "@/pages/MatchTransaction";
 import ImportTransaction from './pages/ImportTransaction';
 import { ThemeProvider } from "./context/ThemeProvider";
-import ReconciliationDashboard from "@/pages/ReconciliationDashboard"; // Added import
-import TransactionRules from "@/pages/TransactionRules"; // Added import
+import ReconciliationDashboard from "@/pages/ReconciliationDashboard"; 
+import TransactionRules from "@/pages/TransactionRules"; 
 import { lazy } from 'react';
-import Tasks from "./pages/tasks/index"; //added import
-import AddTask from "./pages/tasks/AddTask"; //added import
-import ViewTasks from "./pages/tasks/ViewTasks"; //added import
-
+import Tasks from "./pages/tasks/index"; 
+import AddTask from "./pages/tasks/AddTask"; 
+import ViewTasks from "./pages/tasks/ViewTasks"; 
 
 // Rent Management Components
 import ViewCharges from "./pages/rent/ViewCharges";
@@ -104,6 +103,8 @@ import LateFeeRules from "./pages/rent/LateFeeRules";
 import AddLateFeeRule from "./pages/rent/AddLateFeeRule";
 import ExportCharges from "./pages/rent/ExportCharges";
 import RentRoll from "./pages/rent/RentRoll";
+import ScheduleInspection from "@/pages/ScheduleInspection"; // Added import
+import AddUtilityAccount from "@/pages/AddUtilityAccount"; // Added import
 
 
 function AppRoutes() {
@@ -274,6 +275,8 @@ function AppRoutes() {
               <Route path="/create-document" component={CreateDocument} />
               <Route path="/document-templates" component={DocumentTemplates} />
               <Route path="/view-document/:id" component={ViewDocument} />
+              <Route path="/schedule-inspection" component={ScheduleInspection} />
+              <Route path="/add-utility-account" component={AddUtilityAccount} />
 
               <Route path="/banking" component={Banking} />
               <Route path="/banking/accounts" component={BankAccounts} />

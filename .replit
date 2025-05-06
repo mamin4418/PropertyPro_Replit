@@ -20,7 +20,7 @@ localPort = 24678
 externalPort = 80
 
 [workflows]
-runButton = "Fixed Production Server"
+runButton = "Run Fixed Application"
 
 [[workflows.workflow]]
 name = "Project"
@@ -2269,3 +2269,36 @@ args = "echo \"Starting server in production mode...\""
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "NODE_ENV=production PORT=3000 tsx server/index.ts"
+
+[[workflows.workflow]]
+name = "Run Fixed Application"
+author = 41484040
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Stopping any running servers...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pkill -f \"tsx server/index.ts\" || true"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "sleep 2"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Clearing node modules cache...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "rm -rf node_modules/.vite"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Starting fixed server with all updated features...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "NODE_ENV=development tsx server/index.ts"

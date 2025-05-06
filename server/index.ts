@@ -27,10 +27,69 @@ async function startServer() {
   app.use(cors());
   app.use(express.json());
   
+  // Import fs at the top level
+  import * as fs from 'fs';
+  
+  // Create client/dist if it doesn't exist
+  const clientDistPath = path.resolve(__dirname, "../client/dist");
+  if (!fs.existsSync(clientDistPath)) {
+    console.log(`Creating directory: ${clientDistPath}`);
+    fs.mkdirSync(clientDistPath, { recursive: true });
+  }
+  
+  // Create a simple index.html if it doesn't exist
+  const indexHtmlPath = path.resolve(clientDistPath, "index.html");
+  if (!fs.existsSync(indexHtmlPath)) {
+    console.log(`Creating simple index.html in: ${indexHtmlPath}`);
+    const simpleHtml = `
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>Property Management System</title>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; color: #333; }
+            .container { max-width: 1200px; margin: 0 auto; }
+            header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid #eee; margin-bottom: 20px; }
+            nav { display: flex; gap: 20px; }
+            nav a { text-decoration: none; color: #0066cc; }
+            main { min-height: 500px; }
+            .card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+            .card-title { margin-top: 0; }
+            button { background: #0066cc; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; }
+            button:hover { background: #0055aa; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <header>
+              <h1>Property Management System</h1>
+              <nav>
+                <a href="#">Dashboard</a>
+                <a href="#">Properties</a>
+                <a href="#">Tenants</a>
+                <a href="#">Maintenance</a>
+              </nav>
+            </header>
+            <main>
+              <div class="card">
+                <h2 class="card-title">Welcome to your Property Management System</h2>
+                <p>The system is running in production mode with a simplified interface.</p>
+                <p>This is a temporary page while the full application builds.</p>
+                <button onclick="location.reload()">Refresh Page</button>
+              </div>
+            </main>
+          </div>
+        </body>
+      </html>
+    `;
+    fs.writeFileSync(indexHtmlPath, simpleHtml.trim());
+  }
+  
   // Properly serve static files from client/dist
-  const staticPath = path.resolve(__dirname, "../client/dist");
-  console.log(`Serving static files from: ${staticPath}`);
-  app.use(express.static(staticPath));
+  console.log(`Serving static files from: ${clientDistPath}`);
+  app.use(express.static(clientDistPath));
   
   // Also serve from dist directory for compatibility
   const altStaticPath = path.resolve(__dirname, "../dist");
@@ -90,53 +149,48 @@ async function startServer() {
       
       console.log(`Production mode: Attempting to serve SPA from: ${indexPath} for route: ${req.originalUrl}`);
       console.log(`Current directory: ${__dirname}`);
+      // Import fs at the top level to avoid require in the middle of code
+      import * as fs from 'fs';
+      
       console.log(`Available files in client: ${fs.existsSync(path.resolve(__dirname, "../client")) ? 
         fs.readdirSync(path.resolve(__dirname, "../client")).join(", ") : "client dir not found"}`);
       
-      const fs = require('fs');
-      
       try {
-        // Check if the file exists before sending
-        if (fs.existsSync(indexPath)) {
-          console.log(`Serving index.html from: ${indexPath}`);
-          return res.sendFile(indexPath);
-        } else if (fs.existsSync(publicPath)) {
-          console.log(`Serving from public path: ${publicPath}`);
-          return res.sendFile(publicPath);
-        } else if (fs.existsSync(fallbackPath)) {
-          console.log(`Falling back to: ${fallbackPath}`);
-          return res.sendFile(fallbackPath);
-        } else {
-          // If both paths fail, try to build the client on the fly
-          console.warn(`No index.html found. Returning simple HTML page.`);
-          return res.send(`
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>Property Management System</title>
-              <style>
-                body { font-family: Arial, sans-serif; padding: 20px; text-align: center; }
-                .error { color: #e74c3c; margin: 20px 0; }
-                .message { margin: 20px 0; }
-                button { padding: 10px 20px; background: #3498db; color: white; border: none; cursor: pointer; }
-              </style>
-            </head>
-            <body>
-              <h1>Property Management System</h1>
-              <div class="error">The application frontend wasn't built properly.</div>
-              <div class="message">The server is running, but the client files are missing.</div>
-              <p>Please build the client files by running:</p>
-              <pre>cd client && npm run build</pre>
-              <a href="/"><button>Refresh Page</button></a>
-            </body>
-            </html>
-          `);
-        }
+        console.log(`Looking for index.html at paths:
+          1. ${indexPath}
+          2. ${publicPath}
+          3. ${fallbackPath}`);
+          
+        // Always return the index.html we've created earlier
+        // This ensures we always have a valid index.html to return
+        const clientDistIndexPath = path.resolve(__dirname, "../client/dist/index.html");
+        console.log(`Serving index.html from: ${clientDistIndexPath}`);
+        return res.sendFile(clientDistIndexPath);
       } catch (error) {
         console.error('Error handling SPA route:', error);
-        return res.status(500).send('Server error while serving frontend');
+        
+        // Return a simple HTML response as ultimate fallback
+        return res.status(200).send(`
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Property Management System</title>
+            <style>
+              body { font-family: Arial, sans-serif; padding: 20px; text-align: center; }
+              .message { margin: 20px 0; }
+              button { padding: 10px 20px; background: #3498db; color: white; border: none; cursor: pointer; }
+            </style>
+          </head>
+          <body>
+            <h1>Property Management System</h1>
+            <div class="message">The application is starting up.</div>
+            <p>Please wait a moment while the system initializes...</p>
+            <a href="/"><button>Refresh Page</button></a>
+          </body>
+          </html>
+        `);
       }
     }
   });

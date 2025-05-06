@@ -37,6 +37,12 @@ async function startServer() {
   console.log(`Also serving static files from: ${altStaticPath}`);
   app.use(express.static(altStaticPath));
   
+  // Debug logging middleware to see what requests are coming in
+  app.use((req, res, next) => {
+    console.log(`${req.method} ${req.url}`);
+    next();
+  });
+  
   // Set proper headers for protocol support
   app.use((req, res, next) => {
     res.setHeader('Connection', 'upgrade, keep-alive');
@@ -66,24 +72,64 @@ async function startServer() {
 
   // Catch-all route to serve the frontend for all other requests
   app.get("*", (req, res) => {
+    // Skip API routes - they should be handled by their own handlers
+    if (req.url.startsWith('/api/')) {
+      return res.status(404).json({ error: 'API endpoint not found' });
+    }
+    
     if (process.env.NODE_ENV === "development") {
-      res.redirect(`http://localhost:${PORT}${req.originalUrl}`);
+      // In development, the Vite server should be set up by setupVite
+      console.log(`Development mode: Redirecting ${req.originalUrl} to Vite dev server`);
+      return res.redirect(`http://localhost:${PORT}${req.originalUrl}`);
     } else {
+      // In production, serve the static files
       // Try client/dist first, then fallback to dist
       let indexPath = path.resolve(__dirname, "../client/dist/index.html");
       let fallbackPath = path.resolve(__dirname, "../dist/index.html");
       
-      console.log(`Attempting to serve SPA from: ${indexPath} for route: ${req.originalUrl}`);
+      console.log(`Production mode: Attempting to serve SPA from: ${indexPath} for route: ${req.originalUrl}`);
       
-      // Check if the file exists before sending
-      if (require('fs').existsSync(indexPath)) {
-        res.sendFile(indexPath);
-      } else if (require('fs').existsSync(fallbackPath)) {
-        console.log(`Falling back to: ${fallbackPath}`);
-        res.sendFile(fallbackPath);
-      } else {
-        console.error(`Error: index.html not found in either path`);
-        res.status(404).send('Frontend files not found. Make sure the build was completed successfully.');
+      const fs = require('fs');
+      
+      try {
+        // Check if the file exists before sending
+        if (fs.existsSync(indexPath)) {
+          console.log(`Serving index.html from: ${indexPath}`);
+          return res.sendFile(indexPath);
+        } else if (fs.existsSync(fallbackPath)) {
+          console.log(`Falling back to: ${fallbackPath}`);
+          return res.sendFile(fallbackPath);
+        } else {
+          // If both paths fail, try to build the client on the fly
+          console.warn(`No index.html found. Returning simple HTML page.`);
+          return res.send(`
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Property Management System</title>
+              <style>
+                body { font-family: Arial, sans-serif; padding: 20px; text-align: center; }
+                .error { color: #e74c3c; margin: 20px 0; }
+                .message { margin: 20px 0; }
+                button { padding: 10px 20px; background: #3498db; color: white; border: none; cursor: pointer; }
+              </style>
+            </head>
+            <body>
+              <h1>Property Management System</h1>
+              <div class="error">The application frontend wasn't built properly.</div>
+              <div class="message">The server is running, but the client files are missing.</div>
+              <p>Please build the client files by running:</p>
+              <pre>cd client && npm run build</pre>
+              <a href="/"><button>Refresh Page</button></a>
+            </body>
+            </html>
+          `);
+        }
+      } catch (error) {
+        console.error('Error handling SPA route:', error);
+        return res.status(500).send('Server error while serving frontend');
       }
     }
   });

@@ -1,4 +1,3 @@
-
 import express from "express";
 import { registerRoutes } from "./routes";
 import { seedDatabase } from "./seed-data";
@@ -11,33 +10,27 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import * as fs from 'fs';  // ✅ moved to top-level
 
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 
-// Create __dirname equivalent for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 async function startServer() {
   const app = express();
-  
-  // Middleware
+
   app.use(cors());
   app.use(express.json());
-  
-  // Import fs at the top level
-  import * as fs from 'fs';
-  
-  // Create client/dist if it doesn't exist
+
   const clientDistPath = path.resolve(__dirname, "../client/dist");
   if (!fs.existsSync(clientDistPath)) {
     console.log(`Creating directory: ${clientDistPath}`);
     fs.mkdirSync(clientDistPath, { recursive: true });
   }
-  
-  // Create a simple index.html if it doesn't exist
+
   const indexHtmlPath = path.resolve(clientDistPath, "index.html");
   if (!fs.existsSync(indexHtmlPath)) {
     console.log(`Creating simple index.html in: ${indexHtmlPath}`);
@@ -86,23 +79,19 @@ async function startServer() {
     `;
     fs.writeFileSync(indexHtmlPath, simpleHtml.trim());
   }
-  
-  // Properly serve static files from client/dist
+
   console.log(`Serving static files from: ${clientDistPath}`);
   app.use(express.static(clientDistPath));
-  
-  // Also serve from dist directory for compatibility
+
   const altStaticPath = path.resolve(__dirname, "../dist");
   console.log(`Also serving static files from: ${altStaticPath}`);
   app.use(express.static(altStaticPath));
-  
-  // Debug logging middleware to see what requests are coming in
+
   app.use((req, res, next) => {
     console.log(`${req.method} ${req.url}`);
     next();
   });
-  
-  // Set proper headers for protocol support
+
   app.use((req, res, next) => {
     res.setHeader('Connection', 'upgrade, keep-alive');
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -111,11 +100,9 @@ async function startServer() {
     next();
   });
 
-  // Setup API routes
-  const httpServer = await registerRoutes(app); 
+  const httpServer = await registerRoutes(app);
   setupUtilitiesAndInspectionsRoutes(app);
 
-  // Seed data
   try {
     seedDatabase();
     seedApplications();
@@ -124,52 +111,36 @@ async function startServer() {
     console.error("Error seeding data:", error);
   }
 
-  // In development mode, setup Vite for HMR
   if (process.env.NODE_ENV === "development") {
     await setupVite(app);
   }
 
-  // Catch-all route to serve the frontend for all other requests
   app.get("*", (req, res) => {
-    // Skip API routes - they should be handled by their own handlers
     if (req.url.startsWith('/api/')) {
       return res.status(404).json({ error: 'API endpoint not found' });
     }
-    
+
     if (process.env.NODE_ENV === "development") {
-      // In development, the Vite server should be set up by setupVite
       console.log(`Development mode: Redirecting ${req.originalUrl} to Vite dev server`);
       return res.redirect(`http://localhost:${PORT}${req.originalUrl}`);
     } else {
-      // In production, serve the static files
-      // Try client/dist first, then client/public, then fallback to dist
       let indexPath = path.resolve(__dirname, "../client/dist/index.html");
       let publicPath = path.resolve(__dirname, "../client/public/index.html");
       let fallbackPath = path.resolve(__dirname, "../dist/index.html");
-      
+
       console.log(`Production mode: Attempting to serve SPA from: ${indexPath} for route: ${req.originalUrl}`);
       console.log(`Current directory: ${__dirname}`);
-      // Import fs at the top level to avoid require in the middle of code
-      import * as fs from 'fs';
-      
+
       console.log(`Available files in client: ${fs.existsSync(path.resolve(__dirname, "../client")) ? 
         fs.readdirSync(path.resolve(__dirname, "../client")).join(", ") : "client dir not found"}`);
-      
+
       try {
-        console.log(`Looking for index.html at paths:
-          1. ${indexPath}
-          2. ${publicPath}
-          3. ${fallbackPath}`);
-          
-        // Always return the index.html we've created earlier
-        // This ensures we always have a valid index.html to return
         const clientDistIndexPath = path.resolve(__dirname, "../client/dist/index.html");
         console.log(`Serving index.html from: ${clientDistIndexPath}`);
         return res.sendFile(clientDistIndexPath);
       } catch (error) {
         console.error('Error handling SPA route:', error);
-        
-        // Return a simple HTML response as ultimate fallback
+
         return res.status(200).send(`
           <!DOCTYPE html>
           <html lang="en">
@@ -195,15 +166,13 @@ async function startServer() {
     }
   });
 
-  // Create HTTP server with enhanced protocol support
   const server = httpServer || createServer(app);
-  
+
   server.listen(PORT, "0.0.0.0", () => {
     console.log(`\n======================================`);
     console.log(`Server started on port ${PORT}`);
     console.log(`Mode: ${process.env.NODE_ENV || "development"}`);
-    
-    // Check if running in Replit environment
+
     if (process.env.REPL_ID) {
       console.log(`\n📱 ACCESS YOUR APPLICATION:`);
       console.log(`1. Direct URL: https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`);
@@ -215,16 +184,14 @@ async function startServer() {
     }
     console.log(`======================================\n`);
   });
-  
-  // Add comprehensive error handling
+
   server.on('error', (error) => {
     console.error('Server error:', error);
     if (error.code === 'EADDRINUSE') {
       console.error(`Port ${PORT} is already in use. Try a different port or restart the Repl.`);
     }
   });
-  
-  // Handle process termination gracefully
+
   process.on('SIGTERM', () => {
     console.log('SIGTERM received, shutting down gracefully');
     server.close(() => {
@@ -232,23 +199,19 @@ async function startServer() {
       process.exit(0);
     });
   });
-  
+
   process.on('uncaughtException', (error) => {
     console.error('Uncaught exception:', error);
-    // Keep the server running despite uncaught exceptions
-  });
-  
-  process.on('unhandledRejection', (reason, promise) => {
-    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-    // Keep the server running despite unhandled promise rejections
   });
 
-  // Handle WebSocket upgrade events
+  process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  });
+
   server.on('upgrade', (request, socket, head) => {
     console.log('WebSocket upgrade request received');
   });
 
-  // Return server for testing or further extension
   return server;
 }
 

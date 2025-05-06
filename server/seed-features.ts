@@ -1,8 +1,10 @@
-
 import { storage } from "./storage";
 
-// Empty seed features file - sections removed
+// ✅ Declare all counters at the top
 let completedInspectionCounter = 1;
+let utilityAccountCounter = 1;
+let utilityBillCounter = 1;
+let scheduledInspectionCounter = 1;
 
 async function seedUtilitiesAndInspections() {
   try {

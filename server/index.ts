@@ -32,6 +32,11 @@ async function startServer() {
   console.log(`Serving static files from: ${staticPath}`);
   app.use(express.static(staticPath));
   
+  // Also serve from dist directory for compatibility
+  const altStaticPath = path.resolve(__dirname, "../dist");
+  console.log(`Also serving static files from: ${altStaticPath}`);
+  app.use(express.static(altStaticPath));
+  
   // Set proper headers for protocol support
   app.use((req, res, next) => {
     res.setHeader('Connection', 'upgrade, keep-alive');
@@ -64,15 +69,20 @@ async function startServer() {
     if (process.env.NODE_ENV === "development") {
       res.redirect(`http://localhost:${PORT}${req.originalUrl}`);
     } else {
-      // Use correct absolute path for serving index.html
-      const indexPath = path.resolve(__dirname, "../client/dist/index.html");
-      console.log(`Serving SPA from: ${indexPath} for route: ${req.originalUrl}`);
+      // Try client/dist first, then fallback to dist
+      let indexPath = path.resolve(__dirname, "../client/dist/index.html");
+      let fallbackPath = path.resolve(__dirname, "../dist/index.html");
+      
+      console.log(`Attempting to serve SPA from: ${indexPath} for route: ${req.originalUrl}`);
       
       // Check if the file exists before sending
       if (require('fs').existsSync(indexPath)) {
         res.sendFile(indexPath);
+      } else if (require('fs').existsSync(fallbackPath)) {
+        console.log(`Falling back to: ${fallbackPath}`);
+        res.sendFile(fallbackPath);
       } else {
-        console.error(`Error: index.html not found at path: ${indexPath}`);
+        console.error(`Error: index.html not found in either path`);
         res.status(404).send('Frontend files not found. Make sure the build was completed successfully.');
       }
     }

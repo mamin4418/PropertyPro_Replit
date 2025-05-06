@@ -6,7 +6,7 @@ export default defineConfig({
   root: 'client', // Explicitly set the root to the client directory
   plugins: [react()], // Add React plugin for TypeScript/JSX support
   build: {
-    outDir: '../dist', // Output to root-level dist directory
+    outDir: 'dist', // Output to client/dist directory
     emptyOutDir: true, // Clear the dist directory before building
   },
   server: {

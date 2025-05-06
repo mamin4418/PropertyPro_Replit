@@ -20,7 +20,7 @@ localPort = 24678
 externalPort = 80
 
 [workflows]
-runButton = "Fix and Run Dev Server"
+runButton = "Build and Start"
 
 [[workflows.workflow]]
 name = "Project"
@@ -1909,6 +1909,39 @@ args = "pkill -f \"tsx server/index.ts\" || true"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "pkill -f \"node serve-assets.js\" || true"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "sleep 2"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Building the client app...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd client && npm run build"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Starting server in production mode...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "NODE_ENV=production PORT=3000 tsx server/index.ts"
+
+[[workflows.workflow]]
+name = "Build and Start"
+author = 41484040
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Stopping any running servers...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pkill -f \"tsx server/index.ts\" || true"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

@@ -292,3 +292,242 @@
         </div>
     </div>
 </div>
+<?php
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../models/Property.php';
+require_once __DIR__ . '/../models/Unit.php';
+require_once __DIR__ . '/../models/Tenant.php';
+
+// Initialize models
+$propertyModel = new Property($mysqli);
+$unitModel = new Unit($mysqli);
+$tenantModel = new Tenant($mysqli);
+
+// Get property statistics
+$properties = $propertyModel->getPropertiesWithStats();
+$propertyCount = count($properties);
+
+// Get unit statistics
+$unitStats = $unitModel->getUnitStatistics();
+$totalUnits = $unitStats['total'] ?? 0;
+$occupiedUnits = $unitStats['occupied'] ?? 0;
+$vacantUnits = $unitStats['vacant'] ?? 0;
+$occupancyRate = $totalUnits > 0 ? ($occupiedUnits / $totalUnits) * 100 : 0;
+
+// Get recent properties (up to 5)
+$recentProperties = array_slice($properties, 0, 5);
+
+$pageTitle = "Dashboard";
+require_once __DIR__ . '/../includes/header.php';
+?>
+
+<div class="container-fluid py-4">
+    <h1 class="h3 mb-4">Dashboard</h1>
+
+    <!-- Statistics Cards -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Properties
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= $propertyCount ?></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-building fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Units
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= $totalUnits ?></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-home fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Occupancy Rate
+                            </div>
+                            <div class="row no-gutters align-items-center">
+                                <div class="col-auto">
+                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800"><?= round($occupancyRate) ?>%</div>
+                                </div>
+                                <div class="col">
+                                    <div class="progress progress-sm mr-2">
+                                        <div class="progress-bar bg-info" role="progressbar" 
+                                             style="width: <?= $occupancyRate ?>%" 
+                                             aria-valuenow="<?= $occupancyRate ?>" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Vacant Units
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= $vacantUnits ?></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-door-open fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Property Overview Card -->
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Properties Overview</h6>
+                    <a href="properties.php" class="btn btn-sm btn-primary shadow-sm">
+                        <i class="fas fa-list fa-sm text-white-50"></i> View All
+                    </a>
+                </div>
+                <div class="card-body">
+                    <?php if (empty($properties)): ?>
+                        <div class="alert alert-info">
+                            No properties found. <a href="add_property.php">Add your first property</a>
+                        </div>
+                    <?php else: ?>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Property</th>
+                                        <th>Type</th>
+                                        <th>Units</th>
+                                        <th>Occupancy</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($recentProperties as $property): ?>
+                                        <?php 
+                                            $propertyOccupancyRate = 0;
+                                            if (isset($property['unit_count']) && $property['unit_count'] > 0) {
+                                                $propertyOccupancyRate = ($property['occupied_units'] / $property['unit_count']) * 100;
+                                            }
+                                        ?>
+                                        <tr>
+                                            <td>
+                                                <a href="view_property.php?id=<?= $property['id'] ?>">
+                                                    <?= htmlspecialchars($property['name']) ?>
+                                                </a>
+                                            </td>
+                                            <td><?= htmlspecialchars($property['type']) ?></td>
+                                            <td>
+                                                <?= isset($property['unit_count']) ? $property['unit_count'] : 0 ?> 
+                                                <small class="text-muted">(<?= isset($property['occupied_units']) ? $property['occupied_units'] : 0 ?> occupied)</small>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="progress flex-grow-1 mr-2" style="height: 8px; width: 100px;">
+                                                        <div class="progress-bar bg-success" role="progressbar" 
+                                                             style="width: <?= round($propertyOccupancyRate) ?>%;" 
+                                                             aria-valuenow="<?= round($propertyOccupancyRate) ?>" 
+                                                             aria-valuemin="0" 
+                                                             aria-valuemax="100"></div>
+                                                    </div>
+                                                    <span><?= round($propertyOccupancyRate) ?>%</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Links Card -->
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a href="add_property.php" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                <h6 class="mb-1">Add New Property</h6>
+                                <i class="fas fa-building"></i>
+                            </div>
+                            <small class="text-muted">Create a new property in the system</small>
+                        </a>
+                        <a href="add_tenant.php" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                <h6 class="mb-1">Add New Tenant</h6>
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <small class="text-muted">Add a new tenant to the system</small>
+                        </a>
+                        <a href="create_lease.php" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                <h6 class="mb-1">Create New Lease</h6>
+                                <i class="fas fa-file-contract"></i>
+                            </div>
+                            <small class="text-muted">Create a new lease agreement</small>
+                        </a>
+                        <a href="add_maintenance.php" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                <h6 class="mb-1">Report Maintenance Issue</h6>
+                                <i class="fas fa-tools"></i>
+                            </div>
+                            <small class="text-muted">Report a new maintenance request</small>
+                        </a>
+                        <a href="utilities.php" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                <h6 class="mb-1">Manage Utilities</h6>
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <small class="text-muted">View and manage utility accounts</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php require_once __DIR__ . '/../includes/footer.php'; ?>

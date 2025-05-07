@@ -3,21 +3,52 @@
 require_once '../config/database.php';
 require_once '../models/Unit.php';
 
-// Set content type to JSON
 header('Content-Type: application/json');
 
-// Check if property_id is provided
-if (!isset($_GET['property_id']) || empty($_GET['property_id'])) {
-    echo json_encode(['error' => 'Property ID is required']);
-    exit;
+// Allow CORS
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit(0);
 }
 
-$propertyId = (int)$_GET['property_id'];
+// Get database connection
+$database = new Database();
+$db = $database->getConnection();
 
-// Get units for the property
-$unit = new Unit($mysqli);
-$units = $unit->getUnitsByProperty($propertyId);
+$unit = new Unit($db);
 
-// Return the units as JSON
-echo json_encode($units);
+// Default response
+$response = [
+    'success' => false,
+    'data' => [],
+    'message' => 'No property ID provided'
+];
+
+// Check if property_id is provided
+if (isset($_GET['property_id'])) {
+    $property_id = intval($_GET['property_id']);
+    
+    // Get units for the property
+    $result = $unit->getUnitsByProperty($property_id);
+    
+    if ($result) {
+        $units = [];
+        while ($row = $result->fetch_assoc()) {
+            $units[] = $row;
+        }
+        
+        $response = [
+            'success' => true,
+            'data' => $units,
+            'message' => count($units) . ' units found'
+        ];
+    } else {
+        $response['message'] = 'No units found for this property';
+    }
+}
+
+echo json_encode($response);
 ?>

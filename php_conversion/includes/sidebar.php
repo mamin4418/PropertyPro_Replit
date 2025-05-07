@@ -93,6 +93,17 @@
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </a>
             </li>
+            <li class="nav-heading">Companies & Vendors</li>
+            <li class="nav-item">
+                <a class="nav-link" href="companies.php">
+                    <i class="fas fa-briefcase"></i> Companies
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="vendors.php">
+                    <i class="fas fa-truck"></i> Vendors
+                </a>
+            </li>
         </ul>
     </div>
 </div>

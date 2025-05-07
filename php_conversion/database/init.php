@@ -9,21 +9,55 @@ $mysqli = require __DIR__ . '/../config/database.php';
 
 // SQL statements to create tables (from edited code, replacing the original's table creation)
 $tables = [
-    // Properties table
-    "CREATE TABLE IF NOT EXISTS properties (
-        id INT AUTO_INCREMENT PRIMARY KEY,
+    "companies" => "CREATE TABLE IF NOT EXISTS companies (
+        id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        address VARCHAR(255),
+        city VARCHAR(100),
+        state VARCHAR(50),
+        zip VARCHAR(20),
+        phone VARCHAR(50),
+        email VARCHAR(100),
+        website VARCHAR(255),
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    )",
+
+    "vendors" => "CREATE TABLE IF NOT EXISTS vendors (
+        id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        contact_name VARCHAR(255),
+        email VARCHAR(100),
+        phone VARCHAR(50),
+        service_type VARCHAR(100) NOT NULL,
+        address VARCHAR(255),
+        city VARCHAR(100),
+        state VARCHAR(50),
+        zip VARCHAR(20),
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    )",
+
+    "properties" => "CREATE TABLE IF NOT EXISTS properties (
+        id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         address VARCHAR(255) NOT NULL,
         city VARCHAR(100) NOT NULL,
         state VARCHAR(50) NOT NULL,
         zip VARCHAR(20) NOT NULL,
-        type VARCHAR(50) NOT NULL,
-        acquisition_date DATE,
-        purchase_price DECIMAL(10, 2),
-        current_value DECIMAL(10, 2),
-        description TEXT,
+        property_type VARCHAR(50) NOT NULL,
+        year_built INT(4),
+        purchase_date DATE,
+        purchase_price DECIMAL(12,2),
+        market_value DECIMAL(12,2),
+        status VARCHAR(50) DEFAULT 'Active',
+        notes TEXT,
+        company_id INT(11),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE SET NULL
     )",
 
     // Units table
@@ -208,7 +242,7 @@ if ($success) {
     // Insert sample data for testing if needed
     $sampleData = [
         // Sample property
-        "INSERT INTO properties (name, address, city, state, zip, type) 
+        "INSERT INTO properties (name, address, city, state, zip, property_type) 
          VALUES ('Oakwood Apartments', '123 Main St', 'Springfield', 'IL', '62701', 'Multi-family') 
          ON DUPLICATE KEY UPDATE name = name",
 
@@ -245,9 +279,6 @@ if ($success) {
 
     echo "Sample data inserted successfully!<br>";
 }
-
-
-//The rest of the original code is removed because it is replaced by the edited code.
 
 
 echo "Database initialization completed!";

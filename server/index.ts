@@ -120,27 +120,16 @@ async function startServer() {
       return res.status(404).json({ error: 'API endpoint not found' });
     }
 
-    if (process.env.NODE_ENV === "development") {
-      console.log(`Development mode: Redirecting ${req.originalUrl} to Vite dev server`);
-      return res.redirect(`http://localhost:${PORT}${req.originalUrl}`);
-    } else {
-      let indexPath = path.resolve(__dirname, "../client/dist/index.html");
-      let publicPath = path.resolve(__dirname, "../client/public/index.html");
-      let fallbackPath = path.resolve(__dirname, "../dist/index.html");
-
-      console.log(`Production mode: Attempting to serve SPA from: ${indexPath} for route: ${req.originalUrl}`);
-      console.log(`Current directory: ${__dirname}`);
-
-      console.log(`Available files in client: ${fs.existsSync(path.resolve(__dirname, "../client")) ? 
-        fs.readdirSync(path.resolve(__dirname, "../client")).join(", ") : "client dir not found"}`);
-
-      try {
-        const clientDistIndexPath = path.resolve(__dirname, "../client/dist/index.html");
-        console.log(`Serving index.html from: ${clientDistIndexPath}`);
+    // Send the index.html file for client-side routing
+    const clientDistIndexPath = path.resolve(__dirname, "../client/dist/index.html");
+    console.log(`Attempting to serve SPA from: ${clientDistIndexPath} for route: ${req.originalUrl}`);
+    
+    try {
+      if (fs.existsSync(clientDistIndexPath)) {
         return res.sendFile(clientDistIndexPath);
-      } catch (error) {
-        console.error('Error handling SPA route:', error);
-
+      } else {
+        console.warn(`Index file not found at ${clientDistIndexPath}, creating a simple one`);
+        // Serve a fallback page if the main index.html doesn't exist
         return res.status(200).send(`
           <!DOCTYPE html>
           <html lang="en">
@@ -156,13 +145,16 @@ async function startServer() {
           </head>
           <body>
             <h1>Property Management System</h1>
-            <div class="message">The application is starting up.</div>
-            <p>Please wait a moment while the system initializes...</p>
+            <div class="message">The application is being built...</div>
+            <p>Please wait a moment or try refreshing the page.</p>
             <a href="/"><button>Refresh Page</button></a>
           </body>
           </html>
         `);
       }
+    } catch (error) {
+      console.error('Error handling SPA route:', error);
+      return res.status(500).send('Server error while serving the application.');
     }
   });
 

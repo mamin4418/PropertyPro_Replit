@@ -53,28 +53,65 @@ async function startServer() {
     console.error("Error checking dist directory:", error);
   }
 
+  // First check if client/dist exists and log its contents for debugging
+  try {
+    const distExists = fs.existsSync(clientDistPath);
+    console.log(`Client dist directory exists: ${distExists}`);
+    if (distExists) {
+      const distFiles = fs.readdirSync(clientDistPath);
+      console.log(`Files in dist directory: ${distFiles.join(', ')}`);
+      
+      // Check for index.html specifically
+      const hasIndexHtml = distFiles.includes('index.html');
+      console.log(`index.html exists in dist: ${hasIndexHtml}`);
+      
+      if (hasIndexHtml) {
+        console.log(`Found index.html in: ${path.join(clientDistPath, 'index.html')}`);
+      } else {
+        console.warn("WARNING: index.html not found in client/dist. The client may not have been built properly.");
+      }
+    } else {
+      console.warn("WARNING: client/dist directory does not exist. Please build the client application first.");
+    }
+  } catch (error) {
+    console.error("Error checking dist directory:", error);
+  }
+
   // Configure static files with proper cache headers and MIME types
   app.use(express.static(clientDistPath, {
     etag: true,
     lastModified: true,
     maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0,
-    setHeaders: (res, path) => {
+    setHeaders: (res, filePath) => {
       // Set proper MIME types for common files
-      if (path.endsWith('.js')) {
-        res.setHeader('Content-Type', 'application/javascript');
-      } else if (path.endsWith('.css')) {
-        res.setHeader('Content-Type', 'text/css');
-      } else if (path.endsWith('.html')) {
+      if (filePath.endsWith('.js')) {
+        res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
+      } else if (filePath.endsWith('.mjs')) {
+        res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
+      } else if (filePath.endsWith('.css')) {
+        res.setHeader('Content-Type', 'text/css; charset=UTF-8');
+      } else if (filePath.endsWith('.html')) {
         res.setHeader('Content-Type', 'text/html; charset=UTF-8');
-      } else if (path.endsWith('.svg')) {
+      } else if (filePath.endsWith('.svg')) {
         res.setHeader('Content-Type', 'image/svg+xml');
-      } else if (path.endsWith('.png')) {
+      } else if (filePath.endsWith('.png')) {
         res.setHeader('Content-Type', 'image/png');
-      } else if (path.endsWith('.jpg') || path.endsWith('.jpeg')) {
+      } else if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) {
         res.setHeader('Content-Type', 'image/jpeg');
+      } else if (filePath.endsWith('.json')) {
+        res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+      } else if (filePath.endsWith('.woff2')) {
+        res.setHeader('Content-Type', 'font/woff2');
+      } else if (filePath.endsWith('.woff')) {
+        res.setHeader('Content-Type', 'font/woff');
+      } else if (filePath.endsWith('.ttf')) {
+        res.setHeader('Content-Type', 'font/ttf');
       }
-      // Log static file requests for debugging
-      console.log(`Serving static file: ${path}`);
+      
+      // Don't cache HTML in development
+      if (process.env.NODE_ENV !== 'production' && filePath.endsWith('.html')) {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      }
     }
   }));
 
@@ -82,7 +119,18 @@ async function startServer() {
   app.use('/assets', express.static(path.join(clientDistPath, 'assets'), {
     etag: true,
     immutable: true,
-    maxAge: '1y'
+    maxAge: '1y',
+    setHeaders: (res, filePath) => {
+      // Set proper content types for assets
+      if (filePath.endsWith('.js')) {
+        res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
+      } else if (filePath.endsWith('.css')) {
+        res.setHeader('Content-Type', 'text/css; charset=UTF-8');
+      } else if (filePath.endsWith('.svg')) {
+        res.setHeader('Content-Type', 'image/svg+xml');
+      }
+      console.log(`Serving asset: ${filePath}`);
+    }
   }));
 
   app.use((req, res, next) => {
@@ -124,6 +172,17 @@ async function startServer() {
     res.json({ time: new Date().toISOString(), env: process.env.NODE_ENV });
   });
 
+  // API routes
+  app.use('/api', (req, res, next) => {
+    console.log(`API Request: ${req.method} ${req.url}`);
+    next();
+  });
+
+  // Simple diagnostic endpoint
+  app.get('/api/time', (req, res) => {
+    res.json({ time: new Date().toISOString(), env: process.env.NODE_ENV });
+  });
+
   // Handle client-side routing - must be after API routes but before error handlers
   app.get('*', (req, res, next) => {
     // Skip API routes
@@ -134,7 +193,7 @@ async function startServer() {
     console.log(`Client-side route requested: ${req.originalUrl}`);
 
     // Send the index.html file for client-side routing
-    const clientDistIndexPath = path.resolve(__dirname, "../client/dist/index.html");
+    const clientDistIndexPath = path.resolve(clientDistPath, "index.html");
     console.log(`Attempting to serve SPA from: ${clientDistIndexPath}`);
 
     try {
@@ -150,8 +209,8 @@ async function startServer() {
         });
       } else {
         console.warn(`Index file not found at ${clientDistIndexPath}. Make sure to build the client app first.`);
-        // Inform user to build the client
-        return res.status(200).send(`
+        // Create a fallback index.html
+        const fallbackHTML = `
           <!DOCTYPE html>
           <html lang="en">
           <head>
@@ -159,20 +218,52 @@ async function startServer() {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Property Management System</title>
             <style>
-              body { font-family: Arial, sans-serif; padding: 20px; text-align: center; }
-              .message { margin: 20px 0; }
-              .error { color: #e74c3c; }
-              button { padding: 10px 20px; background: #3498db; color: white; border: none; cursor: pointer; }
+              body { font-family: Arial, sans-serif; padding: 20px; text-align: center; max-width: 800px; margin: 0 auto; }
+              .message { margin: 20px 0; padding: 15px; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; }
+              .info { background-color: #cce5ff; border: 1px solid #b8daff; }
+              h1 { color: #333; }
+              button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; border-radius: 5px; }
+              button:hover { background: #0069d9; }
+              .instructions { text-align: left; background: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 20px; }
+              .instructions code { background: #e9ecef; padding: 2px 5px; border-radius: 3px; }
             </style>
           </head>
           <body>
             <h1>Property Management System</h1>
-            <div class="message error">The client application needs to be built first.</div>
-            <p>Please run the "Fix Home Page Preview" workflow to build the client and start the server properly.</p>
-            <p>Current time: ${new Date().toLocaleString()}</p>
+            <div class="message">The client application needs to be built before viewing.</div>
+            
+            <div class="message info">
+              <p><strong>Current Status:</strong> Server is running but client build is missing.</p>
+              <p>Server Time: ${new Date().toLocaleString()}</p>
+            </div>
+            
+            <button onclick="location.reload()">Refresh Page</button>
+            
+            <div class="instructions">
+              <h3>How to fix:</h3>
+              <ol>
+                <li>Run the workflow named "Complete Build and Start" from the Run menu</li>
+                <li>This will build the client app and restart the server</li>
+                <li>After the build completes, refresh this page</li>
+              </ol>
+            </div>
           </body>
           </html>
-        `);
+        `;
+        
+        // Write the fallback HTML to the client/dist directory
+        try {
+          if (!fs.existsSync(clientDistPath)) {
+            fs.mkdirSync(clientDistPath, { recursive: true });
+            console.log(`Created client/dist directory`);
+          }
+          fs.writeFileSync(clientDistIndexPath, fallbackHTML);
+          console.log(`Created fallback index.html at ${clientDistIndexPath}`);
+          return res.sendFile(clientDistIndexPath);
+        } catch (writeError) {
+          console.error('Error creating fallback index.html:', writeError);
+          return res.send(fallbackHTML);
+        }
       }
     } catch (error) {
       console.error('Error handling SPA route:', error);

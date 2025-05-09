@@ -20,7 +20,7 @@ localPort = 24678
 externalPort = 80
 
 [workflows]
-runButton = "Restart Clean Server"
+runButton = "Complete Build and Start"
 
 [[workflows.workflow]]
 name = "Project"
@@ -2776,10 +2776,6 @@ args = "rm -rf node_modules/.vite"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "rm -rf client/node_modules/.vite"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "mkdir -p client/dist"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

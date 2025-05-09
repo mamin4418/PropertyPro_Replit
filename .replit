@@ -20,7 +20,7 @@ localPort = 24678
 externalPort = 80
 
 [workflows]
-runButton = "Fix and Restart Dev Server"
+runButton = "Fix Preview Issue"
 
 [[workflows.workflow]]
 name = "Project"
@@ -2338,11 +2338,187 @@ args = "mkdir -p client/dist"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "echo \"Making sure client index.html exists...\""
+args = "echo \"Ensuring simple index.html exists in client/dist...\""
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "touch client/dist/index.html"
+args = "cat > client/dist/index.html << 'EOL'"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "<!DOCTYPE html>"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "<html lang=\"en\">"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "  <head>"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "    <meta charset=\"UTF-8\" />"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "    <title>Property Management System</title>"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "    <style>"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "      body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; color: #333; }"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "      .container { max-width: 1200px; margin: 0 auto; }"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "      header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid #eee; margin-bottom: 20px; }"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "      nav { display: flex; gap: 20px; }"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "      nav a { text-decoration: none; color: #0066cc; }"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "      main { min-height: 500px; }"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "      .card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "      .card-title { margin-top: 0; }"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "      button { background: #0066cc; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; }"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "      button:hover { background: #0055aa; }"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "    </style>"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "  </head>"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "  <body>"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "    <div class=\"container\">"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "      <header>"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "        <h1>Property Management System</h1>"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "        <nav>"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "          <a href=\"#\">Dashboard</a>"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "          <a href=\"#\">Properties</a>"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "          <a href=\"#\">Tenants</a>"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "          <a href=\"#\">Maintenance</a>"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "        </nav>"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "      </header>"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "      <main>"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "        <div class=\"card\">"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "          <h2 class=\"card-title\">Welcome to your Property Management System</h2>"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "          <p>The system is running successfully.</p>"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "          <p>You can now navigate to different sections using the links above.</p>"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "          <button onclick=\"location.reload()\">Refresh Page</button>"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "        </div>"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "      </main>"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "    </div>"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "  </body>"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "</html>"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "EOL"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Copying test.html to client/dist...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cp test.html client/dist/"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

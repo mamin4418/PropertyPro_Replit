@@ -1,9 +1,9 @@
+
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
 export default defineConfig({
-  root: './',
   plugins: [react()],
   resolve: {
     alias: {
@@ -11,7 +11,15 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: './dist',
+    outDir: 'dist',
     emptyOutDir: true,
+  },
+  server: {
+    host: '0.0.0.0',
+    cors: true,
+    hmr: {
+      clientPort: 443,
+      protocol: 'wss',
+    },
   },
 });

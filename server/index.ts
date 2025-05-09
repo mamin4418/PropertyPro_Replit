@@ -81,11 +81,18 @@ async function startServer() {
   }
 
   console.log(`Serving static files from: ${clientDistPath}`);
-  app.use(express.static(clientDistPath));
+  app.use(express.static(clientDistPath, { 
+    etag: true,
+    lastModified: true,
+    maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0
+  }));
 
-  const altStaticPath = path.resolve(__dirname, "../dist");
-  console.log(`Also serving static files from: ${altStaticPath}`);
-  app.use(express.static(altStaticPath));
+  // Add specific route for assets to improve debugging
+  app.use('/assets', express.static(path.join(clientDistPath, 'assets'), {
+    etag: true,
+    immutable: true,
+    maxAge: '1y'
+  }));
 
   app.use((req, res, next) => {
     console.log(`${req.method} ${req.url}`);
@@ -122,14 +129,17 @@ async function startServer() {
 
     // Send the index.html file for client-side routing
     const clientDistIndexPath = path.resolve(__dirname, "../client/dist/index.html");
-    console.log(`Attempting to serve SPA from: ${clientDistIndexPath} for route: ${req.originalUrl}`);
+    console.log(`Serving SPA from: ${clientDistIndexPath} for route: ${req.originalUrl}`);
     
     try {
       if (fs.existsSync(clientDistIndexPath)) {
-        return res.sendFile(clientDistIndexPath);
+        return res.sendFile(clientDistIndexPath, { 
+          etag: true,
+          lastModified: true 
+        });
       } else {
-        console.warn(`Index file not found at ${clientDistIndexPath}, creating a simple one`);
-        // Serve a fallback page if the main index.html doesn't exist
+        console.warn(`Index file not found at ${clientDistIndexPath}. Make sure to build the client app first.`);
+        // Inform user to build the client
         return res.status(200).send(`
           <!DOCTYPE html>
           <html lang="en">
@@ -140,14 +150,15 @@ async function startServer() {
             <style>
               body { font-family: Arial, sans-serif; padding: 20px; text-align: center; }
               .message { margin: 20px 0; }
+              .error { color: #e74c3c; }
               button { padding: 10px 20px; background: #3498db; color: white; border: none; cursor: pointer; }
             </style>
           </head>
           <body>
             <h1>Property Management System</h1>
-            <div class="message">The application is being built...</div>
-            <p>Please wait a moment or try refreshing the page.</p>
-            <a href="/"><button>Refresh Page</button></a>
+            <div class="message error">The client application needs to be built first.</div>
+            <p>Please run the "Fix Home Page Preview" workflow to build the client and start the server properly.</p>
+            <p>Current time: ${new Date().toLocaleString()}</p>
           </body>
           </html>
         `);

@@ -37,17 +37,35 @@ async function startServer() {
     if (distExists) {
       const distFiles = fs.readdirSync(clientDistPath);
       console.log(`Files in dist directory: ${distFiles.join(', ')}`);
+      
+      // Check for index.html specifically
+      const hasIndexHtml = distFiles.includes('index.html');
+      console.log(`index.html exists in dist: ${hasIndexHtml}`);
+      
+      if (!hasIndexHtml) {
+        console.warn("WARNING: index.html not found in client/dist. The client may not have been built properly.");
+      }
+    } else {
+      console.warn("WARNING: client/dist directory does not exist. Please build the client application first.");
     }
   } catch (error) {
     console.error("Error checking dist directory:", error);
   }
 
-  // Configure static files with proper cache headers
+  // Configure static files with proper cache headers and MIME types
   app.use(express.static(clientDistPath, {
     etag: true,
     lastModified: true,
     maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0,
     setHeaders: (res, path) => {
+      // Set proper MIME types for common files
+      if (path.endsWith('.js')) {
+        res.setHeader('Content-Type', 'application/javascript');
+      } else if (path.endsWith('.css')) {
+        res.setHeader('Content-Type', 'text/css');
+      } else if (path.endsWith('.html')) {
+        res.setHeader('Content-Type', 'text/html; charset=UTF-8');
+      }
       // Log static file requests for debugging
       console.log(`Serving static file: ${path}`);
     }

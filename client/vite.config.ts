@@ -1,4 +1,3 @@
-
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
@@ -13,21 +12,25 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
-    sourcemap: true,
-    // Log more info during build
-    reportCompressedSize: true,
+    sourcemap: process.env.NODE_ENV !== 'production',
     chunkSizeWarningLimit: 1000,
+    reportCompressedSize: false,
   },
   server: {
     host: '0.0.0.0',
-    port: 3001, // Use a different port than the server to avoid conflicts
+    port: 5173,
+    strictPort: true,
     cors: true,
     hmr: {
       clientPort: 443,
       protocol: 'wss',
-      // Add more HMR options for better reliability in Replit
-      timeout: 20000,
-      overlay: true,
     },
   },
+  optimizeDeps: {
+    force: true
+  },
+  // Improve performance on Replit
+  esbuild: {
+    logOverride: { 'this-is-undefined-in-esm': 'silent' }
+  }
 });

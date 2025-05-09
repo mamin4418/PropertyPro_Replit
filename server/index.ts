@@ -81,12 +81,13 @@ async function startServer() {
     console.error("Error checking dist directory:", error);
   }
 
-  // Configure static files with proper cache headers and MIME types
+  // Enhanced static file serving
   app.use(express.static(clientDistPath, {
     etag: true,
     lastModified: true,
     maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0,
     setHeaders: (res, filePath) => {
+      console.log(`Serving static file: ${filePath}`);
       // Set proper MIME types for common files
       if (filePath.endsWith('.js')) {
         res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');

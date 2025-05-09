@@ -132,6 +132,57 @@ if (isset($_POST['seed_data']) && $_POST['seed_data'] == 'on') {
             throw new Exception("Connection failed: " . $conn->connect_error);
         }
         
+        // Set up default roles and permissions
+        $roles = [
+            ['admin', 'Administrator with full access to the system'],
+            ['property_manager', 'Property manager with access to assigned properties'],
+            ['owner', 'Property owner with limited access'],
+            ['tenant', 'Tenant with access to their own information'],
+            ['maintenance', 'Maintenance staff with access to maintenance requests'],
+            ['accountant', 'Accountant with access to financial information']
+        ];
+        
+        foreach ($roles as $role) {
+            $stmt = $conn->prepare("INSERT IGNORE INTO roles (name, description) VALUES (?, ?)");
+            $stmt->bind_param("ss", $role[0], $role[1]);
+            $stmt->execute();
+            $stmt->close();
+        }
+        
+        // Create default admin user
+        $username = 'admin';
+        $password = password_hash('admin123', PASSWORD_DEFAULT);
+        $email = 'admin@example.com';
+        $first_name = 'System';
+        $last_name = 'Administrator';
+        $role = 'admin';
+        
+        $stmt = $conn->prepare("INSERT IGNORE INTO users (username, password, email, first_name, last_name, role) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssss", $username, $password, $email, $first_name, $last_name, $role);
+        $stmt->execute();
+        $stmt->close();
+        
+        // Set up default expense categories
+        $expenseCategories = [
+            ['Maintenance', 'Regular maintenance expenses'],
+            ['Utilities', 'Utility bills including water, electricity, gas, etc.'],
+            ['Insurance', 'Property insurance expenses'],
+            ['Taxes', 'Property taxes'],
+            ['Mortgage', 'Mortgage payments'],
+            ['Management', 'Property management fees'],
+            ['Legal', 'Legal and professional fees'],
+            ['Advertising', 'Marketing and advertising expenses'],
+            ['Supplies', 'Office and maintenance supplies'],
+            ['Other', 'Miscellaneous expenses']
+        ];
+        
+        foreach ($expenseCategories as $category) {
+            $stmt = $conn->prepare("INSERT IGNORE INTO expense_categories (name, description) VALUES (?, ?)");
+            $stmt->bind_param("ss", $category[0], $category[1]);
+            $stmt->execute();
+            $stmt->close();
+        }
+        
         // Sample properties
         $properties = [
             ['Sunset Apartments', '123 Sunset Blvd', 'Los Angeles', 'CA', '90210', 'Apartment Complex', '2010-05-15', 15, 200000],
@@ -211,6 +262,82 @@ if (isset($_POST['seed_data']) && $_POST['seed_data'] == 'on') {
                 $stmt->execute();
                 $stmt->close();
             }
+        }
+        
+        // Sample bank accounts
+        $bankAccounts = [
+            ['Operating Account', '123456789', '987654321', 'First National Bank', 'checking', 10000, 10000],
+            ['Reserve Account', '987654321', '123456789', 'First National Bank', 'savings', 5000, 5000]
+        ];
+        
+        foreach ($bankAccounts as $account) {
+            $stmt = $conn->prepare("INSERT INTO bank_accounts (account_name, account_number, routing_number, bank_name, account_type, opening_balance, current_balance) 
+                                    VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("sssssdd", $account[0], $account[1], $account[2], $account[3], $account[4], $account[5], $account[6]);
+            $stmt->execute();
+            $stmt->close();
+        }
+        
+        // Sample applications
+        $applications = [
+            [1, 1, 'John', 'Smith', 'john.smith@example.com', '555-111-2222', '1985-06-15', '123 Current St', 'Springfield', 'IL', '62701', 'Jane Landlord', '555-333-4444', 'employed', 'Acme Corp', '555-555-6666', 4000],
+            [1, 2, 'Sarah', 'Johnson', 'sarah.johnson@example.com', '555-777-8888', '1990-03-22', '456 Present Ave', 'Springfield', 'IL', '62702', 'Tom Owner', '555-999-0000', 'employed', 'XYZ Inc', '555-111-3333', 3500]
+        ];
+        
+        foreach ($applications as $app) {
+            $stmt = $conn->prepare("INSERT INTO applications (property_id, unit_id, first_name, last_name, email, phone, date_of_birth, current_address, current_city, current_state, current_zip, current_landlord_name, current_landlord_phone, employment_status, employer_name, employer_phone, monthly_income) 
+                                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("iisssssssssssssd", $app[0], $app[1], $app[2], $app[3], $app[4], $app[5], $app[6], $app[7], $app[8], $app[9], $app[10], $app[11], $app[12], $app[13], $app[14], $app[15], $app[16]);
+            $stmt->execute();
+            $stmt->close();
+        }
+        
+        // Sample screening criteria
+        $stmt = $conn->prepare("INSERT INTO screening_criteria (name, description, min_credit_score, min_income_ratio, criminal_check, eviction_check, employment_verification, landlord_verification) 
+                               VALUES ('Standard Screening', 'Default screening criteria for all applicants', 650, 3.0, 1, 1, 1, 1)");
+        $stmt->execute();
+        $stmt->close();
+        
+        // Sample expenses
+        $expenses = [
+            [1, 1, 1, 250, '2023-01-15', 'Repair leaky faucet', 'check', 'CHK1001', 0, NULL, 1],
+            [1, NULL, 2, 450, '2023-01-10', 'Electric bill for January', 'bank transfer', 'BT1002', 1, 'monthly', NULL],
+            [2, NULL, 4, 1200, '2023-01-05', 'Property tax Q1', 'check', 'CHK1003', 1, 'quarterly', NULL]
+        ];
+        
+        foreach ($expenses as $expense) {
+            $stmt = $conn->prepare("INSERT INTO expenses (property_id, unit_id, category_id, amount, expense_date, description, payment_method, reference_number, recurring, recurring_interval, vendor_id) 
+                                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("iiidssssssi", $expense[0], $expense[1], $expense[2], $expense[3], $expense[4], $expense[5], $expense[6], $expense[7], $expense[8], $expense[9], $expense[10]);
+            $stmt->execute();
+            $stmt->close();
+        }
+        
+        // Sample settings
+        $settings = [
+            ['company_name', 'Property Management System', 'general', 'text', 'Company name displayed in the system'],
+            ['company_logo', 'assets/images/logo.png', 'general', 'text', 'Path to company logo'],
+            ['date_format', 'Y-m-d', 'general', 'select', 'Default date format for the system'],
+            ['currency_symbol', '$', 'general', 'text', 'Currency symbol for financial amounts'],
+            ['default_theme', 'light', 'appearance', 'select', 'Default theme for the system'],
+            ['email_from', 'noreply@propertymgmt.com', 'email', 'text', 'Default from email address'],
+            ['smtp_host', 'smtp.example.com', 'email', 'text', 'SMTP server hostname'],
+            ['smtp_port', '587', 'email', 'number', 'SMTP server port'],
+            ['smtp_secure', 'tls', 'email', 'select', 'SMTP security protocol'],
+            ['smtp_auth', '1', 'email', 'boolean', 'SMTP authentication required'],
+            ['smtp_username', 'username', 'email', 'text', 'SMTP username'],
+            ['smtp_password', 'password', 'email', 'text', 'SMTP password'],
+            ['maintenance_notification', '1', 'notifications', 'boolean', 'Send notifications for maintenance requests'],
+            ['payment_notification', '1', 'notifications', 'boolean', 'Send notifications for payments'],
+            ['lease_expiration_notice', '30', 'notifications', 'number', 'Days before lease expiration to send notice']
+        ];
+        
+        foreach ($settings as $setting) {
+            $stmt = $conn->prepare("INSERT INTO settings (setting_key, setting_value, setting_group, setting_type, description) 
+                                   VALUES (?, ?, ?, ?, ?)");
+            $stmt->bind_param("sssss", $setting[0], $setting[1], $setting[2], $setting[3], $setting[4]);
+            $stmt->execute();
+            $stmt->close();
         }
         
         $conn->close();

@@ -20,7 +20,7 @@ localPort = 24678
 externalPort = 80
 
 [workflows]
-runButton = "Complete Rebuild and Serve"
+runButton = "Restart Dev Server"
 
 [[workflows.workflow]]
 name = "Project"

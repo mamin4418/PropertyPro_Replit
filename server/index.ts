@@ -29,6 +29,7 @@ async function startServer() {
   const clientDistPath = path.resolve(__dirname, "../client/dist");
   console.log(`Environment: ${process.env.NODE_ENV}`);
   console.log(`Serving static files from: ${clientDistPath}`);
+  console.log(`Server port: ${PORT}`);
 
   // Check if dist directory exists and has content
   try {

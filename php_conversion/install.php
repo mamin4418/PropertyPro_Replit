@@ -54,7 +54,10 @@ echo "</div>";
 $folders_to_check = [
     'assets',
     'config',
-    'includes'
+    'includes',
+    'models',
+    'pages',
+    'api'
 ];
 
 echo "<div class='step'>";
@@ -108,6 +111,87 @@ if (file_exists('config/database.php')) {
     echo "<p>Database Configuration: Not Found ✗ - config/database.php does not exist</p>";
     $success = false;
 }
+echo "</div>";
+
+// Step 5: Seed sample data (optional)
+echo "<div class='step'>";
+echo "<h3>Step 5: Sample Data (Optional)</h3>";
+
+echo "<form method='post' action='" . $_SERVER['PHP_SELF'] . "'>";
+echo "<div class='form-check mb-3'>";
+echo "<input class='form-check-input' type='checkbox' name='seed_data' id='seed_data' " . (isset($_POST['seed_data']) ? 'checked' : '') . ">";
+echo "<label class='form-check-label' for='seed_data'>Install sample data (recommended for testing)</label>";
+echo "</div>";
+
+if (isset($_POST['seed_data']) && $_POST['seed_data'] == 'on') {
+    try {
+        require_once 'config/database.php';
+        $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+        
+        if ($conn->connect_error) {
+            throw new Exception("Connection failed: " . $conn->connect_error);
+        }
+        
+        // Sample properties
+        $properties = [
+            ['Sunset Apartments', '123 Sunset Blvd', 'Los Angeles', 'CA', '90210', 'Apartment Complex', '2010-05-15', 15, 200000],
+            ['Ocean View Condos', '456 Beach Dr', 'Miami', 'FL', '33139', 'Condominium', '2015-10-10', 8, 350000],
+            ['Mountain Retreat', '789 Pine Rd', 'Denver', 'CO', '80202', 'Single Family', '2018-07-20', 1, 450000]
+        ];
+        
+        foreach ($properties as $property) {
+            $stmt = $conn->prepare("INSERT INTO properties (name, address, city, state, zip, type, acquisition_date, units, purchase_price) 
+                                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("sssssssid", $property[0], $property[1], $property[2], $property[3], $property[4], 
+                              $property[5], $property[6], $property[7], $property[8]);
+            $stmt->execute();
+            $stmt->close();
+        }
+        
+        // Sample tenants
+        $tenants = [
+            ['John', 'Doe', 'john.doe@example.com', '555-123-4567', '1980-01-15'],
+            ['Jane', 'Smith', 'jane.smith@example.com', '555-987-6543', '1985-05-20'],
+            ['Michael', 'Johnson', 'michael.johnson@example.com', '555-456-7890', '1975-11-30']
+        ];
+        
+        foreach ($tenants as $tenant) {
+            $stmt = $conn->prepare("INSERT INTO tenants (first_name, last_name, email, phone, date_of_birth) 
+                                    VALUES (?, ?, ?, ?, ?)");
+            $stmt->bind_param("sssss", $tenant[0], $tenant[1], $tenant[2], $tenant[3], $tenant[4]);
+            $stmt->execute();
+            $stmt->close();
+        }
+        
+        // Sample units
+        for ($i = 1; $i <= 3; $i++) {
+            $unit_number = "Unit " . $i;
+            $property_id = $i;
+            $bedrooms = rand(1, 3);
+            $bathrooms = $bedrooms > 1 ? 2 : 1;
+            $sq_ft = $bedrooms * 500 + 200;
+            $rent = $bedrooms * 800 + 400;
+            
+            $stmt = $conn->prepare("INSERT INTO units (property_id, unit_number, bedrooms, bathrooms, sq_feet, rent_amount, status) 
+                                    VALUES (?, ?, ?, ?, ?, ?, 'vacant')");
+            $stmt->bind_param("isiidi", $property_id, $unit_number, $bedrooms, $bathrooms, $sq_ft, $rent);
+            $stmt->execute();
+            $stmt->close();
+        }
+        
+        $conn->close();
+        echo "<p>Sample data installed successfully! ✓</p>";
+        $messages[] = "Sample data installed successfully.";
+    } catch (Exception $e) {
+        echo "<p>Sample data installation failed: " . $e->getMessage() . " ✗</p>";
+        $success = false;
+    }
+} else {
+    echo "<p>No sample data will be installed. You can add this later manually.</p>";
+}
+
+echo "<button type='submit' class='btn btn-primary'>Install Sample Data</button>";
+echo "</form>";
 echo "</div>";
 
 // Final status

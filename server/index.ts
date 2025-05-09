@@ -265,6 +265,7 @@ async function startServer() {
       return res.status(500).send('Server error while serving the application.');
     }
   });
+  });
 
   const server = httpServer || createServer(app);
 

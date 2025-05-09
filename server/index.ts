@@ -42,11 +42,11 @@ async function startServer() {
     if (distExists) {
       const distFiles = fs.readdirSync(clientDistPath);
       console.log(`Files in dist directory: ${distFiles.join(', ')}`);
-      
+
       // Check for index.html specifically
       const hasIndexHtml = distFiles.includes('index.html');
       console.log(`index.html exists in dist: ${hasIndexHtml}`);
-      
+
       if (!hasIndexHtml) {
         console.warn("WARNING: index.html not found in client/dist. The client may not have been built properly.");
       }
@@ -64,11 +64,11 @@ async function startServer() {
     if (distExists) {
       const distFiles = fs.readdirSync(clientDistPath);
       console.log(`Files in dist directory: ${distFiles.join(', ')}`);
-      
+
       // Check for index.html specifically
       const hasIndexHtml = distFiles.includes('index.html');
       console.log(`index.html exists in dist: ${hasIndexHtml}`);
-      
+
       if (hasIndexHtml) {
         console.log(`Found index.html in: ${path.join(clientDistPath, 'index.html')}`);
       } else {
@@ -111,7 +111,7 @@ async function startServer() {
       } else if (filePath.endsWith('.ttf')) {
         res.setHeader('Content-Type', 'font/ttf');
       }
-      
+
       // Don't cache HTML in development
       if (process.env.NODE_ENV !== 'production' && filePath.endsWith('.html')) {
         res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
@@ -226,14 +226,14 @@ async function startServer() {
           <body>
             <h1>Property Management System</h1>
             <div class="message">The client application needs to be built before viewing.</div>
-            
+
             <div class="message info">
               <p><strong>Current Status:</strong> Server is running but client build is missing.</p>
               <p>Server Time: ${new Date().toLocaleString()}</p>
             </div>
-            
+
             <button onclick="location.reload()">Refresh Page</button>
-            
+
             <div class="instructions">
               <h3>How to fix:</h3>
               <ol>
@@ -245,7 +245,7 @@ async function startServer() {
           </body>
           </html>
         `;
-        
+
         // Write the fallback HTML to the client/dist directory
         try {
           if (!fs.existsSync(clientDistPath)) {

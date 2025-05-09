@@ -188,6 +188,21 @@ $tables = [
         FOREIGN KEY (utility_account_id) REFERENCES utility_accounts(id) ON DELETE CASCADE
     )",
 
+    // Payments table
+    "CREATE TABLE IF NOT EXISTS payments (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        lease_id INT NOT NULL,
+        amount DECIMAL(10, 2) NOT NULL,
+        payment_date DATE NOT NULL,
+        payment_method VARCHAR(50) NOT NULL, -- check, cash, online, bank transfer, credit card, other
+        payment_type VARCHAR(50) NOT NULL, -- rent, deposit, fee, utility, other
+        reference_number VARCHAR(100),
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (lease_id) REFERENCES leases(id) ON DELETE CASCADE
+    )",
+
     // Inspections table
     "CREATE TABLE IF NOT EXISTS inspections (
         id INT AUTO_INCREMENT PRIMARY KEY,

@@ -1,288 +1,278 @@
 
 <?php
 class Payment {
-    private $db;
-
+    private $conn;
+    
     public function __construct($db) {
-        $this->db = $db;
+        $this->conn = $db;
     }
-
-    public function getAllPayments($filters = []) {
-        $sql = "SELECT p.*, 
-                l.id as lease_id, 
-                t.first_name as tenant_first_name, 
-                t.last_name as tenant_last_name,
-                pr.name as property_name,
-                u.unit_number
-                FROM payments p
-                LEFT JOIN leases l ON p.lease_id = l.id
-                LEFT JOIN tenants t ON l.tenant_id = t.id
-                LEFT JOIN units u ON l.unit_id = u.id
-                LEFT JOIN properties pr ON u.property_id = pr.id
-                WHERE 1=1";
+    
+    /**
+     * Get all payments with related info
+     * @return array Array of payments
+     */
+    public function getAllPayments() {
+        $query = "SELECT p.*, l.unit_id, 
+                  CONCAT(t.first_name, ' ', t.last_name) as tenant_name,
+                  u.unit_number, pr.name as property_name
+                  FROM payments p
+                  JOIN leases l ON p.lease_id = l.id
+                  JOIN tenants t ON l.tenant_id = t.id
+                  JOIN units u ON l.unit_id = u.id
+                  JOIN properties pr ON u.property_id = pr.id
+                  ORDER BY p.payment_date DESC";
         
-        $params = [];
-        $param_types = "";
-        
-        // Apply filters
-        if (isset($filters['tenant_id']) && !empty($filters['tenant_id'])) {
-            $sql .= " AND l.tenant_id = ?";
-            $params[] = $filters['tenant_id'];
-            $param_types .= "i";
-        }
-        
-        if (isset($filters['property_id']) && !empty($filters['property_id'])) {
-            $sql .= " AND pr.id = ?";
-            $params[] = $filters['property_id'];
-            $param_types .= "i";
-        }
-        
-        if (isset($filters['unit_id']) && !empty($filters['unit_id'])) {
-            $sql .= " AND u.id = ?";
-            $params[] = $filters['unit_id'];
-            $param_types .= "i";
-        }
-        
-        if (isset($filters['status']) && !empty($filters['status'])) {
-            $sql .= " AND p.status = ?";
-            $params[] = $filters['status'];
-            $param_types .= "s";
-        }
-        
-        if (isset($filters['date_from']) && !empty($filters['date_from'])) {
-            $sql .= " AND p.payment_date >= ?";
-            $params[] = $filters['date_from'];
-            $param_types .= "s";
-        }
-        
-        if (isset($filters['date_to']) && !empty($filters['date_to'])) {
-            $sql .= " AND p.payment_date <= ?";
-            $params[] = $filters['date_to'];
-            $param_types .= "s";
-        }
-        
-        $sql .= " ORDER BY p.payment_date DESC";
-        
-        $stmt = $this->db->prepare($sql);
-        
-        if (!empty($params)) {
-            $stmt->bind_param($param_types, ...$params);
-        }
-        
-        $stmt->execute();
-        $result = $stmt->get_result();
+        $result = $this->conn->query($query);
         
         $payments = [];
-        while ($row = $result->fetch_assoc()) {
-            $payments[] = $row;
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $payments[] = $row;
+            }
         }
         
         return $payments;
     }
-
-    public function getPaymentById($id) {
-        $query = "SELECT p.*, 
-                 l.id as lease_id, 
-                 t.first_name as tenant_first_name, 
-                 t.last_name as tenant_last_name,
-                 t.id as tenant_id,
-                 pr.name as property_name,
-                 pr.id as property_id,
-                 u.unit_number,
-                 u.id as unit_id
-                 FROM payments p
-                 LEFT JOIN leases l ON p.lease_id = l.id
-                 LEFT JOIN tenants t ON l.tenant_id = t.id
-                 LEFT JOIN units u ON l.unit_id = u.id
-                 LEFT JOIN properties pr ON u.property_id = pr.id
-                 WHERE p.id = ?";
-        
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        
-        return $result->fetch_assoc();
-    }
-
+    
+    /**
+     * Get payments by lease ID
+     * @param int $lease_id Lease ID
+     * @return array Array of payments for the specified lease
+     */
     public function getPaymentsByLeaseId($lease_id) {
         $query = "SELECT * FROM payments WHERE lease_id = ? ORDER BY payment_date DESC";
-        $stmt = $this->db->prepare($query);
+        
+        $stmt = $this->conn->prepare($query);
         $stmt->bind_param("i", $lease_id);
         $stmt->execute();
+        
         $result = $stmt->get_result();
         
         $payments = [];
-        while ($row = $result->fetch_assoc()) {
-            $payments[] = $row;
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $payments[] = $row;
+            }
         }
         
+        $stmt->close();
         return $payments;
     }
-
-    public function getPaymentsByTenantId($tenant_id) {
-        $query = "SELECT p.*, 
-                 l.id as lease_id, 
-                 pr.name as property_name,
-                 u.unit_number
-                 FROM payments p
-                 JOIN leases l ON p.lease_id = l.id
-                 JOIN units u ON l.unit_id = u.id
-                 JOIN properties pr ON u.property_id = pr.id
-                 WHERE l.tenant_id = ?
-                 ORDER BY p.payment_date DESC";
+    
+    /**
+     * Get payment by ID
+     * @param int $id Payment ID
+     * @return array|null Payment details or null if not found
+     */
+    public function getPaymentById($id) {
+        $query = "SELECT p.*, l.unit_id, 
+                  CONCAT(t.first_name, ' ', t.last_name) as tenant_name,
+                  u.unit_number, pr.name as property_name
+                  FROM payments p
+                  JOIN leases l ON p.lease_id = l.id
+                  JOIN tenants t ON l.tenant_id = t.id
+                  JOIN units u ON l.unit_id = u.id
+                  JOIN properties pr ON u.property_id = pr.id
+                  WHERE p.id = ?";
         
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param("i", $tenant_id);
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("i", $id);
         $stmt->execute();
+        
         $result = $stmt->get_result();
         
-        $payments = [];
-        while ($row = $result->fetch_assoc()) {
-            $payments[] = $row;
+        if ($result->num_rows > 0) {
+            $payment = $result->fetch_assoc();
+            $stmt->close();
+            return $payment;
         }
         
-        return $payments;
+        $stmt->close();
+        return null;
     }
-
-    public function createPayment($data) {
-        $query = "INSERT INTO payments (lease_id, amount, payment_date, payment_method, 
-                 reference_number, memo, status, created_at) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+    
+    /**
+     * Create a new payment
+     * @param int $lease_id Lease ID
+     * @param float $amount Payment amount
+     * @param string $payment_date Payment date (YYYY-MM-DD)
+     * @param string $payment_method Payment method
+     * @param string $payment_type Payment type
+     * @param string $reference_number Reference number
+     * @param string $notes Notes
+     * @return int|bool Newly created payment ID or false on failure
+     */
+    public function createPayment($lease_id, $amount, $payment_date, $payment_method, $payment_type, $reference_number, $notes) {
+        $query = "INSERT INTO payments (lease_id, amount, payment_date, payment_method, payment_type, reference_number, notes) 
+                  VALUES (?, ?, ?, ?, ?, ?, ?)";
         
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param(
-            "idssss", 
-            $data['lease_id'], 
-            $data['amount'], 
-            $data['payment_date'], 
-            $data['payment_method'], 
-            $data['reference_number'], 
-            $data['memo'],
-            $data['status']
-        );
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("idssss", $lease_id, $amount, $payment_date, $payment_method, $payment_type, $reference_number, $notes);
         
         if ($stmt->execute()) {
-            return $this->db->insert_id;
+            $payment_id = $stmt->insert_id;
+            $stmt->close();
+            return $payment_id;
         }
         
+        $stmt->close();
         return false;
     }
-
-    public function updatePayment($id, $data) {
-        $query = "UPDATE payments SET 
-                 lease_id = ?, 
-                 amount = ?, 
-                 payment_date = ?, 
-                 payment_method = ?, 
-                 reference_number = ?, 
-                 memo = ?, 
-                 status = ?, 
-                 updated_at = NOW()
-                 WHERE id = ?";
+    
+    /**
+     * Update an existing payment
+     * @param int $id Payment ID
+     * @param int $lease_id Lease ID
+     * @param float $amount Payment amount
+     * @param string $payment_date Payment date (YYYY-MM-DD)
+     * @param string $payment_method Payment method
+     * @param string $payment_type Payment type
+     * @param string $reference_number Reference number
+     * @param string $notes Notes
+     * @return bool True on success, false on failure
+     */
+    public function updatePayment($id, $lease_id, $amount, $payment_date, $payment_method, $payment_type, $reference_number, $notes) {
+        $query = "UPDATE payments 
+                  SET lease_id = ?, amount = ?, payment_date = ?, payment_method = ?, 
+                      payment_type = ?, reference_number = ?, notes = ? 
+                  WHERE id = ?";
         
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param(
-            "idssssi", 
-            $data['lease_id'], 
-            $data['amount'], 
-            $data['payment_date'], 
-            $data['payment_method'], 
-            $data['reference_number'], 
-            $data['memo'],
-            $data['status'],
-            $id
-        );
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("idssssi", $lease_id, $amount, $payment_date, $payment_method, $payment_type, $reference_number, $notes, $id);
         
-        return $stmt->execute();
+        $result = $stmt->execute();
+        $stmt->close();
+        
+        return $result;
     }
-
+    
+    /**
+     * Delete a payment
+     * @param int $id Payment ID
+     * @return bool True on success, false on failure
+     */
     public function deletePayment($id) {
         $query = "DELETE FROM payments WHERE id = ?";
-        $stmt = $this->db->prepare($query);
+        
+        $stmt = $this->conn->prepare($query);
         $stmt->bind_param("i", $id);
         
-        return $stmt->execute();
+        $result = $stmt->execute();
+        $stmt->close();
+        
+        return $result;
     }
     
-    public function getPaymentTotals($filters = []) {
-        $sql = "SELECT SUM(p.amount) as total_amount, COUNT(p.id) as total_count
-                FROM payments p
-                LEFT JOIN leases l ON p.lease_id = l.id
-                LEFT JOIN tenants t ON l.tenant_id = t.id
-                LEFT JOIN units u ON l.unit_id = u.id
-                LEFT JOIN properties pr ON u.property_id = pr.id
-                WHERE 1=1";
+    /**
+     * Get payment statistics
+     * @return array Payment statistics
+     */
+    public function getPaymentStats() {
+        $stats = [
+            'total_amount' => 0,
+            'count' => 0,
+            'avg_amount' => 0,
+            'recent_payments' => []
+        ];
         
-        $params = [];
-        $param_types = "";
+        // Get total amount and count
+        $query = "SELECT COUNT(*) as count, SUM(amount) as total FROM payments";
+        $result = $this->conn->query($query);
         
-        // Apply filters
-        if (isset($filters['tenant_id']) && !empty($filters['tenant_id'])) {
-            $sql .= " AND l.tenant_id = ?";
-            $params[] = $filters['tenant_id'];
-            $param_types .= "i";
+        if ($result && $result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $stats['total_amount'] = $row['total'] ?: 0;
+            $stats['count'] = $row['count'] ?: 0;
+            $stats['avg_amount'] = $stats['count'] > 0 ? $stats['total_amount'] / $stats['count'] : 0;
         }
         
-        if (isset($filters['property_id']) && !empty($filters['property_id'])) {
-            $sql .= " AND pr.id = ?";
-            $params[] = $filters['property_id'];
-            $param_types .= "i";
+        // Get recent payments
+        $query = "SELECT p.*, l.unit_id, 
+                  CONCAT(t.first_name, ' ', t.last_name) as tenant_name,
+                  u.unit_number
+                  FROM payments p
+                  JOIN leases l ON p.lease_id = l.id
+                  JOIN tenants t ON l.tenant_id = t.id
+                  JOIN units u ON l.unit_id = u.id
+                  ORDER BY p.payment_date DESC LIMIT 5";
+        
+        $result = $this->conn->query($query);
+        
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $stats['recent_payments'][] = $row;
+            }
         }
         
-        if (isset($filters['unit_id']) && !empty($filters['unit_id'])) {
-            $sql .= " AND u.id = ?";
-            $params[] = $filters['unit_id'];
-            $param_types .= "i";
-        }
+        return $stats;
+    }
+    
+    /**
+     * Get payments by date range
+     * @param string $start_date Start date (YYYY-MM-DD)
+     * @param string $end_date End date (YYYY-MM-DD)
+     * @return array Array of payments in the specified date range
+     */
+    public function getPaymentsByDateRange($start_date, $end_date) {
+        $query = "SELECT p.*, l.unit_id, 
+                  CONCAT(t.first_name, ' ', t.last_name) as tenant_name,
+                  u.unit_number, pr.name as property_name
+                  FROM payments p
+                  JOIN leases l ON p.lease_id = l.id
+                  JOIN tenants t ON l.tenant_id = t.id
+                  JOIN units u ON l.unit_id = u.id
+                  JOIN properties pr ON u.property_id = pr.id
+                  WHERE p.payment_date BETWEEN ? AND ?
+                  ORDER BY p.payment_date DESC";
         
-        if (isset($filters['status']) && !empty($filters['status'])) {
-            $sql .= " AND p.status = ?";
-            $params[] = $filters['status'];
-            $param_types .= "s";
-        }
-        
-        if (isset($filters['date_from']) && !empty($filters['date_from'])) {
-            $sql .= " AND p.payment_date >= ?";
-            $params[] = $filters['date_from'];
-            $param_types .= "s";
-        }
-        
-        if (isset($filters['date_to']) && !empty($filters['date_to'])) {
-            $sql .= " AND p.payment_date <= ?";
-            $params[] = $filters['date_to'];
-            $param_types .= "s";
-        }
-        
-        $stmt = $this->db->prepare($sql);
-        
-        if (!empty($params)) {
-            $stmt->bind_param($param_types, ...$params);
-        }
-        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("ss", $start_date, $end_date);
         $stmt->execute();
+        
         $result = $stmt->get_result();
         
-        return $result->fetch_assoc();
-    }
-    
-    public function generateReceipt($payment_id) {
-        $payment = $this->getPaymentById($payment_id);
-        
-        if (!$payment) {
-            return false;
+        $payments = [];
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $payments[] = $row;
+            }
         }
         
-        // Generate a receipt reference
-        $receipt_ref = 'RCPT-' . date('Ymd') . '-' . $payment_id;
+        $stmt->close();
+        return $payments;
+    }
+    
+    /**
+     * Get payments by property ID
+     * @param int $property_id Property ID
+     * @return array Array of payments for the specified property
+     */
+    public function getPaymentsByPropertyId($property_id) {
+        $query = "SELECT p.*, l.unit_id, 
+                  CONCAT(t.first_name, ' ', t.last_name) as tenant_name,
+                  u.unit_number
+                  FROM payments p
+                  JOIN leases l ON p.lease_id = l.id
+                  JOIN tenants t ON l.tenant_id = t.id
+                  JOIN units u ON l.unit_id = u.id
+                  WHERE u.property_id = ?
+                  ORDER BY p.payment_date DESC";
         
-        // Update payment with receipt reference
-        $query = "UPDATE payments SET receipt_reference = ? WHERE id = ?";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param("si", $receipt_ref, $payment_id);
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("i", $property_id);
         $stmt->execute();
         
-        return $receipt_ref;
+        $result = $stmt->get_result();
+        
+        $payments = [];
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $payments[] = $row;
+            }
+        }
+        
+        $stmt->close();
+        return $payments;
     }
 }
 ?>

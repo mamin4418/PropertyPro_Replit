@@ -179,6 +179,40 @@ if (isset($_POST['seed_data']) && $_POST['seed_data'] == 'on') {
             $stmt->close();
         }
         
+        // Sample leases
+        for ($i = 1; $i <= 3; $i++) {
+            $unit_id = $i;
+            $tenant_id = $i;
+            $start_date = date('Y-m-d', strtotime('-6 months'));
+            $end_date = date('Y-m-d', strtotime('+6 months'));
+            $rent_amount = ($i * 500) + 500;
+            $security_deposit = $rent_amount;
+            
+            $stmt = $conn->prepare("INSERT INTO leases (unit_id, tenant_id, start_date, end_date, rent_amount, security_deposit, status, lease_type, payment_due_day) 
+                                    VALUES (?, ?, ?, ?, ?, ?, 'active', 'fixed-term', 1)");
+            $stmt->bind_param("iissdd", $unit_id, $tenant_id, $start_date, $end_date, $rent_amount, $security_deposit);
+            $stmt->execute();
+            $stmt->close();
+            
+            // Sample lease ID
+            $lease_id = $i;
+            
+            // Sample payments for each lease (last 3 months)
+            for ($j = 3; $j >= 1; $j--) {
+                $payment_date = date('Y-m-d', strtotime('-'.$j.' months'));
+                $amount = $rent_amount;
+                $payment_method = ($j % 3 == 0) ? 'check' : (($j % 3 == 1) ? 'cash' : 'online');
+                $payment_type = 'rent';
+                $reference_number = 'REF'.rand(1000, 9999);
+                
+                $stmt = $conn->prepare("INSERT INTO payments (lease_id, amount, payment_date, payment_method, payment_type, reference_number) 
+                                        VALUES (?, ?, ?, ?, ?, ?)");
+                $stmt->bind_param("idssss", $lease_id, $amount, $payment_date, $payment_method, $payment_type, $reference_number);
+                $stmt->execute();
+                $stmt->close();
+            }
+        }
+        
         $conn->close();
         echo "<p>Sample data installed successfully! ✓</p>";
         $messages[] = "Sample data installed successfully.";

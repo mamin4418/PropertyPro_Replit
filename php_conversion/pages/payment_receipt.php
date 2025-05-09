@@ -1,320 +1,344 @@
 
 <?php
-require_once '../database/init.php';
 require_once '../models/Payment.php';
 require_once '../models/Lease.php';
 require_once '../models/Tenant.php';
+require_once '../models/Unit.php';
 require_once '../models/Property.php';
-require_once '../models/Company.php';
-require_once '../includes/functions.php';
 
-// Check if user is logged in
-session_start();
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit();
-}
-
-// Check if payment ID is provided
-if (!isset($_GET['id']) || empty($_GET['id'])) {
-    header("Location: payments.php");
-    exit();
-}
-
-$payment_id = $_GET['id'];
+// Initialize database connection
+$mysqli = require_once '../config/database.php';
 
 // Initialize models
-$paymentModel = new Payment($conn);
-$leaseModel = new Lease($conn);
-$tenantModel = new Tenant($conn);
-$propertyModel = new Property($conn);
-$companyModel = new Company($conn);
+$paymentModel = new Payment($mysqli);
+$leaseModel = new Lease($mysqli);
+$tenantModel = new Tenant($mysqli);
+$unitModel = new Unit($mysqli);
+$propertyModel = new Property($mysqli);
 
-// Get payment details
+// Get payment ID from URL
+$payment_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+// Verify payment exists
 $payment = $paymentModel->getPaymentById($payment_id);
-
 if (!$payment) {
-    $_SESSION['error_message'] = "Payment not found";
-    header("Location: payments.php");
-    exit();
-}
-
-// Generate receipt if not exists and status is completed
-if ($payment['status'] === 'completed' && empty($payment['receipt_reference'])) {
-    $receipt_ref = $paymentModel->generateReceipt($payment_id);
-    // Refresh payment details after generating receipt
-    $payment = $paymentModel->getPaymentById($payment_id);
+    // Payment not found, redirect to payments page
+    header("Location: payments.php?error=Payment not found");
+    exit;
 }
 
 // Get lease details
 $lease = $leaseModel->getLeaseById($payment['lease_id']);
 
 // Get tenant details
-$tenant = $tenantModel->getTenantById($payment['tenant_id']);
+$tenant = $tenantModel->getTenantById($lease['tenant_id']);
+
+// Get unit details
+$unit = $unitModel->getUnitById($lease['unit_id']);
 
 // Get property details
-$property = $propertyModel->getPropertyById($payment['property_id']);
+$property = $propertyModel->getPropertyById($unit['property_id']);
 
-// Get company details
-$company = $companyModel->getFirstCompany();
+// Format payment date
+$payment_date = date('F j, Y', strtotime($payment['payment_date']));
 
-// Calculate payment period (assuming for rent)
-$payment_period_start = date('Y-m-01', strtotime($payment['payment_date']));
-$payment_period_end = date('Y-m-t', strtotime($payment['payment_date']));
+// Generate receipt number
+$receipt_number = 'RCP-' . str_pad($payment['id'], 6, '0', STR_PAD_LEFT);
 
-// Format dates
-$formatted_payment_date = date('F j, Y', strtotime($payment['payment_date']));
-$formatted_period_start = date('F j, Y', strtotime($payment_period_start));
-$formatted_period_end = date('F j, Y', strtotime($payment_period_end));
+// Format amount
+$amount_formatted = number_format($payment['amount'], 2);
 
-// Page title - don't include header for clean receipt
-$pageTitle = "Payment Receipt";
+// Function to convert number to words
+function numberToWords($num) {
+    $ones = array(
+        0 => "ZERO",
+        1 => "ONE",
+        2 => "TWO",
+        3 => "THREE",
+        4 => "FOUR",
+        5 => "FIVE",
+        6 => "SIX",
+        7 => "SEVEN",
+        8 => "EIGHT",
+        9 => "NINE",
+        10 => "TEN",
+        11 => "ELEVEN",
+        12 => "TWELVE",
+        13 => "THIRTEEN",
+        14 => "FOURTEEN",
+        15 => "FIFTEEN",
+        16 => "SIXTEEN",
+        17 => "SEVENTEEN",
+        18 => "EIGHTEEN",
+        19 => "NINETEEN"
+    );
+    $tens = array(
+        0 => "",
+        1 => "",
+        2 => "TWENTY",
+        3 => "THIRTY",
+        4 => "FORTY",
+        5 => "FIFTY",
+        6 => "SIXTY",
+        7 => "SEVENTY",
+        8 => "EIGHTY",
+        9 => "NINETY"
+    );
+    $hundreds = array(
+        "HUNDRED",
+        "THOUSAND",
+        "MILLION",
+        "BILLION",
+        "TRILLION",
+        "QUADRILLION"
+    );
+
+    $num = number_format($num, 2, ".", ",");
+    $num_arr = explode(".", $num);
+    $wholenum = $num_arr[0];
+    $decnum = $num_arr[1];
+    $whole_arr = array_reverse(explode(",", $wholenum));
+    krsort($whole_arr);
+    $rettxt = "";
+
+    foreach($whole_arr as $key => $i) {
+        if($i < 20) {
+            $rettxt .= $ones[$i];
+        } elseif($i < 100) {
+            $rettxt .= $tens[substr($i, 0, 1)];
+            $rettxt .= " " . $ones[substr($i, 1, 1)];
+        } else {
+            $rettxt .= $ones[substr($i, 0, 1)] . " " . $hundreds[0];
+            $rettxt .= " " . $tens[substr($i, 1, 1)];
+            $rettxt .= " " . $ones[substr($i, 2, 1)];
+        }
+        
+        if($key > 0) {
+            $rettxt .= " " . $hundreds[$key] . " ";
+        }
+    }
+    
+    if($decnum > 0) {
+        $rettxt .= " AND ";
+        if($decnum < 20) {
+            $rettxt .= $ones[$decnum];
+        } elseif($decnum < 100) {
+            $rettxt .= $tens[substr($decnum, 0, 1)];
+            $rettxt .= " " . $ones[substr($decnum, 1, 1)];
+        }
+        $rettxt .= " CENTS";
+    }
+    
+    return $rettxt;
+}
+
+// Convert amount to words
+$amount_in_words = numberToWords($payment['amount']);
+
+// Handle print request
+$print = isset($_GET['print']) && $_GET['print'] == 'true';
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Receipt #<?= $payment['receipt_reference'] ?? $payment_id ?></title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>Payment Receipt #<?php echo $receipt_number; ?></title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             font-family: Arial, sans-serif;
-            font-size: 14px;
-            line-height: 1.5;
-            color: #333;
-            background-color: #f8f9fc;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
         }
         .receipt-container {
             max-width: 800px;
-            margin: 30px auto;
-            background-color: #fff;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-            border-radius: 5px;
-            overflow: hidden;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         .receipt-header {
-            padding: 20px;
-            background-color: #4e73df;
-            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 20px;
         }
-        .receipt-body {
-            padding: 30px;
-        }
-        .receipt-footer {
-            padding: 20px;
-            background-color: #f8f9fc;
-            text-align: center;
-            font-size: 12px;
-            color: #858796;
+        .company-info h2 {
+            color: #333;
+            margin: 0;
         }
         .receipt-title {
             font-size: 24px;
-            font-weight: bold;
-            margin: 0;
-        }
-        .receipt-subtitle {
-            font-size: 14px;
-            margin-top: 5px;
-        }
-        .receipt-info {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 30px;
-        }
-        .receipt-info-block {
-            flex: 1;
-        }
-        .receipt-info-block h3 {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #4e73df;
-        }
-        .receipt-amount {
-            font-size: 24px;
-            font-weight: bold;
-            color: #1cc88a;
+            margin-bottom: 20px;
+            color: #333;
             text-align: center;
+        }
+        .receipt-details {
+            margin-bottom: 20px;
+        }
+        .receipt-details table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .receipt-details th, .receipt-details td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .amount-section {
             margin: 20px 0;
             padding: 15px;
-            background-color: #f8f9fc;
+            background-color: #f9f9f9;
             border-radius: 5px;
+            border: 1px solid #ddd;
         }
-        .receipt-table {
-            width: 100%;
-            margin-bottom: 30px;
+        .amount-box {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            margin: 10px 0;
         }
-        .receipt-table th {
-            background-color: #f8f9fc;
-            padding: 10px;
-            text-align: left;
+        .amount-words {
+            font-style: italic;
+            text-align: center;
+            margin-bottom: 15px;
         }
-        .receipt-table td {
-            padding: 10px;
-            border-bottom: 1px solid #e3e6f0;
+        .signature-section {
+            margin-top: 50px;
+            display: flex;
+            justify-content: space-between;
         }
-        .receipt-signature {
+        .signature-line {
+            border-top: 1px solid #333;
+            width: 200px;
             margin-top: 50px;
             text-align: center;
         }
-        .signature-line {
-            width: 200px;
-            margin: 40px auto 10px;
-            border-bottom: 1px solid #333;
-        }
-        .receipt-status {
-            position: absolute;
-            top: 60px;
-            right: 30px;
-            font-size: 24px;
-            transform: rotate(-15deg);
-            padding: 5px 15px;
-            border: 2px solid;
-            border-radius: 10px;
-            text-transform: uppercase;
-        }
-        .status-completed {
-            color: #1cc88a;
-            border-color: #1cc88a;
-        }
-        .status-pending {
-            color: #f6c23e;
-            border-color: #f6c23e;
-        }
-        .status-failed {
-            color: #e74a3b;
-            border-color: #e74a3b;
-        }
-        .receipt-actions {
+        .receipt-footer {
             margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+            font-size: 12px;
             text-align: center;
+            color: #777;
+        }
+        .print-button {
+            text-align: center;
+            margin-top: 20px;
         }
         @media print {
+            .print-button, .back-button {
+                display: none;
+            }
             body {
-                background-color: #fff;
+                background-color: white;
+                padding: 0;
             }
             .receipt-container {
                 box-shadow: none;
-                margin: 0;
-                max-width: 100%;
-            }
-            .receipt-actions {
-                display: none;
-            }
-            .no-print {
-                display: none;
+                padding: 0;
             }
         }
     </style>
 </head>
 <body>
-    <div class="receipt-container position-relative">
-        <!-- Receipt Header -->
+    <div class="receipt-container">
         <div class="receipt-header">
-            <div class="receipt-title">Payment Receipt</div>
-            <div class="receipt-subtitle">
-                Receipt #: <?= $payment['receipt_reference'] ?? 'RCPT-' . $payment_id ?>
+            <div class="company-info">
+                <h2>Property Management System</h2>
+                <p>123 Main Street<br>Anytown, CA 12345<br>Phone: (123) 456-7890</p>
             </div>
-        </div>
-        
-        <!-- Status Stamp -->
-        <div class="receipt-status status-<?= $payment['status'] ?>">
-            <?= ucfirst(htmlspecialchars($payment['status'])) ?>
-        </div>
-        
-        <!-- Receipt Body -->
-        <div class="receipt-body">
-            <!-- From and To Information -->
             <div class="receipt-info">
-                <div class="receipt-info-block">
-                    <h3>From</h3>
-                    <p>
-                        <strong><?= htmlspecialchars($company['name'] ?? 'Property Management Company') ?></strong><br>
-                        <?= nl2br(htmlspecialchars($company['address'] ?? '123 Main Street, City, State ZIP')) ?><br>
-                        <?= htmlspecialchars($company['phone'] ?? 'Phone: (123) 456-7890') ?><br>
-                        <?= htmlspecialchars($company['email'] ?? 'Email: info@propertymanagement.com') ?>
-                    </p>
-                </div>
-                
-                <div class="receipt-info-block">
-                    <h3>To</h3>
-                    <p>
-                        <strong><?= htmlspecialchars($tenant['first_name'] . ' ' . $tenant['last_name']) ?></strong><br>
-                        <?= htmlspecialchars($property['name']) ?><br>
-                        Unit: <?= htmlspecialchars($payment['unit_number']) ?><br>
-                        <?= htmlspecialchars($tenant['email']) ?><br>
-                        <?= htmlspecialchars($tenant['phone']) ?>
-                    </p>
-                </div>
-                
-                <div class="receipt-info-block">
-                    <h3>Receipt Details</h3>
-                    <p>
-                        <strong>Date: </strong><?= $formatted_payment_date ?><br>
-                        <strong>Payment Method: </strong><?= htmlspecialchars($payment['payment_method']) ?><br>
-                        <?php if (!empty($payment['reference_number'])): ?>
-                            <strong>Reference: </strong><?= htmlspecialchars($payment['reference_number']) ?><br>
-                        <?php endif; ?>
-                    </p>
-                </div>
-            </div>
-            
-            <!-- Payment Amount -->
-            <div class="receipt-amount">
-                Payment Amount: $<?= number_format($payment['amount'], 2) ?>
-            </div>
-            
-            <!-- Payment Details Table -->
-            <table class="receipt-table">
-                <thead>
-                    <tr>
-                        <th>Description</th>
-                        <th>Period</th>
-                        <th>Amount</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Rent Payment - <?= htmlspecialchars($property['name']) ?> (Unit <?= htmlspecialchars($payment['unit_number']) ?>)</td>
-                        <td><?= $formatted_period_start ?> - <?= $formatted_period_end ?></td>
-                        <td>$<?= number_format($payment['amount'], 2) ?></td>
-                    </tr>
-                    <?php if (!empty($payment['memo'])): ?>
-                        <tr>
-                            <td colspan="3">
-                                <strong>Notes: </strong><?= nl2br(htmlspecialchars($payment['memo'])) ?>
-                            </td>
-                        </tr>
-                    <?php endif; ?>
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="2" style="text-align: right;"><strong>Total</strong></td>
-                        <td><strong>$<?= number_format($payment['amount'], 2) ?></strong></td>
-                    </tr>
-                </tfoot>
-            </table>
-            
-            <!-- Signature -->
-            <div class="receipt-signature">
-                <div class="signature-line"></div>
-                <div>Authorized Signature</div>
-            </div>
-            
-            <!-- Actions (Only visible on screen) -->
-            <div class="receipt-actions no-print">
-                <button class="btn btn-primary" onclick="window.print();">Print Receipt</button>
-                <a href="view_payment.php?id=<?= $payment_id ?>" class="btn btn-secondary">Back to Payment</a>
-                <a href="payments.php" class="btn btn-light">All Payments</a>
+                <h3>RECEIPT</h3>
+                <p><strong>Receipt #:</strong> <?php echo $receipt_number; ?><br>
+                <strong>Date:</strong> <?php echo $payment_date; ?></p>
             </div>
         </div>
         
-        <!-- Receipt Footer -->
+        <div class="receipt-title">
+            PAYMENT RECEIPT
+        </div>
+        
+        <div class="receipt-details">
+            <table>
+                <tr>
+                    <td><strong>Received From:</strong></td>
+                    <td><?php echo $tenant['first_name'] . ' ' . $tenant['last_name']; ?></td>
+                    <td><strong>Property:</strong></td>
+                    <td><?php echo $property['name']; ?></td>
+                </tr>
+                <tr>
+                    <td><strong>Unit:</strong></td>
+                    <td><?php echo $unit['unit_number']; ?></td>
+                    <td><strong>Payment Method:</strong></td>
+                    <td><?php echo ucfirst($payment['payment_method']); ?></td>
+                </tr>
+                <tr>
+                    <td><strong>Payment Type:</strong></td>
+                    <td><?php echo ucfirst($payment['payment_type']); ?></td>
+                    <td><strong>Reference #:</strong></td>
+                    <td><?php echo $payment['reference_number']; ?></td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="amount-section">
+            <div class="amount-box">
+                AMOUNT PAID: $<?php echo $amount_formatted; ?>
+            </div>
+            <div class="amount-words">
+                <?php echo $amount_in_words; ?>
+            </div>
+        </div>
+        
+        <?php if (!empty($payment['notes'])): ?>
+        <div class="notes-section">
+            <h5>Notes:</h5>
+            <p><?php echo $payment['notes']; ?></p>
+        </div>
+        <?php endif; ?>
+        
+        <div class="signature-section">
+            <div>
+                <div class="signature-line">
+                    Tenant Signature
+                </div>
+            </div>
+            <div>
+                <div class="signature-line">
+                    Management Signature
+                </div>
+            </div>
+        </div>
+        
         <div class="receipt-footer">
-            <p>This receipt was generated on <?= date('F j, Y, g:i a') ?>.</p>
-            <p>Thank you for your payment!</p>
+            <p>This receipt is evidence of payment received. Please retain for your records.</p>
+            <p>Thank you for your prompt payment.</p>
         </div>
     </div>
+    
+    <?php if (!$print): ?>
+    <div class="print-button">
+        <a href="payment_receipt.php?id=<?php echo $payment_id; ?>&print=true" class="btn btn-primary" onclick="window.print(); return false;">
+            <i class="fas fa-print"></i> Print Receipt
+        </a>
+        <a href="view_payment.php?id=<?php echo $payment_id; ?>" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Payment Details
+        </a>
+    </div>
+    <?php endif; ?>
+
+    <script>
+        <?php if ($print): ?>
+        window.onload = function() {
+            window.print();
+        }
+        <?php endif; ?>
+    </script>
 </body>
 </html>

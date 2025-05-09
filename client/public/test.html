@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Server Test Page</title>
+    <title>Test Page</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -22,35 +21,69 @@
         h1 {
             color: #0066cc;
         }
+        .test-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f7f7f7;
+            border-radius: 5px;
+        }
         .success {
-            color: #4caf50;
+            color: green;
             font-weight: bold;
         }
+        .test-item {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
     </style>
+    <script src="test.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>Server Test Page</h1>
-        <p class="success">✓ If you can see this page, your server is working correctly!</p>
-        <p>This file is directly served from the client/public directory.</p>
-        <p>Server time: <span id="server-time"></span></p>
-        <p>Client time: <span id="client-time"></span></p>
+        <h1>System Test Page</h1>
+        <p>This page verifies that the Property Management System is working correctly.</p>
+        <p>Current time: <span id="current-time"></span></p>
+
+        <div class="test-section">
+            <h2>System Tests</h2>
+
+            <div class="test-item">
+                <h3>Static HTML Test</h3>
+                <p class="success">✓ HTML is being served correctly!</p>
+            </div>
+
+            <div class="test-item">
+                <h3>JavaScript Test</h3>
+                <p id="js-test">JavaScript test pending...</p>
+            </div>
+
+            <div class="test-item">
+                <h3>API Test</h3>
+                <p>API Time: <span id="api-time">Testing...</span></p>
+                <button id="test-api-btn">Test API Connection</button>
+            </div>
+        </div>
+
         <button onclick="location.reload()">Refresh Page</button>
     </div>
 
     <script>
-        // Display current client time
-        document.getElementById('client-time').textContent = new Date().toLocaleString();
-        
-        // Try to fetch server time
-        fetch('/api/time')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('server-time').textContent = new Date(data.time).toLocaleString();
-            })
-            .catch(error => {
-                document.getElementById('server-time').textContent = 'Could not connect to server';
-            });
+        // Update the current time
+        document.getElementById('current-time').textContent = new Date().toLocaleString();
+
+        // Test API endpoint
+        document.getElementById('test-api-btn').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/time');
+                const data = await response.json();
+                document.getElementById('api-time').textContent = data.time + ' (Environment: ' + data.env + ')';
+                document.getElementById('api-time').className = 'success';
+            } catch (error) {
+                document.getElementById('api-time').textContent = 'Error connecting to API: ' + error.message;
+                document.getElementById('api-time').style.color = 'red';
+            }
+        });
     </script>
 </body>
 </html>

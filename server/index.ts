@@ -66,6 +66,12 @@ async function startServer() {
         res.setHeader('Content-Type', 'text/css');
       } else if (path.endsWith('.html')) {
         res.setHeader('Content-Type', 'text/html; charset=UTF-8');
+      } else if (path.endsWith('.svg')) {
+        res.setHeader('Content-Type', 'image/svg+xml');
+      } else if (path.endsWith('.png')) {
+        res.setHeader('Content-Type', 'image/png');
+      } else if (path.endsWith('.jpg') || path.endsWith('.jpeg')) {
+        res.setHeader('Content-Type', 'image/jpeg');
       }
       // Log static file requests for debugging
       console.log(`Serving static file: ${path}`);

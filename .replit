@@ -20,7 +20,7 @@ localPort = 24678
 externalPort = 80
 
 [workflows]
-runButton = "Run Fixed Application"
+runButton = "Fix Preview Issue"
 
 [[workflows.workflow]]
 name = "Project"
@@ -2302,3 +2302,52 @@ args = "echo \"Starting fixed server with all updated features...\""
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "NODE_ENV=development tsx server/index.ts"
+
+[[workflows.workflow]]
+name = "Fix Preview Issue"
+author = 41484040
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Stopping any running servers...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pkill -f \"tsx server/index.ts\" || true"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "sleep 2"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Clearing node modules cache...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "rm -rf node_modules/.vite"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Creating client/dist directory if it doesn't exist...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "mkdir -p client/dist"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Making sure client index.html exists...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "touch client/dist/index.html"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Starting server with fixed configuration...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "NODE_ENV=development PORT=3000 tsx server/index.ts"

@@ -2783,6 +2783,38 @@ args = ""
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
+args = "echo \"Ensuring client/dist directory exists...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "mkdir -p client/dist"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = ""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Installing necessary dependencies...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd client"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm install "
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd .."
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = ""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
 args = "echo \"Building the client application...\""
 
 [[workflows.workflow.tasks]]

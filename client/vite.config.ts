@@ -22,8 +22,10 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true,
     emptyOutDir: true,
+    sourcemap: true,
+    chunkSizeWarningLimit: 1000,
+    // Optimize for Replit deployment
     rollupOptions: {
       output: {
         manualChunks: {
@@ -38,11 +40,5 @@ export default defineConfig({
         }
       }
     }
-  },
-  optimizeDeps: {
-    include: ['react', 'react-dom', 'wouter']
-  },
-  esbuild: {
-    logOverride: { 'this-is-undefined-in-esm': 'silent' }
   }
 });

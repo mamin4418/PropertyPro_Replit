@@ -31,8 +31,12 @@ async function startServer() {
   console.log(`Serving static files from: ${clientDistPath}`);
   console.log(`Server port: ${PORT}`);
 
-  // Check if dist directory exists and has content
+  // Make sure the dist directory exists
   try {
+    if (!fs.existsSync(clientDistPath)) {
+      fs.mkdirSync(clientDistPath, { recursive: true });
+      console.log(`Created client/dist directory`);
+    }
     const distExists = fs.existsSync(clientDistPath);
     console.log(`Client dist directory exists: ${distExists}`);
     if (distExists) {
@@ -196,20 +200,11 @@ async function startServer() {
     const clientDistIndexPath = path.resolve(clientDistPath, "index.html");
     console.log(`Attempting to serve SPA from: ${clientDistIndexPath}`);
 
-    try {
-      if (fs.existsSync(clientDistIndexPath)) {
-        console.log(`Found index.html, serving for route: ${req.originalUrl}`);
-        return res.sendFile(clientDistIndexPath, { 
-          etag: true,
-          lastModified: true,
-          headers: {
-            'Cache-Control': 'no-cache',
-            'Content-Type': 'text/html; charset=UTF-8'
-          }
-        });
-      } else {
-        console.warn(`Index file not found at ${clientDistIndexPath}. Make sure to build the client app first.`);
-        // Create a fallback index.html
+    // Create a fallback index.html if it doesn't exist
+    if (!fs.existsSync(clientDistIndexPath)) {
+      console.log("Creating fallback index.html for client-side routing");
+      try {
+        // Create a simple fallback index.html
         const fallbackHTML = `
           <!DOCTYPE html>
           <html lang="en">

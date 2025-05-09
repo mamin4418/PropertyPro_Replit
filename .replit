@@ -20,7 +20,7 @@ localPort = 24678
 externalPort = 80
 
 [workflows]
-runButton = "Restart Dev Server"
+runButton = "Complete Rebuild and Serve"
 
 [[workflows.workflow]]
 name = "Project"
@@ -2552,6 +2552,63 @@ args = "echo \"Clearing node modules cache...\""
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "rm -rf node_modules/.vite"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Building the client app...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd client && npm run build"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Returning to root directory...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd .."
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Starting server with fixed configuration...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "NODE_ENV=development PORT=3000 tsx server/index.ts"
+
+[[workflows.workflow]]
+name = "Complete Rebuild and Serve"
+author = 41484040
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Stopping any running servers...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pkill -f \"tsx server/index.ts\" || true"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "sleep 2"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Clearing node modules cache...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "rm -rf node_modules/.vite"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"Ensuring client/dist directory exists...\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "mkdir -p client/dist"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

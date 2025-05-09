@@ -1,0 +1,56 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Test Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #0066cc;
+        }
+        .success {
+            color: #4caf50;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Server Test Page</h1>
+        <p class="success">✓ If you can see this page, your server is working correctly!</p>
+        <p>This file is directly served from the client/public directory.</p>
+        <p>Server time: <span id="server-time"></span></p>
+        <p>Client time: <span id="client-time"></span></p>
+        <button onclick="location.reload()">Refresh Page</button>
+    </div>
+
+    <script>
+        // Display current client time
+        document.getElementById('client-time').textContent = new Date().toLocaleString();
+        
+        // Try to fetch server time
+        fetch('/api/time')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('server-time').textContent = new Date(data.time).toLocaleString();
+            })
+            .catch(error => {
+                document.getElementById('server-time').textContent = 'Could not connect to server';
+            });
+    </script>
+</body>
+</html>

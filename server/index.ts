@@ -25,69 +25,35 @@ async function startServer() {
   app.use(cors());
   app.use(express.json());
 
+  // Serve static files from client/dist
   const clientDistPath = path.resolve(__dirname, "../client/dist");
-  if (!fs.existsSync(clientDistPath)) {
-    console.log(`Creating directory: ${clientDistPath}`);
-    fs.mkdirSync(clientDistPath, { recursive: true });
-  }
-
-  const indexHtmlPath = path.resolve(clientDistPath, "index.html");
-  if (!fs.existsSync(indexHtmlPath)) {
-    console.log(`Creating simple index.html in: ${indexHtmlPath}`);
-    const simpleHtml = `
-      <!DOCTYPE html>
-      <html lang="en">
-        <head>
-          <meta charset="UTF-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <title>Property Management System</title>
-          <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; color: #333; }
-            .container { max-width: 1200px; margin: 0 auto; }
-            header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid #eee; margin-bottom: 20px; }
-            nav { display: flex; gap: 20px; }
-            nav a { text-decoration: none; color: #0066cc; }
-            main { min-height: 500px; }
-            .card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-            .card-title { margin-top: 0; }
-            button { background: #0066cc; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; }
-            button:hover { background: #0055aa; }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <header>
-              <h1>Property Management System</h1>
-              <nav>
-                <a href="#">Dashboard</a>
-                <a href="#">Properties</a>
-                <a href="#">Tenants</a>
-                <a href="#">Maintenance</a>
-              </nav>
-            </header>
-            <main>
-              <div class="card">
-                <h2 class="card-title">Welcome to your Property Management System</h2>
-                <p>The system is running in production mode with a simplified interface.</p>
-                <p>This is a temporary page while the full application builds.</p>
-                <button onclick="location.reload()">Refresh Page</button>
-              </div>
-            </main>
-          </div>
-        </body>
-      </html>
-    `;
-    fs.writeFileSync(indexHtmlPath, simpleHtml.trim());
-  }
-
+  console.log(`Environment: ${process.env.NODE_ENV}`);
   console.log(`Serving static files from: ${clientDistPath}`);
-  app.use(express.static(clientDistPath, { 
+
+  // Check if dist directory exists and has content
+  try {
+    const distExists = fs.existsSync(clientDistPath);
+    console.log(`Client dist directory exists: ${distExists}`);
+    if (distExists) {
+      const distFiles = fs.readdirSync(clientDistPath);
+      console.log(`Files in dist directory: ${distFiles.join(', ')}`);
+    }
+  } catch (error) {
+    console.error("Error checking dist directory:", error);
+  }
+
+  // Configure static files with proper cache headers
+  app.use(express.static(clientDistPath, {
     etag: true,
     lastModified: true,
-    maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0
+    maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0,
+    setHeaders: (res, path) => {
+      // Log static file requests for debugging
+      console.log(`Serving static file: ${path}`);
+    }
   }));
 
-  // Add specific route for assets to improve debugging
+  // Specifically handle assets folder with proper cache headers
   app.use('/assets', express.static(path.join(clientDistPath, 'assets'), {
     etag: true,
     immutable: true,
@@ -122,20 +88,40 @@ async function startServer() {
     await setupVite(app);
   }
 
-  app.get("*", (req, res) => {
+  // API routes
+  app.use('/api', (req, res, next) => {
+    console.log(`API Request: ${req.method} ${req.url}`);
+    next();
+  });
+
+  // Simple diagnostic endpoint
+  app.get('/api/time', (req, res) => {
+    res.json({ time: new Date().toISOString(), env: process.env.NODE_ENV });
+  });
+
+  // Handle client-side routing - must be after API routes but before error handlers
+  app.get('*', (req, res, next) => {
+    // Skip API routes
     if (req.url.startsWith('/api/')) {
-      return res.status(404).json({ error: 'API endpoint not found' });
+      return next();
     }
+
+    console.log(`Client-side route requested: ${req.originalUrl}`);
 
     // Send the index.html file for client-side routing
     const clientDistIndexPath = path.resolve(__dirname, "../client/dist/index.html");
-    console.log(`Serving SPA from: ${clientDistIndexPath} for route: ${req.originalUrl}`);
-    
+    console.log(`Attempting to serve SPA from: ${clientDistIndexPath}`);
+
     try {
       if (fs.existsSync(clientDistIndexPath)) {
+        console.log(`Found index.html, serving for route: ${req.originalUrl}`);
         return res.sendFile(clientDistIndexPath, { 
           etag: true,
-          lastModified: true 
+          lastModified: true,
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Content-Type': 'text/html; charset=UTF-8'
+          }
         });
       } else {
         console.warn(`Index file not found at ${clientDistIndexPath}. Make sure to build the client app first.`);
@@ -171,6 +157,16 @@ async function startServer() {
 
   const server = httpServer || createServer(app);
 
+  // Add error handler middleware
+  app.use((err, req, res, next) => {
+    console.error('Server error:', err);
+    res.status(500).json({ 
+      error: 'Internal Server Error',
+      message: process.env.NODE_ENV === 'development' ? err.message : 'An error occurred'
+    });
+  });
+
+  // Start the server
   server.listen(PORT, "0.0.0.0", () => {
     console.log(`\n======================================`);
     console.log(`Server started on port ${PORT}`);

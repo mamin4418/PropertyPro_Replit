@@ -283,6 +283,33 @@ export const rentalApplications = pgTable("rental_applications", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Communication Templates - Reusable templates for various communication types
+export const communicationTemplates = pgTable("communication_templates", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  type: text("type").notNull(), // email, sms, notification, letter
+  subject: text("subject"),
+  content: text("content").notNull(),
+  variables: json("variables"), // JSON structure for template variables
+  createdBy: integer("created_by"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Notifications - System notifications for users
+export const notifications = pgTable("notifications", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  title: text("title").notNull(),
+  message: text("message").notNull(),
+  relatedType: text("related_type"), // The entity type this notification is related to
+  relatedId: integer("related_id"), // The ID of the related entity
+  isRead: boolean("is_read").default(false),
+  link: text("link"), // Optional link to navigate to
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Communication Logs - Track all communications with leads/applicants
 export const communicationLogs = pgTable("communication_logs", {
   id: serial("id").primaryKey(),
@@ -445,6 +472,18 @@ export const insertRentalApplicationSchema = createInsertSchema(rentalApplicatio
   updatedAt: true,
 });
 
+export const insertCommunicationTemplateSchema = createInsertSchema(communicationTemplates).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertNotificationSchema = createInsertSchema(notifications).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const insertCommunicationLogSchema = createInsertSchema(communicationLogs).omit({
   id: true,
   createdAt: true,
@@ -514,6 +553,12 @@ export type InsertCustomField = z.infer<typeof insertCustomFieldSchema>;
 
 export type RentalApplication = typeof rentalApplications.$inferSelect;
 export type InsertRentalApplication = z.infer<typeof insertRentalApplicationSchema>;
+
+export type CommunicationTemplate = typeof communicationTemplates.$inferSelect;
+export type InsertCommunicationTemplate = z.infer<typeof insertCommunicationTemplateSchema>;
+
+export type Notification = typeof notifications.$inferSelect;
+export type InsertNotification = z.infer<typeof insertNotificationSchema>;
 
 export type CommunicationLog = typeof communicationLogs.$inferSelect;
 export type InsertCommunicationLog = z.infer<typeof insertCommunicationLogSchema>;
@@ -612,41 +657,3 @@ export const insertUserSchema = createInsertSchema(users).pick({
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
-
-export interface Mortgage {
-  id: number;
-  propertyId: number;
-  lender: string;
-  loanNumber: string;
-  loanType: string;
-  originalAmount: number;
-  currentBalance: number;
-  interestRate: number;
-  monthlyPayment: number;
-  startDate: Date;
-  maturityDate: Date;
-  escrowIncluded: boolean;
-  escrowAmount?: number;
-  contactName?: string;
-  contactPhone?: string;
-  contactEmail?: string;
-  isActive: boolean;
-}
-
-export interface MaintenanceRequest {
-  id: number;
-  propertyId: number;
-  unitId: number;
-  title: string;
-  description: string;
-  priority: 'low' | 'normal' | 'urgent';
-  status: 'open' | 'in-progress' | 'completed';
-  reportedDate: Date;
-  completedDate?: Date;
-  reportedBy: string;
-  assignedTo?: string | null;
-  notes?: string;
-  images?: string[];
-  createdAt: Date;
-  updatedAt: Date;
-}

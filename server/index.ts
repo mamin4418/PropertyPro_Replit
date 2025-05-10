@@ -260,10 +260,12 @@ async function startServer() {
           console.error('Error creating fallback index.html:', writeError);
           return res.send(fallbackHTML);
         }
+      } catch (error) {
+        console.error('Error handling SPA route:', error);
+        return res.status(500).send('Server error while serving the application.');
       }
-    } catch (error) {
-      console.error('Error handling SPA route:', error);
-      return res.status(500).send('Server error while serving the application.');
+    } else {
+      return res.sendFile(clientDistIndexPath);
     }
   });
 

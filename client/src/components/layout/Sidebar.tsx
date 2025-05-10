@@ -23,7 +23,9 @@ import {
   ChevronDown,
   ChevronRight,
   Binary,
-  UtilityPole
+  UtilityPole,
+  MessageSquare,
+  Mail
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ThemeSwitch from "./ThemeSwitch";
@@ -201,6 +203,12 @@ export default function Sidebar() {
           </SidebarNavItem>
           <SidebarNavItem href="/vendors" icon={User}>
             Vendors
+          </SidebarNavItem>
+        </SidebarCategory>
+        
+        <SidebarCategory title="COMMUNICATION" icon={MessageSquare}>
+          <SidebarNavItem href="/communication-templates" icon={Mail}>
+            Templates
           </SidebarNavItem>
         </SidebarCategory>
 

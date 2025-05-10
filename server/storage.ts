@@ -26,6 +26,9 @@ class PropertyStorage {
   scheduledInspections = new Map();
   completedInspections = new Map();
   tasks = new Map();
+  communicationTemplates = new Map();
+  notifications = new Map();
+  communicationLogs = new Map();
 
   propertyIdCounter = 1;
   tenantIdCounter = 1;
@@ -49,6 +52,9 @@ class PropertyStorage {
   scheduledInspectionIdCounter = 1;
   completedInspectionIdCounter = 1;
   taskIdCounter = 1;
+  communicationTemplateIdCounter = 1;
+  notificationIdCounter = 1;
+  communicationLogIdCounter = 1;
 
   constructor() {
     // Initialize empty maps
@@ -91,6 +97,27 @@ class PropertyStorage {
       });
       this.taskIdCounter = Math.max(...value.map((t: any) => t.id), 0) + 1;
     }
+    else if (key === 'communicationTemplates') {
+      this.communicationTemplates.clear();
+      value.forEach((template: any) => {
+        this.communicationTemplates.set(template.id, template);
+      });
+      this.communicationTemplateIdCounter = Math.max(...value.map((t: any) => t.id), 0) + 1;
+    }
+    else if (key === 'notifications') {
+      this.notifications.clear();
+      value.forEach((notification: any) => {
+        this.notifications.set(notification.id, notification);
+      });
+      this.notificationIdCounter = Math.max(...value.map((n: any) => n.id), 0) + 1;
+    }
+    else if (key === 'communicationLogs') {
+      this.communicationLogs.clear();
+      value.forEach((log: any) => {
+        this.communicationLogs.set(log.id, log);
+      });
+      this.communicationLogIdCounter = Math.max(...value.map((l: any) => l.id), 0) + 1;
+    }
   }
 
   async get(key: string): Promise<any> {
@@ -108,6 +135,15 @@ class PropertyStorage {
     }
     else if (key === 'tasks') {
       return Array.from(this.tasks.values());
+    }
+    else if (key === 'communicationTemplates') {
+      return Array.from(this.communicationTemplates.values());
+    }
+    else if (key === 'notifications') {
+      return Array.from(this.notifications.values());
+    }
+    else if (key === 'communicationLogs') {
+      return Array.from(this.communicationLogs.values());
     }
     return null;
   }
@@ -739,6 +775,96 @@ class PropertyStorage {
 
   async deleteTask(id: number): Promise<boolean> {
     return this.tasks.delete(id);
+  }
+
+  // Communication Template methods
+  async getCommunicationTemplates(): Promise<any[]> {
+    return Array.from(this.communicationTemplates.values());
+  }
+
+  async getCommunicationTemplate(id: number): Promise<any | undefined> {
+    return this.communicationTemplates.get(id);
+  }
+
+  async createCommunicationTemplate(template: any): Promise<any> {
+    const id = this.communicationTemplateIdCounter++;
+    const now = new Date();
+    const newTemplate = { ...template, id, createdAt: now, updatedAt: now };
+    this.communicationTemplates.set(id, newTemplate);
+    return newTemplate;
+  }
+
+  async updateCommunicationTemplate(id: number, template: any): Promise<any | undefined> {
+    const existingTemplate = this.communicationTemplates.get(id);
+    if (!existingTemplate) return undefined;
+
+    const updatedTemplate = { ...existingTemplate, ...template, updatedAt: new Date() };
+    this.communicationTemplates.set(id, updatedTemplate);
+    return updatedTemplate;
+  }
+
+  async deleteCommunicationTemplate(id: number): Promise<boolean> {
+    return this.communicationTemplates.delete(id);
+  }
+
+  // Notification methods
+  async getNotifications(): Promise<any[]> {
+    return Array.from(this.notifications.values());
+  }
+
+  async getNotification(id: number): Promise<any | undefined> {
+    return this.notifications.get(id);
+  }
+
+  async createNotification(notification: any): Promise<any> {
+    const id = this.notificationIdCounter++;
+    const now = new Date();
+    const newNotification = { ...notification, id, createdAt: now, updatedAt: now };
+    this.notifications.set(id, newNotification);
+    return newNotification;
+  }
+
+  async updateNotification(id: number, notification: any): Promise<any | undefined> {
+    const existingNotification = this.notifications.get(id);
+    if (!existingNotification) return undefined;
+
+    const updatedNotification = { ...existingNotification, ...notification, updatedAt: new Date() };
+    this.notifications.set(id, updatedNotification);
+    return updatedNotification;
+  }
+
+  async deleteNotification(id: number): Promise<boolean> {
+    return this.notifications.delete(id);
+  }
+
+  // Communication Log methods
+  async getCommunicationLogs(): Promise<any[]> {
+    return Array.from(this.communicationLogs.values());
+  }
+
+  async getCommunicationLog(id: number): Promise<any | undefined> {
+    return this.communicationLogs.get(id);
+  }
+
+  async createCommunicationLog(log: any): Promise<any> {
+    const id = this.communicationLogIdCounter++;
+    const now = new Date();
+    const newLog = { ...log, id, createdAt: now, updatedAt: now };
+    this.communicationLogs.set(id, newLog);
+    return newLog;
+  }
+
+  async updateCommunicationLog(id: number, log: any): Promise<any | undefined> {
+    const existingLog = this.communicationLogs.get(id);
+    if (!existingLog) return undefined;
+
+    const updatedLog = { ...existingLog, ...log, updatedAt: new Date() };
+    this.communicationLogs.set(id, updatedLog);
+    return updatedLog;
+  }
+
+  async deleteCommunicationLog(id: number): Promise<boolean> {
+    return this.communicationLogs.delete(id);
   }
 }
 

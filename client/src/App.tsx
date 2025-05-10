@@ -105,6 +105,8 @@ import ExportCharges from "./pages/rent/ExportCharges";
 import RentRoll from "./pages/rent/RentRoll";
 import ScheduleInspection from "@/pages/ScheduleInspection"; // Added import
 import AddUtilityAccount from "@/pages/AddUtilityAccount"; // Added import
+import CommunicationTemplates from "@/pages/CommunicationTemplates"; // Added communication imports
+import EditCommunicationTemplate from "@/pages/EditCommunicationTemplate";
 
 
 function AppRoutes() {
@@ -303,6 +305,10 @@ function AppRoutes() {
               <Route path="/tasks" component={Tasks} />
               <Route path="/tasks/add" component={AddTask} />
               <Route path="/tasks/all" component={ViewTasks} />
+              
+              {/* Communication Templates Routes */}
+              <Route path="/communication-templates" component={CommunicationTemplates} />
+              <Route path="/communication-templates/edit/:id" component={EditCommunicationTemplate} />
 
               <Route path="/" component={Dashboard} />
 

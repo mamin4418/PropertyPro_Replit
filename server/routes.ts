@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import rbacRoutes from "./routes/rbac";
+import communicationRoutes from "./routes/communication";
 import { 
   insertContactSchema, 
   insertAddressSchema, 
@@ -19,6 +20,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Register RBAC routes
   app.use('/api/rbac', rbacRoutes);
+  
+  // Register Communication routes
+  app.use('/api/communication', communicationRoutes);
   // Contacts API endpoints
   app.get('/api/contacts', async (req: Request, res: Response) => {
     try {

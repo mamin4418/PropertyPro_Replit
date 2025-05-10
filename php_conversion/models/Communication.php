@@ -176,3 +176,258 @@ class Communication {
     }
 }
 ?>
+<?php
+class Communication {
+    private $db;
+    
+    public function __construct($db) {
+        $this->db = $db;
+    }
+    
+    public function createCommunication($data) {
+        try {
+            $stmt = $this->db->prepare("
+                INSERT INTO communications (
+                    type, recipient_type, recipient_id, recipient_name, 
+                    recipient_contact, subject, content, status,
+                    sent_at, created_at, updated_at
+                ) VALUES (
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                )
+            ");
+            
+            $stmt->bind_param(
+                "ssisssssss",
+                $data['type'],
+                $data['recipient_type'],
+                $data['recipient_id'],
+                $data['recipient_name'],
+                $data['recipient_contact'],
+                $data['subject'],
+                $data['content'],
+                $data['status'],
+                $data['sent_at'],
+                $data['created_at'],
+                $data['updated_at']
+            );
+            
+            $stmt->execute();
+            
+            if ($stmt->affected_rows > 0) {
+                return $this->db->insert_id;
+            }
+            
+            return false;
+        } catch (Exception $e) {
+            error_log("Error creating communication: " . $e->getMessage());
+            return false;
+        }
+    }
+    
+    public function getCommunications($type = null, $status = null, $tenant_id = null, $property_id = null, $start_date = null, $end_date = null) {
+        try {
+            $where_clauses = [];
+            $params = [];
+            $types = "";
+            
+            if ($type) {
+                $where_clauses[] = "type = ?";
+                $params[] = $type;
+                $types .= "s";
+            }
+            
+            if ($status) {
+                $where_clauses[] = "status = ?";
+                $params[] = $status;
+                $types .= "s";
+            }
+            
+            if ($tenant_id) {
+                $where_clauses[] = "recipient_id = ? AND recipient_type = 'tenant'";
+                $params[] = $tenant_id;
+                $types .= "i";
+            }
+            
+            // For property_id, we need to join with tenants and units
+            if ($property_id) {
+                $where_clauses[] = "recipient_type = 'tenant' AND recipient_id IN (
+                    SELECT t.id FROM tenants t
+                    JOIN units u ON t.unit_id = u.id
+                    WHERE u.property_id = ?
+                )";
+                $params[] = $property_id;
+                $types .= "i";
+            }
+            
+            if ($start_date) {
+                $where_clauses[] = "sent_at >= ?";
+                $params[] = $start_date . " 00:00:00";
+                $types .= "s";
+            }
+            
+            if ($end_date) {
+                $where_clauses[] = "sent_at <= ?";
+                $params[] = $end_date . " 23:59:59";
+                $types .= "s";
+            }
+            
+            $where_sql = count($where_clauses) > 0 ? "WHERE " . implode(" AND ", $where_clauses) : "";
+            
+            $sql = "SELECT * FROM communications $where_sql ORDER BY sent_at DESC";
+            
+            $stmt = $this->db->prepare($sql);
+            
+            if (count($params) > 0) {
+                $stmt->bind_param($types, ...$params);
+            }
+            
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            $communications = [];
+            while ($row = $result->fetch_assoc()) {
+                $communications[] = $row;
+            }
+            
+            return $communications;
+        } catch (Exception $e) {
+            error_log("Error retrieving communications: " . $e->getMessage());
+            return false;
+        }
+    }
+    
+    public function getCommunicationById($id) {
+        try {
+            $stmt = $this->db->prepare("SELECT * FROM communications WHERE id = ?");
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($result->num_rows === 1) {
+                return $result->fetch_assoc();
+            }
+            
+            return false;
+        } catch (Exception $e) {
+            error_log("Error retrieving communication: " . $e->getMessage());
+            return false;
+        }
+    }
+    
+    public function updateCommunicationStatus($id, $status) {
+        try {
+            $now = date('Y-m-d H:i:s');
+            
+            $stmt = $this->db->prepare("UPDATE communications SET status = ?, updated_at = ? WHERE id = ?");
+            $stmt->bind_param("ssi", $status, $now, $id);
+            $stmt->execute();
+            
+            return $stmt->affected_rows > 0;
+        } catch (Exception $e) {
+            error_log("Error updating communication status: " . $e->getMessage());
+            return false;
+        }
+    }
+    
+    public function getCommunicationStats() {
+        try {
+            $stats = [
+                'total' => 0,
+                'email' => 0,
+                'sms' => 0,
+                'letter' => 0,
+                'sent' => 0,
+                'delivered' => 0,
+                'failed' => 0
+            ];
+            
+            // Get total count
+            $stmt = $this->db->prepare("SELECT COUNT(*) as count FROM communications");
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+            $stats['total'] = $row['count'];
+            
+            // Get counts by type
+            $stmt = $this->db->prepare("SELECT type, COUNT(*) as count FROM communications GROUP BY type");
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            while ($row = $result->fetch_assoc()) {
+                $stats[$row['type']] = $row['count'];
+            }
+            
+            // Get counts by status
+            $stmt = $this->db->prepare("SELECT status, COUNT(*) as count FROM communications GROUP BY status");
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            while ($row = $result->fetch_assoc()) {
+                $stats[$row['status']] = $row['count'];
+            }
+            
+            return $stats;
+        } catch (Exception $e) {
+            error_log("Error retrieving communication stats: " . $e->getMessage());
+            return [
+                'total' => 0,
+                'email' => 0,
+                'sms' => 0,
+                'letter' => 0,
+                'sent' => 0,
+                'delivered' => 0,
+                'failed' => 0
+            ];
+        }
+    }
+    
+    public function getTenantCommunications($tenant_id) {
+        try {
+            $stmt = $this->db->prepare("
+                SELECT * FROM communications 
+                WHERE recipient_type = 'tenant' AND recipient_id = ?
+                ORDER BY sent_at DESC
+            ");
+            
+            $stmt->bind_param("i", $tenant_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            $communications = [];
+            while ($row = $result->fetch_assoc()) {
+                $communications[] = $row;
+            }
+            
+            return $communications;
+        } catch (Exception $e) {
+            error_log("Error retrieving tenant communications: " . $e->getMessage());
+            return false;
+        }
+    }
+    
+    public function getPropertyCommunications($property_id) {
+        try {
+            $stmt = $this->db->prepare("
+                SELECT c.* FROM communications c
+                JOIN tenants t ON c.recipient_id = t.id AND c.recipient_type = 'tenant'
+                JOIN units u ON t.unit_id = u.id
+                WHERE u.property_id = ?
+                ORDER BY c.sent_at DESC
+            ");
+            
+            $stmt->bind_param("i", $property_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            $communications = [];
+            while ($row = $result->fetch_assoc()) {
+                $communications[] = $row;
+            }
+            
+            return $communications;
+        } catch (Exception $e) {
+            error_log("Error retrieving property communications: " . $e->getMessage());
+            return false;
+        }
+    }
+}

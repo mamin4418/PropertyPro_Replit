@@ -23,7 +23,7 @@ $tables = [
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )",
-    
+
     "roles" => "CREATE TABLE IF NOT EXISTS roles (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(50) NOT NULL UNIQUE,
@@ -31,7 +31,7 @@ $tables = [
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )",
-    
+
     "permissions" => "CREATE TABLE IF NOT EXISTS permissions (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100) NOT NULL UNIQUE,
@@ -39,7 +39,7 @@ $tables = [
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )",
-    
+
     "role_permissions" => "CREATE TABLE IF NOT EXISTS role_permissions (
         role_id INT NOT NULL,
         permission_id INT NOT NULL,
@@ -48,7 +48,7 @@ $tables = [
         FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
         FOREIGN KEY (permission_id) REFERENCES permissions(id) ON DELETE CASCADE
     )",
-    
+
     "user_roles" => "CREATE TABLE IF NOT EXISTS user_roles (
         user_id INT NOT NULL,
         role_id INT NOT NULL,
@@ -57,7 +57,7 @@ $tables = [
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
         FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
     )",
-    
+
     // Companies table
     "companies" => "CREATE TABLE IF NOT EXISTS companies (
         id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -290,7 +290,7 @@ $tables = [
         FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE SET NULL,
         FOREIGN KEY (lease_id) REFERENCES leases(id) ON DELETE SET NULL
     )",
-    
+
     // Financial Management Tables
     "expense_categories" => "CREATE TABLE IF NOT EXISTS expense_categories (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -300,7 +300,7 @@ $tables = [
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )",
-    
+
     "expenses" => "CREATE TABLE IF NOT EXISTS expenses (
         id INT AUTO_INCREMENT PRIMARY KEY,
         property_id INT,
@@ -321,7 +321,7 @@ $tables = [
         FOREIGN KEY (category_id) REFERENCES expense_categories(id) ON DELETE SET NULL,
         FOREIGN KEY (vendor_id) REFERENCES vendors(id) ON DELETE SET NULL
     )",
-    
+
     "bank_accounts" => "CREATE TABLE IF NOT EXISTS bank_accounts (
         id INT AUTO_INCREMENT PRIMARY KEY,
         account_name VARCHAR(100) NOT NULL,
@@ -336,7 +336,7 @@ $tables = [
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )",
-    
+
     "transactions" => "CREATE TABLE IF NOT EXISTS transactions (
         id INT AUTO_INCREMENT PRIMARY KEY,
         bank_account_id INT NOT NULL,
@@ -353,7 +353,7 @@ $tables = [
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (bank_account_id) REFERENCES bank_accounts(id) ON DELETE CASCADE
     )",
-    
+
     // Application and Screening System Tables
     "applications" => "CREATE TABLE IF NOT EXISTS applications (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -393,7 +393,7 @@ $tables = [
         FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE SET NULL,
         FOREIGN KEY (unit_id) REFERENCES units(id) ON DELETE SET NULL
     )",
-    
+
     "application_documents" => "CREATE TABLE IF NOT EXISTS application_documents (
         id INT AUTO_INCREMENT PRIMARY KEY,
         application_id INT NOT NULL,
@@ -405,7 +405,7 @@ $tables = [
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (application_id) REFERENCES applications(id) ON DELETE CASCADE
     )",
-    
+
     "screening_criteria" => "CREATE TABLE IF NOT EXISTS screening_criteria (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
@@ -420,7 +420,7 @@ $tables = [
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )",
-    
+
     // Communication System Tables
     "communications" => "CREATE TABLE IF NOT EXISTS communications (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -437,7 +437,7 @@ $tables = [
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE SET NULL
     )",
-    
+
     "communication_templates" => "CREATE TABLE IF NOT EXISTS communication_templates (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
@@ -449,7 +449,7 @@ $tables = [
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )",
-    
+
     "notifications" => "CREATE TABLE IF NOT EXISTS notifications (
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT NOT NULL,
@@ -462,7 +462,7 @@ $tables = [
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     )",
-    
+
     // System Settings Tables
     "settings" => "CREATE TABLE IF NOT EXISTS settings (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -474,7 +474,7 @@ $tables = [
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )",
-    
+
     "email_templates" => "CREATE TABLE IF NOT EXISTS email_templates (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
@@ -486,7 +486,7 @@ $tables = [
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )",
-    
+
     "system_logs" => "CREATE TABLE IF NOT EXISTS system_logs (
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT,
@@ -499,7 +499,7 @@ $tables = [
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
     )",
-    
+
     // Reports table
     "saved_reports" => "CREATE TABLE IF NOT EXISTS saved_reports (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -511,7 +511,7 @@ $tables = [
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     )",
-    
+
     "report_templates" => "CREATE TABLE IF NOT EXISTS report_templates (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
